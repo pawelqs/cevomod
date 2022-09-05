@@ -37,6 +37,3 @@ Imports:
 Depends: 
     R (>= 2.10)
 LazyData: true
-Remotes:  
-    pawelqs,
-    pawelqs/cancer_evolution
