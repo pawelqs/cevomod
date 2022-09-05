@@ -1,0 +1,331 @@
+---
+title: "Get Started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Get Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(cevomod)
+library(cevoDatasets)
+library(patchwork)
+library(tidyverse)
+data("tcga_brca_test")
+```
+
+# Cumulative tails
+
+```{r, fig.width=7, fig.height=5}
+# tcga_brca_test %>%
+#   group_by(sample_id) %>%
+#   calc_cumulative_tails() %>%
+#   plot(scales = "loglog")
+
+tcga_brca_test %>%
+  plot_cumulative_tails(size = 0.5, scale_y = FALSE)
+```
+
+# SFS with mut annotation
+
+```{r, fig.width=7, fig.height=4}
+# tcga_brca_test %>%
+#   group_by(sample_id) %>%
+#   calc_SFS() %>%
+#   plot()
+
+tcga_brca_test %>%
+  plot_SFS() +
+  geom_mutations(drivers = "BRCA", shape = "variant_classification")
+
+tcga_brca_test %>%
+  plot_SFS() +
+  geom_mutations(drivers = "BRCA", shape = "impact")
+  
+tcga_brca_test %>%
+  ggplot(aes(VAF, fill = sample_id, color = sample_id)) +
+  stat_SFS(geom = "bar") +
+  geom_mutations(drivers = "BRCA", color = "black", shape = "impact") +
+  facet_wrap(~sample_id, scales = "free_y") +
+  theme_ellie(n = n_distinct(tcga_brca_test$sample_id))
+```
+
+# SNVs plots
+
+```{r, fig.width=7, fig.height=5}
+p1 <- tcga_brca_test %>%
+  group_by(sample_id) %>%
+  plot_mutations(drivers = "BRCA", shape = "variant_classification")
+
+p2 <- tcga_brca_test %>%
+  group_by(sample_id) %>%
+  plot_mutations(
+    genes = c("TP53", "BRCA1", "KMT2C", "ERBB2"),
+    mark_genes = c("TP53", "BRCA1", "ERBB2"),
+    y = "samples",
+    shape = "impact")
+
+p1 / p2 + plot_layout(heights = c(3, 1))
+```
+
+# M(f) ~ 1/f
+
+```{r}
+Mf_1f <- tcga_brca_test %>%
+  group_by(sample_id) %>%
+  calc_Mf_1f()
+
+plot(Mf_1f) +
+  scale_color_brewer(palette = "Dark2")
+
+plot(Mf_1f, from = 0.05, to = 0.5, scale = FALSE)
+  # geom_smooth() +
+  # coord_cartesian(xlim = c(1/0.1, 1/0.25)) +
+  # facet_wrap(~sample_id, scales = "free")
+```
+
+
+```{r, fig.width=15, fig.height=7}
+library(neutralitytestr)
+
+neutralitytest_res <- tcga_brca_test %>%
+  group_by(sample_id) %>%
+  nest() %>%
+  deframe() %>%
+  map("VAF") %>%
+  map(neutralitytest, read_depth = 100.0, fmin = 0.11, fmax = 0.2)
+
+neutralitytest_res %>%
+  map(plot_all)
+```
+
+```{r, fig.width=9, fig.height=9}
+data("snvs_AMLRO")
+
+plot_SFS(snvs_AMLRO, geom = "bar", show.legend = FALSE) +
+  facet_wrap(~patient_id, scales = "free") +
+  geom_mutations(drivers = "LAML", color = "black")
+```
+
+# Fit partial neutral models
+
+```{r}
+Mf_1f <- tcga_brca_test %>%
+  group_by(sample_id) %>%
+  calc_Mf_1f()
+
+models <- fit_neutral_partial_models(Mf_1f, rsq_treshold = 0.99)
+```
+
+
+```{r}
+plot(Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
+  geom_lm_models(models) +
+  scale_color_pnw()
+```
+
+# dNdScv
+
+```{r}
+# rm(list = ls())
+# library(dndscv)
+# library(cevomod)
+# library(cevoDatasets)
+# # library(rlang)
+# 
+# data(snvs_AMLRO)
+# 
+# mutations <- snvs_AMLRO %>%
+#   mutate(chr = str_replace(chrom, "chr", "")) %>%
+#   select(sampleID = patient_id, chr, pos, ref, alt) %>%
+#   unique() %>%
+#   head(10000)
+# 
+# myenv <- new.env(parent = parent.env(globalenv()))
+# local({
+#     dndscv2 <- function (mutations) {
+#       dndsout <- dndscv::dndscv(mutations)
+#       dndsout
+#     }
+# }, envir = myenv)
+# 
+# environment(myenv$dndscv2) <- myenv
+# # myenv$dndscv2 <- dndscv::dndscv
+# dndsout <- myenv$dndscv2(mutations)
+# # environment(fun2) = myenv
+# # fun2()
+# 
+# # eval(
+# #   {dndsout <- dndscv::dndscv(mutations)},
+# #   envir = new.env()
+# # )
+# 
+
+```
+
+
+
+```{r}
+# mutations <- snvs_AMLRO %>%
+#   mutate(chr = str_replace(chrom, "chr", "")) %>%
+#   select(sampleID = patient_id, chr, pos, ref, alt) %>%
+#   unique()
+# dndsout <- dndscv(mutations)
+```
+
+
+# Model fitting
+
+```{r, fig.width=10, fig.height=10}
+# snvs_AMLRO <- readRDS("../../analyses/data/snvs_AMLRO.Rds")
+# snvs_AMLRO %>%
+#   ggplot(aes(VAF)) +
+#   geom_histogram() +
+#   facet_wrap(~sample_id, scales = "free")
+```
+
+```{r}
+# SFS <- snvs_AMLRO %>%
+#   filter(sample_id == "AMLRO-1_Dx.Dx") %>%
+#   group_by(sample_id) %>%
+#   calc_SFS()
+# 
+# plot(SFS, geom = geom_bar(aes(fill = sample_id), stat = "identity"))
+```
+
+```{r}
+# model_fun <- function(x, A, K, p1) {
+#   A * poweRlaw::dplcon(x, xmin = 1, alpha = 2) + K * dbinom(x, 100, p1)
+# }
+# 
+# plot(model_fun(1:100, 100, 100, 0.5))
+# 
+# fit_model <- function(SFS, depth = 100) {
+#   dt <- SFS %>%
+#     mutate(x = floor(VAF*100))
+#   
+#   fit <- nls(y ~ model_fun(x, A, K, p1), data = dt, start = list(A = 1000, K = 100, p1 = 0.5))
+#   params <- summary(fit)$coefficients
+#   params <- params[, "Estimate"] %>%
+#     as.list()
+#   
+#   dt$fit <- model_fun(dt$x, params$A, params$K, params$p1)
+# }
+# 
+# ggplot(dt, aes(x)) +
+#   geom_bar(aes(x, y), stat = "identity") +
+#   geom_point(aes(x, fit))
+```
+
+
+```{r}
+# snvs_AMLRO <- snvs_AMLRO %>%
+#   separate(AD, into = c("ref_reads", "alt_reads")) %>%
+#   mutate_at(c("ref_reads", "alt_reads"), parse_integer)
+# 
+# snvs_AMLRO %>%
+#   ggplot(aes(DP)) +
+#   geom_histogram() +
+#   scale_x_log10() +
+#   geom_vline()
+```
+
+
+```{r}
+# fun <- function(x, a) {
+#   dpois()
+#   poweRlaw::dplcon(x, 1, a) + binomi
+#   
+# }
+# 
+# fun(1:10, 2) %>%
+#   plot()
+# 
+# fit <- nls(y ~ fun(VAF, a), data = SFS, start = list(a = 1))
+# fit
+# x <- fit %>%
+#   summary()
+# a <- x$coefficients["a", "Estimate"]
+# 
+# SFS %>%
+#   mutate(
+#     fit = fun(VAF, a)
+#   ) %>%
+#   ggplot() +
+#   geom_bar(aes(VAF, y), stat = "identity") +
+#   geom_point(aes(VAF, fit))
+# 
+# plot(dbinom(1:10, 10, 0.5))
+```
+
+
+```{r}
+# k <- 2:100
+# n <- 100
+# A <- 100
+# K <- 100
+# p0 <- 0.5
+# p1 <- 0.5
+# 
+# df <- tibble(
+#   k = k,
+#   yA = A/(k*(k-1)),
+#   yK = K * choose(n, k) * p0^(n-k) * p1^k,
+#   y = A/(k*(k-1)) + K * choose(n, k) * p0^(n-k) * p1^k 
+# )
+# 
+# df
+# ggplot(df, aes(k, y)) +
+#   geom_point() +
+#   theme_minimal()
+```
+
+```{r}
+# library(MASS)
+# 
+# x <- snvs_AMLRO %>%
+#   filter(sample_id == "AMLRO-1_Dx.Dx") %>%
+#   drop_na() %>%
+#   mutate(Qnk = as.integer(floor(VAF * 100)))
+# hist(x$Qnk)
+# 
+# d <- function(x, A, K, p0, p1) {
+#   n <- 100
+#   A/(x*(x-1)) + K * choose(n, x) * p0^(n-x) * p1^x
+# }
+# d <- function(x, A) {
+#   n <- 100
+#   # A/(x*(x-1))
+#   poweRlaw::dplcon(x, 1, A)
+# }
+# plot(2:100, d(2:100, A = 100))
+# 
+# # plot(1:100, d(1:100, A = 100, K = 100, p0 = 0.6, p1 = 0.4))
+# 
+# fit <- fitdistr(
+#   x$Qnk, 
+#   densfun = d, 
+#   start = list(A = 100),
+#   lower = 1
+# )
+# 
+# fit <- fitdistr(
+#   x$Qnk, 
+#   densfun = d, 
+#   start = list(A = 100, K = 100, p0 = 0.6, p1 = 0.4),
+#   lower = 2,
+#   upper = 80
+# )
+# 
+# plot(poweRlaw::dplcon(1:100, 1, 2))
+```
+
+
