@@ -22,7 +22,7 @@ You can install the development version of cevomod from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("pawel125/cancer_evolution")
+devtools::install_github("pawelqs/cevomod")
 ```
 
 ## Example

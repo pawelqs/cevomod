@@ -31,7 +31,7 @@ You can install the development version of cevomod from [GitHub](https://github.
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("pawel125/cancer_evolution")
+devtools::install_github("pawelqs/cevomod")
 ```
 
 ## Example
