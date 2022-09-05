@@ -25,7 +25,7 @@ jobs:
         with:
           extra-packages: any::covr, any::XML
           needs: coverage
-          dependencies: "hard"
+          dependencies: '"hard"'
 
       - name: Test coverage
         run: covr::codecov(quiet = FALSE)
