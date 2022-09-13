@@ -78,6 +78,7 @@ layer_mutations <- function(genes = NULL, drivers = NULL, data = NULL,
       y = 0,
       size = size,
       color = color,
+      inherit.aes = FALSE,
       ...
     )
   )
