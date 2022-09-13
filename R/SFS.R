@@ -54,7 +54,10 @@ plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
     aes(.data$VAF, !!sym(y), color = !!sym(group_variables[[1]]), ...) +
     geom_line() +
     theme_ellie(n_colors) +
-    labs(title = "SFS")
+    labs(
+      title = "SFS",
+      y = "count"
+    )
 }
 
 
@@ -65,7 +68,11 @@ plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
 plot_SFS <- function(dt, ...) {
   ggplot(dt, aes(.data$VAF, color = .data$sample_id, fill = .data$sample_id)) +
     stat_SFS(...) +
-    theme_ellie(n = n_distinct(dt$sample_id))
+    theme_ellie(n = n_distinct(dt$sample_id)) +
+    labs(
+      title = "SFS",
+      y = "count"
+    )
 }
 
 

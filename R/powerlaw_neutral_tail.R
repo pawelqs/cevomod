@@ -60,9 +60,19 @@ calc_powerlaw_curve <- function(lm_models) {
 estimate_sampling_rate <- function(sfs, lm_models) {
   exp <- calc_powerlaw_curve(lm_models)
 
-  sampling_stats <- exp |>
-    select(.data$patient_id, .data$sample_id, VAF = .data$f, .data$n) |>
-    left_join(sfs, by = c("patient_id", "sample_id", "VAF")) |>
+  patient_id_present <- "patient_id" %in% names(sfs)
+
+  dt <- if (patient_id_present) {
+    exp |>
+      select(.data$patient_id, .data$sample_id, VAF = .data$f, .data$n) |>
+      left_join(sfs, by = c("patient_id", "sample_id", "VAF"))
+  } else {
+    exp |>
+      select(.data$sample_id, VAF = .data$f, .data$n) |>
+      left_join(sfs, by = c("sample_id", "VAF"))
+  }
+
+  sampling_stats <- dt |>
     select(-.data$y_scaled) |>
     filter(.data$VAF < 0.2) |>
     mutate(
