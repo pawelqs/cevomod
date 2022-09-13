@@ -64,7 +64,7 @@ estimate_sampling_rate <- function(sfs, lm_models) {
     select(.data$patient_id, .data$sample_id, VAF = .data$f, .data$n) |>
     left_join(sfs, by = c("patient_id", "sample_id", "VAF")) |>
     select(-.data$y_scaled) |>
-    # filter(.data$VAF < 0.2) |>
+    filter(.data$VAF < 0.2) |>
     mutate(
       err = n - y,
       sampling_rate = err / n
