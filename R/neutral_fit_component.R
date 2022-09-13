@@ -9,9 +9,9 @@
 #' @param size line size
 #' @param ... other arguments passed to geoms
 #' @export
-layer_exponential_fits <- function(lm_models,
-                                   start = NA, end = 1, show.legend = FALSE,
-                                   color = "black", size = 1, ...) {
+layer_neutral_tail <- function(lm_models,
+                               start = NA, end = 1, show.legend = FALSE,
+                               color = "black", size = 1, ...) {
   exp <- lm_models |>
     slice(1) |>
     calc_exp_curve() |>
@@ -45,4 +45,29 @@ calc_exp_curve <- function(lm_models) {
       neutr = (f >= from & f <= to),
       n = -(a / 90) / f^2
     )
+}
+
+
+#' Estimate sampling rate
+#'
+#' Uses experimental SFS and power-law model to estimate the sampling rate
+#'
+#' @param sfs SFS
+#' @param lm_models output from fit_neutral_lm()
+#'
+#' @return tibble
+#' @export
+estimate_sampling_rate <- function(sfs, lm_models) {
+  exp <- calc_exp_curve(lm_models)
+
+  sampling_stats <- exp |>
+    select(.data$patient_id, .data$sample_id, VAF = .data$f, .data$n) |>
+    left_join(sfs, by = c("patient_id", "sample_id", "VAF")) |>
+    select(-.data$y_scaled) |>
+    # filter(.data$VAF < 0.2) |>
+    mutate(
+      err = n - y,
+      sampling_rate = err / n
+    )
+  sampling_stats
 }
