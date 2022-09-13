@@ -5,23 +5,29 @@
 \title{Plot neutral exponential curve on SFS plot}
 \usage{
 layer_exponential_fits(
-  models,
-  start = 0.08,
+  lm_models,
+  start = NA,
   end = 1,
+  show.legend = FALSE,
   color = "black",
-  size = 1
+  size = 1,
+  ...
 )
 }
 \arguments{
-\item{models}{model fits from fit_neutral_lm}
+\item{lm_models}{model fits from fit_neutral_lm}
 
 \item{start}{VAF value to start plotting model fit}
 
-\item{end}{VAF value to end plotting model fit}
+\item{end}{VAF value to end plotting model fit=}
+
+\item{show.legend}{show legend?}
 
 \item{color}{line color}
 
 \item{size}{line size}
+
+\item{...}{other arguments passed to geoms}
 }
 \description{
 Plot neutral exponential curve on SFS plot

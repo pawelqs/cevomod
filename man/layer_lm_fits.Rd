@@ -19,7 +19,7 @@ Mf_1f <- tcga_brca_test |>
   dplyr::filter(sample_id \%in\% c("TCGA-AC-A23H-01","TCGA-AN-A046-01")) |>
   dplyr::group_by(sample_id) |>
   calc_Mf_1f()
-models <- fit_neutral_partial_models(Mf_1f, rsq_treshold = 0.99)
+models <- fit_neutral_lm(Mf_1f, rsq_treshold = 0.99)
 plot(Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
-  geom_lm_models(models)
+  layer_lm_fits(models)
 }

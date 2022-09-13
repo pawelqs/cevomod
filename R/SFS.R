@@ -44,7 +44,7 @@ calc_SFS <- function(dt, digits = 2) {
 #'
 #' tcga_brca_test |>
 #'   plot_SFS() +
-#'   geom_mutations(drivers = "BRCA")
+#'   layer_mutations(drivers = "BRCA")
 plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
   group_variables <- group_vars(x)
   y <- if (y_scaled) "y_scaled" else "y"
