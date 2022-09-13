@@ -12,7 +12,7 @@
 #' models <- fit_neutral_partial_models(Mf_1f, rsq_treshold = 0.99)
 #' plot(Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
 #'   geom_lm_models(models)
-geom_lm_models <- function(data, ...) {
+layer_lm_fits <- function(data, ...) {
   geom_segment(
     aes(
       x = 1/.data$from,
@@ -35,8 +35,8 @@ geom_lm_models <- function(data, ...) {
 #' @param rsq_treshold R-squared tresholds to keep model as neutral
 #' @return cevo_lm_models_tbl
 #' @export
-#' @inherit geom_lm_models examples
-fit_neutral_partial_models <- function(dt, rsq_treshold = 0.98) {
+#' @inherit layer_lm_fits examples
+fit_neutral_lm <- function(dt, rsq_treshold = 0.98) {
   res <- dt |>
     filter(.data$`1/f` < Inf, .data$VAF < 0.5) |>
     select(.data$sample_id, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
