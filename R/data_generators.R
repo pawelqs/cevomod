@@ -12,7 +12,7 @@ generate_neutral_snvs <- function(mut_rate = 2, sample_below = 0.15) {
   tibble(
     sample_id = "S1",
     VAF = seq(.01, 1, by = .01),
-    n = floor(mut_rate / VAF^2)
+    n = floor(mut_rate / .data$VAF^2)
   ) |>
     mutate(
       n = if_else(

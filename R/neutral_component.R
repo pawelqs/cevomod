@@ -14,23 +14,23 @@ layer_neutral_tail <- function(lm_models,
                                color = "black", size = 1, ...) {
   exp <- lm_models |>
     slice(1) |>
-    calc_exp_curve() |>
-    filter(f >= from - 0.02, f <= end)
+    calc_powerlaw_curve() |>
+    filter(.data$f >= .data$from - 0.02, .data$f <= end)
 
   if (!is.na(start)) {
-    exp <- filter(exp, f >= start)
+    exp <- filter(exp, .data$f >= start)
   }
 
   list(
     geom_line(
-      aes(f, n),
+      aes(.data$f, .data$n),
       data = exp,
       color = color, size = size, linetype = "dashed", show.legend = show.legend,
       ...
     ),
     geom_line(
-      aes(f, n),
-      data = exp |> filter(neutr),
+      aes(.data$f, .data$n),
+      data = exp |> filter(.data$neutr),
       color = color, size = size, show.legend = show.legend,
       ...
     )
@@ -38,12 +38,12 @@ layer_neutral_tail <- function(lm_models,
 }
 
 
-calc_exp_curve <- function(lm_models) {
+calc_powerlaw_curve <- function(lm_models) {
   lm_models |>
     expand_grid(f = seq(0.01, 1, by = 0.01)) |>
     mutate(
-      neutr = (f >= from & f <= to),
-      n = -(a / 90) / f^2
+      neutr = (.data$f >= .data$from & .data$f <= .data$to),
+      n = -(.data$a / 90) / .data$f^2
     )
 }
 
@@ -58,7 +58,7 @@ calc_exp_curve <- function(lm_models) {
 #' @return tibble
 #' @export
 estimate_sampling_rate <- function(sfs, lm_models) {
-  exp <- calc_exp_curve(lm_models)
+  exp <- calc_powerlaw_curve(lm_models)
 
   sampling_stats <- exp |>
     select(.data$patient_id, .data$sample_id, VAF = .data$f, .data$n) |>
@@ -66,8 +66,8 @@ estimate_sampling_rate <- function(sfs, lm_models) {
     select(-.data$y_scaled) |>
     filter(.data$VAF < 0.2) |>
     mutate(
-      err = n - y,
-      sampling_rate = err / n
+      err = .data$n - .data$y,
+      sampling_rate = .data$err / .data$n
     )
   sampling_stats
 }
