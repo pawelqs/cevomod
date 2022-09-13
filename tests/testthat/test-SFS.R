@@ -9,11 +9,20 @@ test_that("Calculation of SFS works", {
 })
 
 
-test_that("Plotting of SFS works", {
+test_that("plot(calc_SFS()) works", {
   dt <- tcga_brca_test %>%
     group_by(sample_id)
   p <- dt %>%
     calc_SFS() %>%
     plot()
   expect_s3_class(p, c("gg", "ggplot"))
+  vdiffr::expect_doppelganger("plot(calc_SFS())", p)
+})
+
+
+test_that("plot_SFS() works", {
+  dt <- tcga_brca_test %>%
+    group_by(sample_id)
+  p <- plot_SFS(dt)
+  vdiffr::expect_doppelganger("plot_SFS()", p)
 })

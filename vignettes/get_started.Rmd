@@ -44,16 +44,16 @@ tcga_brca_test %>%
 
 tcga_brca_test %>%
   plot_SFS() +
-  geom_mutations(drivers = "BRCA", shape = "variant_classification")
+  layer_mutations(drivers = "BRCA", shape = "variant_classification")
 
 tcga_brca_test %>%
   plot_SFS() +
-  geom_mutations(drivers = "BRCA", shape = "impact")
+  layer_mutations(drivers = "BRCA", shape = "impact")
   
 tcga_brca_test %>%
   ggplot(aes(VAF, fill = sample_id, color = sample_id)) +
   stat_SFS(geom = "bar") +
-  geom_mutations(drivers = "BRCA", color = "black", shape = "impact") +
+  layer_mutations(drivers = "BRCA", color = "black", shape = "impact") +
   facet_wrap(~sample_id, scales = "free_y") +
   theme_ellie(n = n_distinct(tcga_brca_test$sample_id))
 ```
@@ -112,25 +112,93 @@ data("snvs_AMLRO")
 
 plot_SFS(snvs_AMLRO, geom = "bar", show.legend = FALSE) +
   facet_wrap(~patient_id, scales = "free") +
-  geom_mutations(drivers = "LAML", color = "black")
+  layer_mutations(drivers = "LAML", color = "black")
 ```
 
-# Fit partial neutral models
+# Fit neutral models
 
 ```{r}
 Mf_1f <- tcga_brca_test %>%
   group_by(sample_id) %>%
   calc_Mf_1f()
 
-models <- fit_neutral_partial_models(Mf_1f, rsq_treshold = 0.99)
+models <- fit_neutral_lm(Mf_1f, rsq_treshold = 0.99)
 ```
 
 
 ```{r}
 plot(Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
-  geom_lm_models(models) +
+  layer_lm_fits(models) +
   scale_color_pnw()
 ```
+
+```{r, fig.width=9, fig.height=9}
+exp <- models |> 
+  slice(1) |> 
+  expand_grid(x = seq(0.08, 1, by = 0.01)) |> 
+  mutate(
+    neutr = (x >= from & x <= to),
+    y = (a/-90)/x^2
+  )
+
+plot_SFS(tcga_brca_test, geom = "bar", show.legend = FALSE, color = "white", alpha = 0.9) +
+  facet_wrap(~sample_id, scales = "free") +
+  scale_color_pnw() +
+  scale_fill_pnw() +
+  layer_mutations(drivers = "BRCA", color = "black") +
+  geom_line(aes(x, y), data = exp, color = "black", size = 1, linetype = "dashed") +
+  geom_line(aes(x, y), data = exp |> filter(neutr), color = "black", size = 1)
+```
+
+```{r}
+fake_VAFs <- generate_neutral_snvs(mut_rate = 10, sample_below = 0.15)
+fake_VAFs
+
+plot_SFS(fake_VAFs, geom = "bar") +
+  xlim(0, 1)
+###
+
+Mf_1f <- fake_VAFs %>%
+  group_by(sample_id) %>%
+  calc_Mf_1f()
+
+models <- fit_neutral_lm(Mf_1f, rsq_treshold = 0.99)
+models
+
+plot(Mf_1f, scale = FALSE, from = 0) +
+  layer_lm_fits(models)
+
+exp <- models |> 
+  slice(1) |> 
+  expand_grid(x = seq(0.05, 1, by = 0.01)) |> 
+  filter(x >= from, x <= to) |> 
+  mutate(
+    y = (a/-90)/x^2 + 0
+  )
+
+plot_SFS(fake_VAFs, geom = "bar", show.legend = FALSE, alpha = 0.4, color = "white") +
+  scale_color_pnw() +
+  scale_fill_pnw() +
+  geom_line(aes(x, y), data = exp, color = "black")
+```
+
+```{r}
+tibble(
+    mut_rate = c(1, 2, 4, 6, 10, 20),
+    a = c(-90, -180, -360, -540, -900, -1800)
+  ) |> 
+  ggplot(aes(mut_rate, a)) +
+  geom_point() +
+  theme_minimal()
+```
+
+
+```{r}
+plot(Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
+  layer_lm_fits(models) +
+  scale_color_pnw()
+```
+
 
 # dNdScv
 

@@ -64,9 +64,9 @@ filter_SNVs <- function(dt, genes = NULL, drivers = NULL) {
 #' @param size size
 #' @param ... other arguments passed to geom_point()
 #' @export
-geom_mutations <- function(genes = NULL, drivers = NULL, data = NULL,
-                           color = "black", size = 3, shape = "impact",
-                           filter_fun = guess_filter_fun(shape), ...) {
+layer_mutations <- function(genes = NULL, drivers = NULL, data = NULL,
+                            color = "black", size = 3, shape = "impact",
+                            filter_fun = guess_filter_fun(shape), ...) {
   . <- NULL
   list(
     scale_shape_manual(values = c(2, 4, 3, 5)),
@@ -78,6 +78,7 @@ geom_mutations <- function(genes = NULL, drivers = NULL, data = NULL,
       y = 0,
       size = size,
       color = color,
+      inherit.aes = FALSE,
       ...
     )
   )

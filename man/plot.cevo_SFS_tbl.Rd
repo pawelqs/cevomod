@@ -38,5 +38,5 @@ tcga_brca_test |>
 
 tcga_brca_test |>
   plot_SFS() +
-  geom_mutations(drivers = "BRCA")
+  layer_mutations(drivers = "BRCA")
 }

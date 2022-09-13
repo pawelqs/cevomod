@@ -44,7 +44,7 @@ calc_SFS <- function(dt, digits = 2) {
 #'
 #' tcga_brca_test |>
 #'   plot_SFS() +
-#'   geom_mutations(drivers = "BRCA")
+#'   layer_mutations(drivers = "BRCA")
 plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
   group_variables <- group_vars(x)
   y <- if (y_scaled) "y_scaled" else "y"
@@ -54,7 +54,10 @@ plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
     aes(.data$VAF, !!sym(y), color = !!sym(group_variables[[1]]), ...) +
     geom_line() +
     theme_ellie(n_colors) +
-    labs(title = "SFS")
+    labs(
+      title = "SFS",
+      y = "count"
+    )
 }
 
 
@@ -63,9 +66,13 @@ plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
 #' @param ... args passed to stat_SFS
 #' @export
 plot_SFS <- function(dt, ...) {
-  ggplot(dt, aes(.data$VAF, color = .data$sample_id)) +
+  ggplot(dt, aes(.data$VAF, color = .data$sample_id, fill = .data$sample_id)) +
     stat_SFS(...) +
-    theme_ellie(n = n_distinct(dt$sample_id))
+    theme_ellie(n = n_distinct(dt$sample_id)) +
+    labs(
+      title = "SFS",
+      y = "count"
+    )
 }
 
 
