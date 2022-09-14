@@ -3,12 +3,11 @@
 
 # cevomod <img src="man/figures/logo.png" align="right" height="120" />
 
-# cevomod
-
 <!-- badges: start -->
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check](https://github.com/pawelqs/cevomod/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pawelqs/cevomod/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/pawelqs/cevomod/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/pawelqs/cevomod/actions/workflows/test-coverage.yaml)
 <!-- badges: end -->
 
@@ -44,7 +43,7 @@ data("tcga_brca_test")
 tcga_brca_test |> 
   ggplot(aes(VAF, fill = sample_id, color = sample_id)) +
   stat_SFS(geom = "bar") +
-  geom_mutations(drivers = "BRCA", color = "black", shape = "impact") +
+  layer_mutations(drivers = "BRCA", color = "black", shape = "impact") +
   facet_wrap(~sample_id, scales = "free_y") +
   theme_ellie(n = n_distinct(tcga_brca_test$sample_id))
 ```
