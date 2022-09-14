@@ -16,7 +16,6 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(cevomod)
-library(cevoDatasets)
 library(patchwork)
 library(tidyverse)
 data("tcga_brca_test")
@@ -206,7 +205,6 @@ plot(Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
 # rm(list = ls())
 # library(dndscv)
 # library(cevomod)
-# library(cevoDatasets)
 # # library(rlang)
 # 
 # data(snvs_AMLRO)
