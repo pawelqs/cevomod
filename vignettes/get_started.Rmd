@@ -107,11 +107,11 @@ neutralitytest_res %>%
 ```
 
 ```{r, fig.width=9, fig.height=9}
-data("snvs_AMLRO")
-
-plot_SFS(snvs_AMLRO, geom = "bar", show.legend = FALSE) +
-  facet_wrap(~patient_id, scales = "free") +
-  layer_mutations(drivers = "LAML", color = "black")
+# data("snvs_AMLRO")
+# 
+# plot_SFS(snvs_AMLRO, geom = "bar", show.legend = FALSE) +
+#   facet_wrap(~patient_id, scales = "free") +
+#   layer_mutations(drivers = "LAML", color = "black")
 ```
 
 # Fit neutral models
