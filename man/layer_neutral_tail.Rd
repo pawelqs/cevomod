@@ -8,6 +8,7 @@ layer_neutral_tail(
   lm_models,
   start = NA,
   end = 1,
+  binwidth = 0.01,
   show.legend = FALSE,
   color = "black",
   size = 1,
@@ -19,7 +20,10 @@ layer_neutral_tail(
 
 \item{start}{VAF value to start plotting model fit}
 
-\item{end}{VAF value to end plotting model fit=}
+\item{end}{VAF value to end plotting model fit}
+
+\item{binwidth}{binwidth, necessary to scale the model parameter so it can
+fit the binarized SFS correctly}
 
 \item{show.legend}{show legend?}
 
