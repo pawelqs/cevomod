@@ -66,7 +66,7 @@ estimate_sampling_rate <- function(sfs, lm_models) {
   binwidth <- get_average_interval(sfs$VAF)
   exp <- calc_powerlaw_curve(lm_models, binwidth = binwidth) |>
     mutate(VAF = as.character(.data$f))
-  sfs <- mutate(sfs, VAF = as.character(VAF))
+  sfs <- mutate(sfs, VAF = as.character(.data$VAF))
 
   patient_id_present <- "patient_id" %in% names(sfs)
   dt <- if (patient_id_present) {
