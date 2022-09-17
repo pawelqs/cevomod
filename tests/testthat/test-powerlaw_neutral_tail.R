@@ -35,4 +35,5 @@ test_that("estimate_sampling_rate returns proper tibble", {
     c(1.0000000, 0.9997659, 0.9984197, 0.9943812, 0.9868310),
     tolerance = 0.0001
   )
+  expect_false(any(is.na(sampling_rate)))
 })

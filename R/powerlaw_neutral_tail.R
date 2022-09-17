@@ -64,16 +64,18 @@ calc_powerlaw_curve <- function(lm_models, binwidth) {
 #' @export
 estimate_sampling_rate <- function(sfs, lm_models) {
   binwidth <- get_average_interval(sfs$VAF)
-  exp <- calc_powerlaw_curve(lm_models, binwidth = binwidth)
-  patient_id_present <- "patient_id" %in% names(sfs)
+  exp <- calc_powerlaw_curve(lm_models, binwidth = binwidth) |>
+    mutate(VAF = as.character(.data$f))
+  sfs <- mutate(sfs, VAF = as.character(VAF))
 
+  patient_id_present <- "patient_id" %in% names(sfs)
   dt <- if (patient_id_present) {
     exp |>
-      select(.data$patient_id, .data$sample_id, VAF = .data$f, .data$n) |>
+      select(.data$patient_id, .data$sample_id, .data$VAF, .data$n) |>
       left_join(sfs, by = c("patient_id", "sample_id", "VAF"))
   } else {
     exp |>
-      select(.data$sample_id, VAF = .data$f, .data$n) |>
+      select(.data$sample_id, .data$VAF, .data$n) |>
       left_join(sfs, by = c("sample_id", "VAF"))
   }
 
@@ -81,6 +83,7 @@ estimate_sampling_rate <- function(sfs, lm_models) {
     select(-.data$y_scaled) |>
     filter(.data$VAF < 0.2) |>
     mutate(
+      VAF = parse_double(.data$VAF),
       err = .data$n - .data$y,
       sampling_rate = .data$err / .data$n
     )
