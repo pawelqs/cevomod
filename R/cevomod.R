@@ -11,12 +11,6 @@ NULL
 NULL
 
 
-#' TCGA-BRCA CNVs dataset
-#' @name cnvs_tcga_brca
-#' @docType data
-NULL
-
-
 #' Small CNV test dataset
 #' @name cnvs_test
 #' @docType data
