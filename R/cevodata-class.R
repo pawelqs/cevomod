@@ -15,6 +15,16 @@ new_cevodata <- function(name, genome) {
 }
 
 
+#' Create new cevomod dataset object
+#'
+#' @param name dataset name
+#' @param genome genome version
+#' @param snvs tibble with SNVs
+#' @param snvs_name name for SNVs assay
+#' @param cnvs tibble with CNVs
+#' @param cnvs_name name for CNVs assay
+#' @return `cevodata` object
+#'
 #' @export
 init_cevodata <- function(name, genome = NULL,
                           snvs = NULL, snvs_name = NULL,
@@ -75,6 +85,8 @@ summary.cevodata <- function(object, ...) {
 }
 
 
+#' @return tibble
+#' @describeIn assays Get SNVs from cevodata dataset
 #' @export
 SNVs.cevodata <- function(object, which = object$active_SNVs, ...) {
   if (which %not in% names(object$SNVs)) {
@@ -84,6 +96,7 @@ SNVs.cevodata <- function(object, which = object$active_SNVs, ...) {
 }
 
 
+#' @describeIn assays Add new SNVs to cevodata
 #' @export
 add_SNV_data.cevodata <- function(object, snvs, name = NULL, ...) {
   if(is.null(name)) {
@@ -109,12 +122,14 @@ validate_SNVs <- function(snvs) {
 }
 
 
+#' @describeIn active_assays Get default SNVs assay of cevodata
 #' @export
 default_SNVs.cevodata <- function(object, ...) {
   object$active_SNVs
 }
 
 
+#' @describeIn active_assays Set default SNVs assay of cevodata
 #' @export
 `default_SNVs<-.cevodata` <- function(object, ..., value) {
   if (value %not in% names(object$SNVs)) {
@@ -125,6 +140,7 @@ default_SNVs.cevodata <- function(object, ...) {
 }
 
 
+#' @describeIn assays Get CNVs from cevodata dataset
 #' @export
 CNVs.cevodata <- function(object, which = object$active_CNVs, ...) {
   if (which %not in% names(object$CNVs)) {
@@ -134,6 +150,7 @@ CNVs.cevodata <- function(object, which = object$active_CNVs, ...) {
 }
 
 
+#' @describeIn assays Add new CNVs to cevodata
 #' @export
 add_CNV_data.cevodata <- function(object, cnvs, name = NULL, ...) {
   if(is.null(name)) {
@@ -159,12 +176,14 @@ validate_CNVs <- function(cnvs) {
 }
 
 
+#' @describeIn active_assays Get default CNVs assay of cevodata
 #' @export
 default_CNVs.cevodata <- function(object, ...) {
   object$active_CNVs
 }
 
 
+#' @describeIn active_assays Set default CNVs assay of cevodata
 #' @export
 `default_CNVs<-.cevodata` <- function(object, ..., value) {
   if (value %not in% names(object$CNVs)) {
