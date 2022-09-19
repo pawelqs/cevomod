@@ -27,8 +27,8 @@ test_that("layer_neutral_tail returns list of geoms", {
 
 
 test_that("estimate_sampling_rate returns proper tibble", {
-  sampling_rate <- estimate_sampling_rate(sfs, lm)
-  expect_equal(nrow(sampling_rate), 57)
+  sampling_rate <- estimate_sampling_rate(sfs, slice(lm, 1))
+  expect_equal(nrow(sampling_rate), 100)
   expect_true(all(c("err", "sampling_rate") %in% names(sampling_rate)))
   expect_equal(
     sampling_rate$sampling_rate[1:5],
