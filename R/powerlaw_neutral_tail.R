@@ -81,7 +81,7 @@ estimate_sampling_rate <- function(sfs, lm_models) {
 
   sampling_stats <- dt |>
     select(-.data$y_scaled) |>
-    filter(.data$VAF < 0.2) |>
+    # filter(.data$VAF < 0.2) |>
     mutate(
       VAF = parse_double(.data$VAF),
       err = .data$n - .data$y,
