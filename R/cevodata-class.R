@@ -7,9 +7,9 @@ new_cevodata <- function(name, genome) {
     CNVs = list(),
     clones = list(),
     models = list(),
-    active_SNVs = "",
-    active_CNVs = "",
-    active_clones = ""
+    active_SNVs = NULL,
+    active_CNVs = NULL,
+    active_clones = NULL
   )
   structure(cd, class = "cevodata")
 }
@@ -64,9 +64,14 @@ print.cevodata <- function(x, ...) {
   cli::cat_line("SNV assays: ", SNV_assays_str)
   cli::cat_line("CNV assays: ", CNV_assays_str)
   cli::cat_line(summ$n_patients, " patients, ", summ$n_samples, " samples")
-  # if (!is.null(x$active_SNVs)) {
-  #   print(x$SNVs[[active_SNVs]])
-  # }
+  if (!is.null(x$active_SNVs)) {
+    cli::cat_line("SNVs:")
+    print(x$SNVs[[x$active_SNVs]])
+  }
+  if (!is.null(x$active_CNVs)) {
+    cli::cat_line("CNVs:")
+    print(x$CNVs[[x$active_CNVs]])
+  }
 }
 
 
