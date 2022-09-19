@@ -20,6 +20,7 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
+    cli,
     crayon,
     dplyr,
     forcats,

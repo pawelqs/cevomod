@@ -1,12 +1,18 @@
 
-#' TCGA-BRCA dataset
-#' @name tcga_brca
+#' TCGA-BRCA SNVs dataset
+#' @name snvs_tcga_brca
 #' @docType data
 NULL
 
 
-#' Small test dataset
-#' @name tcga_brca_test
+#' Small SNV test dataset
+#' @name snvs_test
+#' @docType data
+NULL
+
+
+#' Small CNV test dataset
+#' @name cnvs_test
 #' @docType data
 NULL
 

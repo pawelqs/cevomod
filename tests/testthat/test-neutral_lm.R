@@ -1,7 +1,7 @@
-data("tcga_brca_test")
+data("snvs_test")
 
 test_that("Fitting neutral partial models works", {
-  models <- tcga_brca_test |>
+  models <- snvs_test |>
     filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01")) |>
     group_by(sample_id) |>
     calc_Mf_1f() |>

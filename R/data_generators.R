@@ -3,15 +3,16 @@
 #'
 #' @param mut_rate a in f(x) = a/x^2 formula
 #' @param sample_below mutations below this value will be sampled
+#' @param resolution resolution
 #' @return SNVs tibble
 #' @export
 #'
 #' @examples
 #' generate_neutral_snvs()
-generate_neutral_snvs <- function(mut_rate = 2, sample_below = 0.15) {
+generate_neutral_snvs <- function(mut_rate = 2, sample_below = 0.15, resolution = 0.01) {
   tibble(
     sample_id = "S1",
-    VAF = seq(.01, 1, by = .01),
+    VAF = seq(.01, 1, by = resolution),
     n = floor(mut_rate / .data$VAF^2)
   ) |>
     mutate(
