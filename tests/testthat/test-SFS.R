@@ -1,7 +1,7 @@
-data("tcga_brca_test")
+data("snvs_test")
 
 test_that("Calculation of SFS works", {
-  dt <- tcga_brca_test %>%
+  dt <- snvs_test %>%
     group_by(sample_id)
   res <- calc_SFS(dt)
   expected <- read_tsv("../testdata/tcga_brca_SFS.tsv", col_types = "cdid")
@@ -10,7 +10,7 @@ test_that("Calculation of SFS works", {
 
 
 test_that("plot(calc_SFS()) works", {
-  dt <- tcga_brca_test %>%
+  dt <- snvs_test %>%
     group_by(sample_id)
   p <- dt %>%
     calc_SFS() %>%
@@ -21,7 +21,7 @@ test_that("plot(calc_SFS()) works", {
 
 
 test_that("plot_SFS() works", {
-  dt <- tcga_brca_test %>%
+  dt <- snvs_test %>%
     group_by(sample_id)
   p <- plot_SFS(dt)
   vdiffr::expect_doppelganger("plot_SFS()", p)

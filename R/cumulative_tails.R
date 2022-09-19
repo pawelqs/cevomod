@@ -10,8 +10,8 @@
 #' @export
 #'
 #' @examples
-#' data("tcga_brca_test")
-#' tcga_brca_test |>
+#' data("snvs_test")
+#' snvs_test |>
 #'   dplyr::group_by(sample_id) |>
 #'   calc_cumulative_tails()
 calc_cumulative_tails <- function(dt, digits = 2) {
@@ -47,8 +47,8 @@ calc_cumulative_tails <- function(dt, digits = 2) {
 #' @export
 #'
 #' @examples
-#' data("tcga_brca_test")
-#' tcga_brca_test |>
+#' data("snvs_test")
+#' snvs_test |>
 #'   dplyr::group_by(sample_id) |>
 #'   plot_cumulative_tails()
 plot.cevo_cumulative_tails_tbl <- function(x, scale_y = TRUE, scales = "loglog", ...) {
@@ -81,8 +81,8 @@ plot.cevo_cumulative_tails_tbl <- function(x, scale_y = TRUE, scales = "loglog",
 #' @export
 #'
 #' @examples
-#' data("tcga_brca_test")
-#' tcga_brca_test |>
+#' data("snvs_test")
+#' snvs_test |>
 #'   plot_cumulative_tails()
 plot_cumulative_tails <- function(dt, scale_y = TRUE, ...) {
   y <- NULL
@@ -111,12 +111,12 @@ plot_cumulative_tails <- function(dt, scale_y = TRUE, ...) {
 #'
 #' @examples
 #' library(ggplot2)
-#' data("tcga_brca_test")
+#' data("snvs_test")
 #'
-#' ggplot(tcga_brca_test, aes(VAF, color = sample_id)) +
+#' ggplot(snvs_test, aes(VAF, color = sample_id)) +
 #'  stat_cumulative_tail()
 #'
-#' ggplot(tcga_brca_test, aes(VAF, y = stat(y), color = sample_id)) +
+#' ggplot(snvs_test, aes(VAF, y = stat(y), color = sample_id)) +
 #'  stat_cumulative_tail()
 stat_cumulative_tail <- function(mapping = NULL, data = NULL, geom = "point",
                                  position = "identity", na.rm = FALSE, show.legend = NA,

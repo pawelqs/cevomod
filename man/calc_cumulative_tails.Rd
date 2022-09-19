@@ -23,8 +23,8 @@ tbl with the groupping variables and:
 Calculate the cumulative tails
 }
 \examples{
-data("tcga_brca_test")
-tcga_brca_test |>
+data("snvs_test")
+snvs_test |>
   dplyr::group_by(sample_id) |>
   calc_cumulative_tails()
 }

@@ -56,13 +56,13 @@ Plot M(f) ~ 1/f
 
 }}
 \examples{
-data("tcga_brca_test")
-tcga_brca_test |>
+data("snvs_test")
+snvs_test |>
   dplyr::group_by(sample_id) |>
   calc_Mf_1f() |>
   plot()
 
-tcga_brca_test |>
+snvs_test |>
   dplyr::group_by(sample_id) |>
   plot_Mf_1f()
 }

@@ -18,53 +18,53 @@ knitr::opts_chunk$set(
 library(cevomod)
 library(patchwork)
 library(tidyverse)
-data("tcga_brca_test")
+data("snvs_test")
 ```
 
 # Cumulative tails
 
 ```{r, fig.width=7, fig.height=5}
-# tcga_brca_test %>%
+# snvs_test %>%
 #   group_by(sample_id) %>%
 #   calc_cumulative_tails() %>%
 #   plot(scales = "loglog")
 
-tcga_brca_test %>%
+snvs_test %>%
   plot_cumulative_tails(size = 0.5, scale_y = FALSE)
 ```
 
 # SFS with mut annotation
 
 ```{r, fig.width=7, fig.height=4}
-# tcga_brca_test %>%
+# snvs_test %>%
 #   group_by(sample_id) %>%
 #   calc_SFS() %>%
 #   plot()
 
-tcga_brca_test %>%
+snvs_test %>%
   plot_SFS() +
   layer_mutations(drivers = "BRCA", shape = "variant_classification")
 
-tcga_brca_test %>%
+snvs_test %>%
   plot_SFS() +
   layer_mutations(drivers = "BRCA", shape = "impact")
   
-tcga_brca_test %>%
+snvs_test %>%
   ggplot(aes(VAF, fill = sample_id, color = sample_id)) +
   stat_SFS(geom = "bar") +
   layer_mutations(drivers = "BRCA", color = "black", shape = "impact") +
   facet_wrap(~sample_id, scales = "free_y") +
-  theme_ellie(n = n_distinct(tcga_brca_test$sample_id))
+  theme_ellie(n = n_distinct(snvs_test$sample_id))
 ```
 
 # SNVs plots
 
 ```{r, fig.width=7, fig.height=5}
-p1 <- tcga_brca_test %>%
+p1 <- snvs_test %>%
   group_by(sample_id) %>%
   plot_mutations(drivers = "BRCA", shape = "variant_classification")
 
-p2 <- tcga_brca_test %>%
+p2 <- snvs_test %>%
   group_by(sample_id) %>%
   plot_mutations(
     genes = c("TP53", "BRCA1", "KMT2C", "ERBB2"),
@@ -78,7 +78,7 @@ p1 / p2 + plot_layout(heights = c(3, 1))
 # M(f) ~ 1/f
 
 ```{r}
-Mf_1f <- tcga_brca_test %>%
+Mf_1f <- snvs_test %>%
   group_by(sample_id) %>%
   calc_Mf_1f()
 
@@ -95,7 +95,7 @@ plot(Mf_1f, from = 0.05, to = 0.5, scale = FALSE)
 ```{r, fig.width=15, fig.height=7}
 library(neutralitytestr)
 
-neutralitytest_res <- tcga_brca_test %>%
+neutralitytest_res <- snvs_test %>%
   group_by(sample_id) %>%
   nest() %>%
   deframe() %>%
@@ -117,7 +117,7 @@ neutralitytest_res %>%
 # Fit neutral models
 
 ```{r}
-Mf_1f <- tcga_brca_test %>%
+Mf_1f <- snvs_test %>%
   group_by(sample_id) %>%
   calc_Mf_1f()
 
@@ -140,7 +140,7 @@ exp <- models |>
     y = (a/-90)/x^2
   )
 
-plot_SFS(tcga_brca_test, geom = "bar", show.legend = FALSE, color = "white", alpha = 0.9) +
+plot_SFS(snvs_test, geom = "bar", show.legend = FALSE, color = "white", alpha = 0.9) +
   facet_wrap(~sample_id, scales = "free") +
   scale_color_pnw() +
   scale_fill_pnw() +

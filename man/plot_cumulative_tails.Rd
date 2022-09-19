@@ -20,7 +20,7 @@ ggplot obj
 Shortcut to plot cum tails from snvs_ dataframe
 }
 \examples{
-data("tcga_brca_test")
-tcga_brca_test |>
+data("snvs_test")
+snvs_test |>
   plot_cumulative_tails()
 }

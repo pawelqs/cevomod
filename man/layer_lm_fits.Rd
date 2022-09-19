@@ -15,7 +15,7 @@ layer_lm_fits(data, ...)
 Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
 }
 \examples{
-Mf_1f <- tcga_brca_test |>
+Mf_1f <- snvs_test |>
   dplyr::filter(sample_id \%in\% c("TCGA-AC-A23H-01","TCGA-AN-A046-01")) |>
   dplyr::group_by(sample_id) |>
   calc_Mf_1f()

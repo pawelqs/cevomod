@@ -1,7 +1,7 @@
-data("tcga_brca_test")
+data("snvs_test")
 
 test_that("Calculation of Mf_1f works", {
-  dt <- tcga_brca_test %>%
+  dt <- snvs_test %>%
     group_by(sample_id)
   res <- calc_Mf_1f(dt)
   expected <- read_tsv("../testdata/tcga_brca_Mf_1f.tsv", col_types = "cdiid")
@@ -10,7 +10,7 @@ test_that("Calculation of Mf_1f works", {
 
 
 test_that("plot_Mf_1f() works", {
-  p <- tcga_brca_test |>
+  p <- snvs_test |>
     group_by(sample_id) |>
     plot_Mf_1f()
   vdiffr::expect_doppelganger("plot_Mf_1f", p)
@@ -18,7 +18,7 @@ test_that("plot_Mf_1f() works", {
 
 
 test_that("plot(calc_Mf_1f()) works", {
-  p <- tcga_brca_test |>
+  p <- snvs_test |>
     group_by(sample_id) |>
     calc_Mf_1f() |>
     plot()

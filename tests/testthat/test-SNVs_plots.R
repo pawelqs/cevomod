@@ -1,21 +1,21 @@
-data("tcga_brca_test")
+data("snvs_test")
 
 test_that("plot_mutations() with drivers works", {
-  p <- tcga_brca_test |>
+  p <- snvs_test |>
     plot_mutations(drivers = "BRCA")
   vdiffr::expect_doppelganger("plot_mutations(drivers = 'BRCA')", p)
 })
 
 
 test_that("plot_mutations() with gene list works", {
-  p <- tcga_brca_test |>
+  p <- snvs_test |>
     plot_mutations(genes = c("TP53", "TBX3", "BRCA1"))
   vdiffr::expect_doppelganger("plot_mutations(genes = TP53,TBX3,BRCA1)", p)
 })
 
 
 test_that("filter_SNVs() works", {
-  res <- tcga_brca_test |>
+  res <- snvs_test |>
     filter_SNVs(genes = c("TP53", "TBX3", "BRCA1"))
   expect_s3_class(res, "cevo_SNVs_tbl")
   expect_equal(nrow(res), 6)

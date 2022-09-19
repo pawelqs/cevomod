@@ -9,8 +9,8 @@
 #' @export
 #'
 #' @examples
-#' data("tcga_brca_test")
-#' tcga_brca_test |>
+#' data("snvs_test")
+#' snvs_test |>
 #'   dplyr::group_by(sample_id) |>
 #'   calc_Mf_1f()
 calc_Mf_1f <- function(dt, digits = 2) {
@@ -44,13 +44,13 @@ calc_Mf_1f <- function(dt, digits = 2) {
 #' @export
 #'
 #' @examples
-#' data("tcga_brca_test")
-#' tcga_brca_test |>
+#' data("snvs_test")
+#' snvs_test |>
 #'   dplyr::group_by(sample_id) |>
 #'   calc_Mf_1f() |>
 #'   plot()
 #'
-#' tcga_brca_test |>
+#' snvs_test |>
 #'   dplyr::group_by(sample_id) |>
 #'   plot_Mf_1f()
 plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,

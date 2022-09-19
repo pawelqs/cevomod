@@ -9,8 +9,8 @@
 #' @export
 #'
 #' @examples
-#' data("tcga_brca_test")
-#' tcga_brca_test |>
+#' data("snvs_test")
+#' snvs_test |>
 #'   dplyr::group_by(sample_id) |>
 #'   calc_SFS()
 calc_SFS <- function(dt, digits = 2) {
@@ -36,13 +36,13 @@ calc_SFS <- function(dt, digits = 2) {
 #' @export
 #'
 #' @examples
-#' data("tcga_brca_test")
-#' tcga_brca_test |>
+#' data("snvs_test")
+#' snvs_test |>
 #'   dplyr::group_by(sample_id) |>
 #'   calc_SFS() |>
 #'   plot()
 #'
-#' tcga_brca_test |>
+#' snvs_test |>
 #'   plot_SFS() +
 #'   layer_mutations(drivers = "BRCA")
 plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {

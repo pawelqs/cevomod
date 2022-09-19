@@ -38,14 +38,14 @@ library(tidyverse)
 #> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
-data("tcga_brca_test")
+data("snvs_test")
 
-tcga_brca_test |> 
+snvs_test |> 
   ggplot(aes(VAF, fill = sample_id, color = sample_id)) +
   stat_SFS(geom = "bar") +
   layer_mutations(drivers = "BRCA", color = "black", shape = "impact") +
   facet_wrap(~sample_id, scales = "free_y") +
-  theme_ellie(n = n_distinct(tcga_brca_test$sample_id))
+  theme_ellie(n = n_distinct(snvs_test$sample_id))
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
