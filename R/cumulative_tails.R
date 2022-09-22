@@ -1,21 +1,19 @@
 
-#' Calculate the cumulative tails
-#'
-#' @param dt tibble with VAF column. Might be groupped and contain the data for multiple samples
-#' @param digits resolution of the cumulative tails calculation
-#' @return tbl with the groupping variables and:
-#'   - n columnt with the number of mutations in the VAF interval
-#'   - x and y columns describing the cumulative tails
-#'   - y_scaled with y values scaled to the range 0-1
+#' @describeIn cumulative_tails Calculate the cumulative tails
 #' @export
-#'
-#' @examples
-#' data("snvs_test")
-#' snvs_test |>
-#'   dplyr::group_by(sample_id) |>
-#'   calc_cumulative_tails()
-calc_cumulative_tails <- function(dt, digits = 2) {
-  res <- dt %>%
+calc_cumulative_tails.cevodata <- function(object, digits = 2, ...) {
+  object$models[["cumulative_tails"]] <- SNVs(object) |>
+    group_by(.data$patient_id, .data$sample_id, .data$sample) |>
+    calc_cumulative_tails(digits) %>%
+    ungroup()
+  object
+}
+
+
+#' @describeIn cumulative_tails Calculate the cumulative tails
+#' @export
+calc_cumulative_tails.tbl_df <- function(object, digits = 2, ...) {
+  res <- object %>%
     rename(x = .data$VAF) %>%
     .calc_cumulative_tails(digits) %>%
     rename(VAF = .data$x)
@@ -47,10 +45,11 @@ calc_cumulative_tails <- function(dt, digits = 2) {
 #' @export
 #'
 #' @examples
-#' data("snvs_test")
-#' snvs_test |>
+#' data("tcga_brca_test")
+#' SNVs(tcga_brca_test) |>
 #'   dplyr::group_by(sample_id) |>
-#'   plot_cumulative_tails()
+#'   calc_cumulative_tails() |>
+#'   plot()
 plot.cevo_cumulative_tails_tbl <- function(x, scale_y = TRUE, scales = "loglog", ...) {
 
   y <- if (scale_y) "y_scaled" else "y"
@@ -71,20 +70,13 @@ plot.cevo_cumulative_tails_tbl <- function(x, scale_y = TRUE, scales = "loglog",
 }
 
 
-#' Plot the cumulative tails
+#' @describeIn cumulative_tails Shortcut to plot cum tails from SNVs dataframe
 #'
-#' Shortcut to plot cum tails from snvs_ dataframe
-#' @param dt snvs_ tibble with VAF and sample_id columns
 #' @param scale_y scale y vaules to 1?
 #' @param ... passed to stat_cumulative_tail
 #' @return ggplot obj
 #' @export
-#'
-#' @examples
-#' data("snvs_test")
-#' snvs_test |>
-#'   plot_cumulative_tails()
-plot_cumulative_tails <- function(dt, scale_y = TRUE, ...) {
+plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, ...) {
   y <- NULL
 
   aes <- if (scale_y)
@@ -92,7 +84,7 @@ plot_cumulative_tails <- function(dt, scale_y = TRUE, ...) {
   else
     aes(.data$VAF, y = stat(y), color = .data$sample_id)
 
-  dt %>%
+  SNVs(object) %>%
     ggplot(aes) +
     stat_cumulative_tail(...) +
     scale_x_log10() +
@@ -107,17 +99,17 @@ plot_cumulative_tails <- function(dt, scale_y = TRUE, ...) {
 #' @param digits cumulative tail calculation avurracy
 #' @param geom geom
 #'
-#' @export
-#'
 #' @examples
 #' library(ggplot2)
-#' data("snvs_test")
+#' data("tcga_brca_test")
+#' snvs <- SNVs(tcga_brca_test)
 #'
-#' ggplot(snvs_test, aes(VAF, color = sample_id)) +
+#' ggplot(snvs, aes(VAF, color = sample_id)) +
 #'  stat_cumulative_tail()
 #'
-#' ggplot(snvs_test, aes(VAF, y = stat(y), color = sample_id)) +
+#' ggplot(snvs, aes(VAF, y = stat(y), color = sample_id)) +
 #'  stat_cumulative_tail()
+#' @export
 stat_cumulative_tail <- function(mapping = NULL, data = NULL, geom = "point",
                                  position = "identity", na.rm = FALSE, show.legend = NA,
                                  inherit.aes = TRUE, digits = 2, ...) {

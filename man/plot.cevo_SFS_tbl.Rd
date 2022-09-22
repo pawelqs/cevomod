@@ -2,21 +2,16 @@
 % Please edit documentation in R/SFS.R
 \name{plot.cevo_SFS_tbl}
 \alias{plot.cevo_SFS_tbl}
-\alias{plot_SFS}
 \title{Plot SFS}
 \usage{
 \method{plot}{cevo_SFS_tbl}(x, y_scaled = FALSE, ...)
-
-plot_SFS(dt, ...)
 }
 \arguments{
 \item{x}{tibble with calc_SFS() results}
 
 \item{y_scaled}{logical}
 
-\item{...}{args passed to stat_SFS}
-
-\item{dt}{tibble with VAF column. Might be groupped and contain the data for multiple samples}
+\item{...}{futher passed to geom_()}
 }
 \value{
 ggplot obj
@@ -24,19 +19,14 @@ ggplot obj
 \description{
 Plot SFS
 }
-\section{Functions}{
-\itemize{
-\item \code{plot_SFS()}: Plot SFS dsfdsfsdfsd
-
-}}
 \examples{
-data("snvs_test")
-snvs_test |>
+data("tcga_brca_test")
+SNVs(tcga_brca_test) |>
   dplyr::group_by(sample_id) |>
   calc_SFS() |>
   plot()
 
-snvs_test |>
+tcga_brca_test |>
   plot_SFS() +
   layer_mutations(drivers = "BRCA")
 }

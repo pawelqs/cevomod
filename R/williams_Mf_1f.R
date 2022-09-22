@@ -1,21 +1,21 @@
-#' Calculate Williams M(f) ~ 1/f
-#'
-#' @param dt tibble with VAF column. Might be groupped and contain the data for multiple samples
-#' @param digits resolution of the cumulative tails calculation
-#' @return tbl with the groupping variables and:
-#'   - VAF
-#'   - n - number of mutations in the VAF interval
-#'   - `M(f)` and `1/f` columns to plot William's statistics
+
+#' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
 #' @export
-#'
-#' @examples
-#' data("snvs_test")
-#' snvs_test |>
-#'   dplyr::group_by(sample_id) |>
-#'   calc_Mf_1f()
-calc_Mf_1f <- function(dt, digits = 2) {
-  group_variables <- group_vars(dt)
-  res <- dt %>%
+calc_Mf_1f.cevodata <- function(object, digits = 2, ...) {
+  object$models[["Mf_1f"]] <- SNVs(object) |>
+    group_by(.data$patient_id, .data$sample_id, .data$sample) |>
+    calc_Mf_1f() |>
+    ungroup()
+  class(object$models[["Mf_1f"]]) <- c("cevo_Mf_1f_tbl", class(object$models[["Mf_1f"]]))
+  object
+}
+
+
+#' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
+#' @export
+calc_Mf_1f.tbl_df <- function(object, digits = 2, ...) {
+  group_variables <- group_vars(object)
+  res <- object %>%
     mutate(VAF = round(.data$VAF, digits = digits)) %>%
     group_by(.data$VAF, .add = TRUE) %>%
     summarise(n = n(), .groups = "drop_last") %>%
@@ -44,15 +44,14 @@ calc_Mf_1f <- function(dt, digits = 2) {
 #' @export
 #'
 #' @examples
-#' data("snvs_test")
-#' snvs_test |>
+#' data("tcga_brca_test")
+#'
+#' SNVs(tcga_brca_test) |>
 #'   dplyr::group_by(sample_id) |>
 #'   calc_Mf_1f() |>
 #'   plot()
 #'
-#' snvs_test |>
-#'   dplyr::group_by(sample_id) |>
-#'   plot_Mf_1f()
+#' plot_Mf_1f(tcga_brca_test)
 plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,
                                 geom = "point", mapping = NULL, ...) {
 
@@ -87,11 +86,12 @@ plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,
 }
 
 
-#' @describeIn plot.cevo_Mf_1f_tbl Plot M(f) ~ 1/f
+#' @describeIn Mf_1f Plot M(f) ~ 1/f
 #' @inherit plot.cevo_Mf_1f_tbl
-#' @inherit calc_Mf_1f
 #' @export
-plot_Mf_1f <- function(dt, digits = 2, from = 0.1, to = 0.25, scale = TRUE, geom = "point", ...) {
-  Mf_1f <- calc_Mf_1f(dt, digits)
-  plot(Mf_1f, geom = geom, ...)
+plot_Mf_1f <- function(object, digits = 2, from = 0.1, to = 0.25, scale = TRUE, geom = "point", ...) {
+  Mf_1f <- SNVs(object) |>
+    group_by(.data$patient_id, .data$sample_id, .data$sample) |>
+    calc_Mf_1f(digits)
+  plot(Mf_1f, geom = geom, from = from, to = to, scale = scale,  ...)
 }

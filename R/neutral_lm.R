@@ -1,18 +1,10 @@
 
-#' Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
+#' @describeIn neutral_lm Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
 #'
-#' @param data tibble with fits from fit_neutral_partial_models()
+#' @param cd cevodata
 #' @param ... other params passed to geom_segment()
 #' @export
-#' @examples
-#' Mf_1f <- snvs_test |>
-#'   dplyr::filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01")) |>
-#'   dplyr::group_by(sample_id) |>
-#'   calc_Mf_1f()
-#' models <- fit_neutral_lm(Mf_1f, rsq_treshold = 0.99)
-#' plot(Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
-#'   layer_lm_fits(models)
-layer_lm_fits <- function(data, ...) {
+layer_lm_fits <- function(cd, ...) {
   geom_segment(
     aes(
       x = 1/.data$from,
@@ -22,30 +14,30 @@ layer_lm_fits <- function(data, ...) {
       color = .data$sample_id
     ),
     size = 1,
-    data = filter(data, .data$best),
+    data = filter(cd$models$neutral_lm, .data$best),
     show.legend = FALSE,
     ...
   )
 }
 
 
-#' Fit Williams neutral models to the data
-#'
-#' @param dt tibble with results from calc_Mf_1f()
-#' @param rsq_treshold R-squared tresholds to keep model as neutral
-#' @return cevo_lm_models_tbl
+#' @describeIn neutral_lm Fit Williams neutral models to the data
 #' @export
-#' @inherit layer_lm_fits examples
-fit_neutral_lm <- function(dt, rsq_treshold = 0.98) {
-  res <- dt |>
+fit_neutral_lm.cevodata <- function(object, rsq_treshold = 0.98, ...) {
+  if (is.null(object$models$Mf_1f)) {
+    stop("Run calc_Mf_1f() first!")
+  }
+  Mf_1f <- object$models$Mf_1f
+  res <- Mf_1f |>
     filter(.data$`1/f` < Inf, .data$VAF < 0.5) |>
-    select(.data$sample_id, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
+    select(.data$patient_id, .data$sample_id, .data$sample, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
     nest(data = c(.data$VAF, .data$`M(f)`, .data$`1/f`)) |>
     mutate(fits = map(.data$data, fit_optimal_lm, rsq_treshold)) |>
     select(-.data$data) |>
     unnest(.data$fits)
   class(res) <- c("cevo_lm_models_tbl", class(res))
-  res
+  object$models[["neutral_lm"]] <- res
+  object
 }
 
 

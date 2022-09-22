@@ -3,11 +3,11 @@
 \docType{data}
 \name{driver_genes}
 \alias{driver_genes}
-\title{Tbl of driver genes from Bailey, Ding et al. 'Comprehensive Characterization of Cancer Driver
-Genes and Mutations', Cell, 2-18
+\title{Tbl of driver genes from Bailey, Ding et al. 'Comprehensive Characterization
+of Cancer Driver Genes and Mutations', Cell, 2-18
 https://doi.org/10.1016/j.cell.2018.02.060}
 \description{
-Tbl of driver genes from Bailey, Ding et al. 'Comprehensive Characterization of Cancer Driver
-Genes and Mutations', Cell, 2-18
+Tbl of driver genes from Bailey, Ding et al. 'Comprehensive Characterization
+of Cancer Driver Genes and Mutations', Cell, 2-18
 https://doi.org/10.1016/j.cell.2018.02.060
 }

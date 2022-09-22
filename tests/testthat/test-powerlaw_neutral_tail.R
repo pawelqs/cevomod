@@ -1,12 +1,12 @@
-snvs <- generate_neutral_snvs() |>
-  group_by(sample_id)
-mf1f <- calc_Mf_1f(snvs)
-sfs <- calc_SFS(snvs)
-lm <- fit_neutral_lm(mf1f)
+cd <- init_cevodata("Test") |>
+  add_SNV_data(generate_neutral_snvs()) |>
+  calc_Mf_1f() |>
+  calc_SFS() |>
+  fit_neutral_lm()
 
 test_that("calc_powerlaw_curve works", {
-  curve <- lm |>
-    slice(1) |>
+  curve <- cd$models$neutral_lm |>
+    filter(best) |>
     calc_powerlaw_curve(binwidth = 0.01)
   expect_equal(nrow(curve), 100)
   expect_equal(curve$n[1:5], c(17085.6315, 4271.4079, 1898.4035, 1067.8520, 683.4253), tolerance = 0.1)
@@ -20,14 +20,14 @@ test_that("calc_powerlaw_curve works", {
 
 
 test_that("layer_neutral_tail returns list of geoms", {
-  geoms <- layer_neutral_tail(lm)
+  geoms <- layer_neutral_tail(cd)
   expect_type(geoms, "list")
   expect_identical(map_chr(geoms, typeof) |> unique(), "environment")
 })
 
 
 test_that("estimate_sampling_rate returns proper tibble", {
-  sampling_rate <- estimate_sampling_rate(sfs, slice(lm, 1))
+  sampling_rate <- estimate_sampling_rate(cd$models$SFS, slice(cd$models$neutral_lm, 1))
   expect_equal(nrow(sampling_rate), 100)
   expect_true(all(c("err", "sampling_rate") %in% names(sampling_rate)))
   expect_equal(

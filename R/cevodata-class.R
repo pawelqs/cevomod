@@ -7,9 +7,9 @@ new_cevodata <- function(name, genome) {
     CNVs = list(),
     clones = list(),
     models = list(),
-    active_SNVs = "",
-    active_CNVs = "",
-    active_clones = ""
+    active_SNVs = NULL,
+    active_CNVs = NULL,
+    active_clones = NULL
   )
   structure(cd, class = "cevodata")
 }
@@ -64,9 +64,14 @@ print.cevodata <- function(x, ...) {
   cli::cat_line("SNV assays: ", SNV_assays_str)
   cli::cat_line("CNV assays: ", CNV_assays_str)
   cli::cat_line(summ$n_patients, " patients, ", summ$n_samples, " samples")
-  # if (!is.null(x$active_SNVs)) {
-  #   print(x$SNVs[[active_SNVs]])
-  # }
+  if (!is.null(x$active_SNVs)) {
+    cli::cat_line("SNVs:")
+    print(x$SNVs[[x$active_SNVs]])
+  }
+  if (!is.null(x$active_CNVs)) {
+    cli::cat_line("CNVs:")
+    print(x$CNVs[[x$active_CNVs]])
+  }
 }
 
 
@@ -112,8 +117,8 @@ add_SNV_data.cevodata <- function(object, snvs, name = NULL, ...) {
 
 validate_SNVs <- function(snvs) {
   required_cols <- c(
-    "patient_id", "sample_id", "sample", "chrom", "start", "gene_symbol",
-    "ref", "alt", "ref_counts", "alt_counts", "VAF", "impact"
+    "patient_id", "sample_id", "sample", "chrom", "pos", "gene_symbol",
+    "ref", "alt", "ref_reads", "alt_reads", "VAF", "impact"
   )
   missing_cols <- setdiff(required_cols, names(snvs))
   if (length(missing_cols)) {
@@ -167,7 +172,7 @@ add_CNV_data.cevodata <- function(object, cnvs, name = NULL, ...) {
 validate_CNVs <- function(cnvs) {
   required_cols <- c(
     "patient_id", "sample_id", "sample", "chrom", "start", "end",
-    "seg_mean", "total_cn", "major_cn", "minor_cn"
+    "log_ratio", "BAF", "total_cn", "major_cn", "minor_cn"
   )
   missing_cols <- setdiff(required_cols, names(cnvs))
   if (length(missing_cols)) {

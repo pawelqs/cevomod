@@ -11,7 +11,17 @@
 #' generate_neutral_snvs()
 generate_neutral_snvs <- function(mut_rate = 2, sample_below = 0.15, resolution = 0.01) {
   tibble(
+    patient_id = "S1",
     sample_id = "S1",
+    sample = "tumor",
+    chrom = NA_character_,
+    pos = NA_integer_,
+    gene_symbol = NA_character_,
+    ref = NA_character_,
+    alt = NA_character_,
+    ref_reads = NA_integer_,
+    alt_reads = NA_integer_,
+    impact = NA_character_,
     VAF = seq(.01, 1, by = resolution),
     n = floor(mut_rate / .data$VAF^2)
   ) |>

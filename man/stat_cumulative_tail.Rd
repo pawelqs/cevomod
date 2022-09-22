@@ -116,12 +116,13 @@ This geom treats each axis differently and, thus, can thus have two orientations
 
 \examples{
 library(ggplot2)
-data("snvs_test")
+data("tcga_brca_test")
+snvs <- SNVs(tcga_brca_test)
 
-ggplot(snvs_test, aes(VAF, color = sample_id)) +
+ggplot(snvs, aes(VAF, color = sample_id)) +
  stat_cumulative_tail()
 
-ggplot(snvs_test, aes(VAF, y = stat(y), color = sample_id)) +
+ggplot(snvs, aes(VAF, y = stat(y), color = sample_id)) +
  stat_cumulative_tail()
 }
 \seealso{

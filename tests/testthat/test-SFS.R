@@ -1,16 +1,14 @@
-data("snvs_test")
+data("tcga_brca_test")
 
 test_that("Calculation of SFS works", {
-  dt <- snvs_test %>%
-    group_by(sample_id)
-  res <- calc_SFS(dt)
-  expected <- read_tsv("../testdata/tcga_brca_SFS.tsv", col_types = "cdid")
-  expect_identical(ungroup(res), expected)
+  cd <- calc_SFS(tcga_brca_test)
+  expected <- read_tsv("../testdata/tcga_brca_SFS.tsv", col_types = "cccdid")
+  expect_identical(cd$models$SFS, expected)
 })
 
 
 test_that("plot(calc_SFS()) works", {
-  dt <- snvs_test %>%
+  dt <- SNVs(tcga_brca_test) %>%
     group_by(sample_id)
   p <- dt %>%
     calc_SFS() %>%
@@ -21,8 +19,6 @@ test_that("plot(calc_SFS()) works", {
 
 
 test_that("plot_SFS() works", {
-  dt <- snvs_test %>%
-    group_by(sample_id)
-  p <- plot_SFS(dt)
+  p <- plot_SFS(tcga_brca_test)
   vdiffr::expect_doppelganger("plot_SFS()", p)
 })
