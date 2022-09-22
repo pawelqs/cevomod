@@ -212,11 +212,22 @@ layer_neutral_tail <- function(object, ...) {
 }
 
 
-
-#' layer_neutral_tail
+#' Show mutations in particular genes
 #'
-#' @param object object
-#' @param ... other arguments
+#' @param object cevodata
+#' @param genes list of genes for which mutations should be shown
+#' @param drivers cancer type, for which mutations in driver genes should be shown. Needs to
+#'   be taken from `driver_genes`
+#' @param mark_genes list of genes to mark
+#' @param y which to show on y axis: "genes" or "samples"
+#' @param shape "impact" or "variant_classification"?
+#' @param filter_fun Function for filtering mutations:
+#'   variant_classification_filter() or impact_filter()
+#' @return ggplot obj
+#' @name mutation_plots
+
+
+#' @rdname mutation_plots
 #' @export
 plot_mutations <- function(object, ...) {
   UseMethod("plot_mutations")

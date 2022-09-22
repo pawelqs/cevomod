@@ -1,21 +1,46 @@
-#' Show mutations in particular genes
-#'
-#' @param object cevodata
-#' @param genes list of genes for which mutations should be shown
-#' @param drivers cancer type, for which mutations in driver genes should be shown. Needs to
-#'   be taken from `driver_genes`
-#' @param mark_genes list of genes to mark
-#' @param y which to show on y axis: "genes" or "samples"
-#' @param shape "impact" or "variant_classification"?
-#' @param filter_fun Function for filtering mutations:
-#'   variant_classification_filter() or impact_filter()
-#'
-#' @return ggplot obj
+
+#' @rdname mutation_plots
 #' @export
 plot_mutations.cevodata <- function(object, genes = NULL, drivers = NULL, mark_genes = NULL,
                            y = "genes", shape = "impact",
-                           filter_fun = guess_filter_fun(shape)) {
+                           filter_fun = guess_filter_fun(shape), ...) {
   genes_data <- SNVs(object) %>%
+    filter_SNVs(genes, drivers) %>%
+    filter_fun()
+
+  mark_genes_data <-
+    if (!is.null(mark_genes)) {
+      filter(genes_data, .data$gene_symbol %in% mark_genes)
+    } else {
+      filter(genes_data, FALSE)
+    }
+
+  elements <- list(
+    if (y == "genes") aes(y = .data$gene_symbol, color = .data$sample_id),
+    if (y == "genes") {
+      scale_color_manual(
+        values = pnw_palette(name = "Starfish", n_distinct(genes_data$sample_id), type = "continuous")
+      )
+    },
+    if (y == "samples") aes(y = .data$sample_id),
+    if (nrow(mark_genes_data) > 0) geom_point(aes(color = .data$gene_symbol), data = mark_genes_data),
+    if (nrow(mark_genes_data) > 0) scale_color_brewer(palette = "Dark2")
+  )
+
+  ggplot(genes_data, aes(x = .data$VAF, shape = .data[[shape]])) +
+    geom_point() +
+    elements +
+    xlim(c(0, 1)) +
+    theme_minimal()
+}
+
+
+#' @rdname mutation_plots
+#' @export
+plot_mutations.tbl_df <- function(object, genes = NULL, drivers = NULL, mark_genes = NULL,
+                                  y = "genes", shape = "impact",
+                                  filter_fun = guess_filter_fun(shape), ...) {
+  genes_data <- object %>%
     filter_SNVs(genes, drivers) %>%
     filter_fun()
 
@@ -57,9 +82,7 @@ filter_SNVs <- function(dt, genes = NULL, drivers = NULL) {
 }
 
 
-#' Adds mutations to SFS plots
-#'
-#' @inherit plot_mutations
+#' @describeIn mutation_plots Adds mutations to SFS plots
 #' @param color color
 #' @param size size
 #' @param ... other arguments passed to geom_point()
