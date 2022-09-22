@@ -200,3 +200,13 @@ plot_Mf_1f <- function(object, ...) {
 fit_neutral_lm <- function(object, ...) {
   UseMethod("fit_neutral_lm")
 }
+
+
+#' layer_neutral_tail
+#'
+#' @param object SNVs tibble object
+#' @param ... other arguments
+#' @export
+layer_neutral_tail <- function(object, ...) {
+  UseMethod("layer_neutral_tail")
+}

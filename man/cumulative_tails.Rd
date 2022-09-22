@@ -18,8 +18,6 @@
 calc_cumulative_tails(object, ...)
 
 plot_cumulative_tails(object, ...)
-
-plot_cumulative_tails(object, ...)
 }
 \arguments{
 \item{object}{SNVs tibble object}

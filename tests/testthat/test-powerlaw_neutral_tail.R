@@ -6,7 +6,7 @@ cd <- init_cevodata("Test") |>
 
 test_that("calc_powerlaw_curve works", {
   curve <- cd$models$neutral_lm |>
-    slice(1) |>
+    filter(best) |>
     calc_powerlaw_curve(binwidth = 0.01)
   expect_equal(nrow(curve), 100)
   expect_equal(curve$n[1:5], c(17085.6315, 4271.4079, 1898.4035, 1067.8520, 683.4253), tolerance = 0.1)
@@ -20,7 +20,7 @@ test_that("calc_powerlaw_curve works", {
 
 
 test_that("layer_neutral_tail returns list of geoms", {
-  geoms <- layer_neutral_tail(cd$models$neutral_lm)
+  geoms <- layer_neutral_tail(cd)
   expect_type(geoms, "list")
   expect_identical(map_chr(geoms, typeof) |> unique(), "environment")
 })

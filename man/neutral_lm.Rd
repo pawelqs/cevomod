@@ -36,10 +36,12 @@ Creates  cevodata$models$neutral_lm
 data("tcga_brca_test")
 snvs <- SNVs(tcga_brca_test) |>
   dplyr::filter(sample_id \%in\% c("TCGA-AC-A23H-01","TCGA-AN-A046-01"))
+
 cd <- init_cevodata("Test") |>
   add_SNV_data(snvs) |>
   calc_Mf_1f() |>
   fit_neutral_lm(rsq_treshold = 0.99)
+
 plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
   layer_lm_fits(cd)
 }
