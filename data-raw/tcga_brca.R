@@ -74,3 +74,9 @@ cnvs_test <- cnvs_tcga_brca %>%
   filter(sample_id %in% top_mutated_patients)
 usethis::use_data(cnvs_test, overwrite = TRUE)
 
+
+tcga_brca_test <- init_cevodata("TCGA BRCA test data", genome = "hg37") |>
+  add_SNV_data(snvs_test, name = "TCGA") |>
+  add_CNV_data(cnvs_test, data = "TCGA")
+
+usethis::use_data(tcga_brca_test, overwrite = TRUE)
