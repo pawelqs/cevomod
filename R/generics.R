@@ -70,3 +70,37 @@ default_CNVs <- function(object, ...) {
 `default_CNVs<-` <- function(object, ..., value) {
   UseMethod("default_CNVs<-")
 }
+
+
+#' Site Frequency Spectra
+#'
+#' Creates  cevodata$models$SFS with the groupping variables and:
+#'   - n columnt with the number of mutations in the VAF interval
+#'   - x and y columns describing SFS
+#'   - y_scaled with y values scaled to the range 0-1
+#'
+#' @param object SNVs tibble object
+#' @param digits resolution of the cumulative tails calculation
+#' @param ... other arguments
+#' @examples
+#' data("tcga_brca_test")
+#' tcga_brca_test |>
+#'   calc_SFS()
+#'
+#' tcga_brca_test |>
+#'   plot_SFS()
+#' @name sfs
+
+
+#' @rdname sfs
+#' @export
+calc_SFS <- function(object, ...) {
+  UseMethod("calc_SFS")
+}
+
+
+#' @rdname sfs
+#' @export
+plot_SFS <- function(object, ...) {
+  UseMethod("plot_SFS")
+}

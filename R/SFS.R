@@ -1,21 +1,20 @@
-#' Calculate SFS
-#'
-#' @param dt tibble with VAF column. Might be groupped and contain the data for multiple samples
-#' @param digits resolution of the cumulative tails calculation
-#' @return tbl with the groupping variables and:
-#'   - n columnt with the number of mutations in the VAF interval
-#'   - x and y columns describing SFS
-#'   - y_scaled with y values scaled to the range 0-1
+
+#' @describeIn sfs Calculate SFS
 #' @export
-#'
-#' @examples
-#' data("snvs_test")
-#' snvs_test |>
-#'   dplyr::group_by(sample_id) |>
-#'   calc_SFS()
-calc_SFS <- function(dt, digits = 2) {
-  group_variables <- group_vars(dt)
-  res <- dt %>%
+calc_SFS.cevodata <- function(object, digits = 2, ...) {
+  object$models[["SFS"]] <- SNVs(object) |>
+    group_by(.data$patient_id, .data$sample_id, .data$sample) |>
+    calc_SFS(digits = 2) |>
+    ungroup()
+  object
+}
+
+
+#' @describeIn sfs Calculate SFS
+#' @export
+calc_SFS.tbl_df <- function(object, digits = 2, ...) {
+  group_variables <- group_vars(object)
+  res <- object %>%
     mutate(VAF = round(.data$VAF, digits = digits)) %>%
     group_by(.data$VAF, .add = TRUE) %>%
     summarise(y = n(), .groups = "drop_last") %>%
@@ -36,13 +35,13 @@ calc_SFS <- function(dt, digits = 2) {
 #' @export
 #'
 #' @examples
-#' data("snvs_test")
-#' snvs_test |>
+#' data("tcga_brca_test")
+#' SNVs(tcga_brca_test) |>
 #'   dplyr::group_by(sample_id) |>
 #'   calc_SFS() |>
 #'   plot()
 #'
-#' snvs_test |>
+#' tcga_brca_test |>
 #'   plot_SFS() +
 #'   layer_mutations(drivers = "BRCA")
 plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
@@ -61,11 +60,10 @@ plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
 }
 
 
-#' @describeIn plot.cevo_SFS_tbl Plot SFS dsfdsfsdfsd
-#' @param dt tibble with VAF column. Might be groupped and contain the data for multiple samples
-#' @param ... args passed to stat_SFS
+#' @describeIn sfs Plot SFS
 #' @export
-plot_SFS <- function(dt, ...) {
+plot_SFS.cevodata <- function(object, ...) {
+  dt <- SNVs(object)
   ggplot(dt, aes(.data$VAF, color = .data$sample_id, fill = .data$sample_id)) +
     stat_SFS(...) +
     theme_ellie(n = n_distinct(dt$sample_id)) +
