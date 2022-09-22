@@ -25,12 +25,11 @@ data("tcga_brca_test")
 # Cumulative tails
 
 ```{r, fig.width=7, fig.height=5}
-# snvs_test %>%
-#   group_by(sample_id) %>%
+# tcga_brca_test %>%
 #   calc_cumulative_tails() %>%
 #   plot(scales = "loglog")
 
-snvs_test %>%
+tcga_brca_test %>%
   plot_cumulative_tails(size = 0.5, scale_y = FALSE)
 ```
 

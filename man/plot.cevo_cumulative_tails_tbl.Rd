@@ -22,8 +22,9 @@ ggplot obj
 Plot the cumulative tails
 }
 \examples{
-data("snvs_test")
-snvs_test |>
+data("tcga_brca_test")
+SNVs(tcga_brca_test) |>
   dplyr::group_by(sample_id) |>
-  plot_cumulative_tails()
+  calc_cumulative_tails() |>
+  plot()
 }
