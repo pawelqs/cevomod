@@ -78,19 +78,16 @@ p1 / p2 + plot_layout(heights = c(3, 1))
 # M(f) ~ 1/f
 
 ```{r}
-Mf_1f <- snvs_test %>%
-  group_by(sample_id) %>%
-  calc_Mf_1f()
-
-plot(Mf_1f) +
+tcga_brca_test %>%
+  plot_Mf_1f() +
   scale_color_brewer(palette = "Dark2")
 
-plot(Mf_1f, from = 0.05, to = 0.5, scale = FALSE)
+tcga_brca_test %>%
+  plot_Mf_1f(from = 0.05, to = 0.5, scale = FALSE)
   # geom_smooth() +
   # coord_cartesian(xlim = c(1/0.1, 1/0.25)) +
   # facet_wrap(~sample_id, scales = "free")
 ```
-
 
 ```{r, fig.width=15, fig.height=7}
 library(neutralitytestr)

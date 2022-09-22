@@ -2,7 +2,6 @@
 % Please edit documentation in R/williams_Mf_1f.R
 \name{plot.cevo_Mf_1f_tbl}
 \alias{plot.cevo_Mf_1f_tbl}
-\alias{plot_Mf_1f}
 \title{Plot M(f) ~ 1/f}
 \usage{
 \method{plot}{cevo_Mf_1f_tbl}(
@@ -12,16 +11,6 @@
   scale = TRUE,
   geom = "point",
   mapping = NULL,
-  ...
-)
-
-plot_Mf_1f(
-  dt,
-  digits = 2,
-  from = 0.1,
-  to = 0.25,
-  scale = TRUE,
-  geom = "point",
   ...
 )
 }
@@ -39,10 +28,6 @@ plot_Mf_1f(
 \item{mapping}{mapping}
 
 \item{...}{futher passed to geom_()}
-
-\item{dt}{tibble with VAF column. Might be groupped and contain the data for multiple samples}
-
-\item{digits}{resolution of the cumulative tails calculation}
 }
 \value{
 ggplot obj
@@ -50,19 +35,13 @@ ggplot obj
 \description{
 Plot M(f) ~ 1/f
 }
-\section{Functions}{
-\itemize{
-\item \code{plot_Mf_1f()}: Plot M(f) ~ 1/f
-
-}}
 \examples{
-data("snvs_test")
-snvs_test |>
+data("tcga_brca_test")
+
+SNVs(tcga_brca_test) |>
   dplyr::group_by(sample_id) |>
   calc_Mf_1f() |>
   plot()
 
-snvs_test |>
-  dplyr::group_by(sample_id) |>
-  plot_Mf_1f()
+plot_Mf_1f(tcga_brca_test)
 }

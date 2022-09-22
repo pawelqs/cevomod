@@ -137,3 +137,37 @@ calc_cumulative_tails <- function(object, ...) {
 plot_cumulative_tails <- function(object, ...) {
   UseMethod("plot_cumulative_tails")
 }
+
+
+#' William's M(f) ~ 1/f statistics
+#'
+#' Creates  cevodata$models$Mf_1f tbl with the groupping variables and:
+#'   - VAF
+#'   - n - number of mutations in the VAF interval
+#'   - `M(f)` and `1/f` columns to plot William's statistics
+#'
+#' @param object SNVs tibble object
+#' @param digits resolution of the cumulative tails calculation
+#' @param ... other arguments
+#' @examples
+#' data("tcga_brca_test")
+#' tcga_brca_test |>
+#'   calc_Mf_1f()
+#'
+#' tcga_brca_test |>
+#'   plot_Mf_1f()
+#' @name Mf_1f
+
+
+#' @rdname Mf_1f
+#' @export
+calc_Mf_1f <- function(object, ...) {
+  UseMethod("calc_Mf_1f")
+}
+
+
+#' @rdname Mf_1f
+#' @export
+plot_Mf_1f <- function(object, ...) {
+  UseMethod("plot_Mf_1f")
+}
