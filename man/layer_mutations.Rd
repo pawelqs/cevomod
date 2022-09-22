@@ -16,26 +16,11 @@ layer_mutations(
 )
 }
 \arguments{
-\item{genes}{list of genes for which mutations should be shown}
-
-\item{drivers}{cancer type, for which mutations in driver genes should be shown. Needs to
-be taken from \code{driver_genes}}
-
-\item{data}{mutations tibble}
-
 \item{color}{color}
 
 \item{size}{size}
 
-\item{shape}{"impact" or "variant_classification"?}
-
-\item{filter_fun}{Function for filtering mutations:
-variant_classification_filter() or impact_filter()}
-
 \item{...}{other arguments passed to geom_point()}
-}
-\value{
-ggplot obj
 }
 \description{
 Adds mutations to SFS plots

@@ -1,6 +1,6 @@
 #' Show mutations in particular genes
 #'
-#' @param data mutations tibble
+#' @param object cevodata
 #' @param genes list of genes for which mutations should be shown
 #' @param drivers cancer type, for which mutations in driver genes should be shown. Needs to
 #'   be taken from `driver_genes`
@@ -12,10 +12,10 @@
 #'
 #' @return ggplot obj
 #' @export
-plot_mutations <- function(data, genes = NULL, drivers = NULL, mark_genes = NULL,
+plot_mutations.cevodata <- function(object, genes = NULL, drivers = NULL, mark_genes = NULL,
                            y = "genes", shape = "impact",
                            filter_fun = guess_filter_fun(shape)) {
-  genes_data <- data %>%
+  genes_data <- SNVs(object) %>%
     filter_SNVs(genes, drivers) %>%
     filter_fun()
 

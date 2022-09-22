@@ -204,9 +204,20 @@ fit_neutral_lm <- function(object, ...) {
 
 #' layer_neutral_tail
 #'
-#' @param object SNVs tibble object
+#' @param object object
 #' @param ... other arguments
 #' @export
 layer_neutral_tail <- function(object, ...) {
   UseMethod("layer_neutral_tail")
+}
+
+
+
+#' layer_neutral_tail
+#'
+#' @param object object
+#' @param ... other arguments
+#' @export
+plot_mutations <- function(object, ...) {
+  UseMethod("plot_mutations")
 }

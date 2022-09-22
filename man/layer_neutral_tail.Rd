@@ -7,7 +7,7 @@
 layer_neutral_tail(object, ...)
 }
 \arguments{
-\item{object}{SNVs tibble object}
+\item{object}{object}
 
 \item{...}{other arguments}
 }
