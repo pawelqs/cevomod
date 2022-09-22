@@ -20,5 +20,5 @@ test_that("filter_SNVs() works", {
   expect_s3_class(res, "cevo_SNVs_tbl")
   expect_equal(nrow(res), 6)
   expect_identical(res$gene_symbol, c("TBX3", "TBX3", "BRCA1", "TP53", "BRCA1", "TBX3"))
-  expect_identical(res$start, c(115109720, 115117319, 41244256, 7579882, 41244131, 115117717))
+  expect_identical(res$pos, c(115109720, 115117319, 41244256, 7579882, 41244131, 115117717))
 })

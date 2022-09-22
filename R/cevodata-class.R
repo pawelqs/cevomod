@@ -117,8 +117,8 @@ add_SNV_data.cevodata <- function(object, snvs, name = NULL, ...) {
 
 validate_SNVs <- function(snvs) {
   required_cols <- c(
-    "patient_id", "sample_id", "sample", "chrom", "start", "gene_symbol",
-    "ref", "alt", "ref_counts", "alt_counts", "VAF", "impact"
+    "patient_id", "sample_id", "sample", "chrom", "pos", "gene_symbol",
+    "ref", "alt", "ref_reads", "alt_reads", "VAF", "impact"
   )
   missing_cols <- setdiff(required_cols, names(snvs))
   if (length(missing_cols)) {
@@ -172,7 +172,7 @@ add_CNV_data.cevodata <- function(object, cnvs, name = NULL, ...) {
 validate_CNVs <- function(cnvs) {
   required_cols <- c(
     "patient_id", "sample_id", "sample", "chrom", "start", "end",
-    "seg_mean", "total_cn", "major_cn", "minor_cn"
+    "log_ratio", "BAF", "total_cn", "major_cn", "minor_cn"
   )
   missing_cols <- setdiff(required_cols, names(cnvs))
   if (length(missing_cols)) {
