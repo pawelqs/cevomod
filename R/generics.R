@@ -171,3 +171,32 @@ calc_Mf_1f <- function(object, ...) {
 plot_Mf_1f <- function(object, ...) {
   UseMethod("plot_Mf_1f")
 }
+
+
+#' Fitting neutral models
+#'
+#' Creates  cevodata$models$neutral_lm
+#'
+#' @param object SNVs tibble object
+#' @param rsq_treshold R-squared tresholds to keep model as neutral
+#' @param ... other arguments
+#' @examples
+#' data("tcga_brca_test")
+#' snvs <- SNVs(tcga_brca_test) |>
+#'   dplyr::filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01"))
+#'
+#' cd <- init_cevodata("Test") |>
+#'   add_SNV_data(snvs) |>
+#'   calc_Mf_1f() |>
+#'   fit_neutral_lm(rsq_treshold = 0.99)
+#'
+#' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
+#'   layer_lm_fits(cd)
+#' @name neutral_lm
+
+
+#' @rdname neutral_lm
+#' @export
+fit_neutral_lm <- function(object, ...) {
+  UseMethod("fit_neutral_lm")
+}

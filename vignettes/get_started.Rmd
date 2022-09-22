@@ -114,36 +114,34 @@ neutralitytest_res %>%
 # Fit neutral models
 
 ```{r}
-Mf_1f <- snvs_test %>%
-  group_by(sample_id) %>%
-  calc_Mf_1f()
-
-models <- fit_neutral_lm(Mf_1f, rsq_treshold = 0.99)
+cd <- tcga_brca_test |> 
+  calc_Mf_1f() |> 
+  fit_neutral_lm(rsq_treshold = 0.99)
 ```
 
 
 ```{r}
-plot(Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
-  layer_lm_fits(models) +
+plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
+  layer_lm_fits(cd) +
   scale_color_pnw()
 ```
 
 ```{r, fig.width=9, fig.height=9}
-exp <- models |> 
-  slice(1) |> 
-  expand_grid(x = seq(0.08, 1, by = 0.01)) |> 
-  mutate(
-    neutr = (x >= from & x <= to),
-    y = (a/-90)/x^2
-  )
-
-plot_SFS(tcga_brca_test, geom = "bar", show.legend = FALSE, color = "white", alpha = 0.9) +
-  facet_wrap(~sample_id, scales = "free") +
-  scale_color_pnw() +
-  scale_fill_pnw() +
-  layer_mutations(drivers = "BRCA", color = "black") +
-  geom_line(aes(x, y), data = exp, color = "black", size = 1, linetype = "dashed") +
-  geom_line(aes(x, y), data = exp |> filter(neutr), color = "black", size = 1)
+# exp <- models |> 
+#   slice(1) |> 
+#   expand_grid(x = seq(0.08, 1, by = 0.01)) |> 
+#   mutate(
+#     neutr = (x >= from & x <= to),
+#     y = (a/-90)/x^2
+#   )
+# 
+# plot_SFS(tcga_brca_test, geom = "bar", show.legend = FALSE, color = "white", alpha = 0.9) +
+#   facet_wrap(~sample_id, scales = "free") +
+#   scale_color_pnw() +
+#   scale_fill_pnw() +
+#   layer_mutations(drivers = "BRCA", color = "black") +
+#   geom_line(aes(x, y), data = exp, color = "black", size = 1, linetype = "dashed") +
+#   geom_line(aes(x, y), data = exp |> filter(neutr), color = "black", size = 1)
 ```
 
 ```{r}
