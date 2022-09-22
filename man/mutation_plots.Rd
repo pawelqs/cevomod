@@ -33,7 +33,6 @@
 layer_mutations(
   genes = NULL,
   drivers = NULL,
-  data = NULL,
   color = "black",
   size = 3,
   shape = "impact",
