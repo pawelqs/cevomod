@@ -6,6 +6,7 @@ calc_Mf_1f.cevodata <- function(object, digits = 2, ...) {
     group_by(.data$patient_id, .data$sample_id, .data$sample) |>
     calc_Mf_1f() |>
     ungroup()
+  class(object$models[["Mf_1f"]]) <- c("cevo_Mf_1f_tbl", class(object$models[["Mf_1f"]]))
   object
 }
 
