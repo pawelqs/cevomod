@@ -18,7 +18,6 @@ knitr::opts_chunk$set(
 library(cevomod)
 library(patchwork)
 library(tidyverse)
-data("snvs_test")
 data("tcga_brca_test")
 ```
 
@@ -36,11 +35,6 @@ tcga_brca_test %>%
 # SFS with mut annotation
 
 ```{r, fig.width=7, fig.height=4}
-# snvs_test %>%
-#   group_by(sample_id) %>%
-#   calc_SFS() %>%
-#   plot()
-
 tcga_brca_test %>%
   plot_SFS() +
   layer_mutations(drivers = "BRCA", shape = "variant_classification")
@@ -54,18 +48,16 @@ SNVs(tcga_brca_test) %>%
   stat_SFS(geom = "bar") +
   layer_mutations(drivers = "BRCA", color = "black", shape = "impact") +
   facet_wrap(~sample_id, scales = "free_y") +
-  theme_ellie(n = n_distinct(snvs_test$sample_id))
+  theme_ellie(n = n_distinct(SNVs(tcga_brca_test)$sample_id))
 ```
 
 # SNVs plots
 
 ```{r, fig.width=7, fig.height=5}
-p1 <- snvs_test %>%
-  group_by(sample_id) %>%
+p1 <- tcga_brca_test %>%
   plot_mutations(drivers = "BRCA", shape = "variant_classification")
 
-p2 <- snvs_test %>%
-  group_by(sample_id) %>%
+p2 <- tcga_brca_test %>%
   plot_mutations(
     genes = c("TP53", "BRCA1", "KMT2C", "ERBB2"),
     mark_genes = c("TP53", "BRCA1", "ERBB2"),
@@ -90,17 +82,17 @@ tcga_brca_test %>%
 ```
 
 ```{r, fig.width=15, fig.height=7}
-library(neutralitytestr)
-
-neutralitytest_res <- snvs_test %>%
-  group_by(sample_id) %>%
-  nest() %>%
-  deframe() %>%
-  map("VAF") %>%
-  map(neutralitytest, read_depth = 100.0, fmin = 0.11, fmax = 0.2)
-
-neutralitytest_res %>%
-  map(plot_all)
+# library(neutralitytestr)
+# 
+# neutralitytest_res <- snvs_test %>%
+#   group_by(sample_id) %>%
+#   nest() %>%
+#   deframe() %>%
+#   map("VAF") %>%
+#   map(neutralitytest, read_depth = 100.0, fmin = 0.11, fmax = 0.2)
+# 
+# neutralitytest_res %>%
+#   map(plot_all)
 ```
 
 ```{r, fig.width=9, fig.height=9}
