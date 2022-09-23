@@ -212,6 +212,16 @@ layer_neutral_tail <- function(object, ...) {
 }
 
 
+#' estimate_sampling_rate
+#'
+#' @param object object
+#' @param ... other arguments
+#' @export
+estimate_sampling_rate <- function(object, ...) {
+  UseMethod("estimate_sampling_rate")
+}
+
+
 #' Show mutations in particular genes
 #'
 #' @param object cevodata

@@ -1,5 +1,5 @@
 
-#' Plot neutral exponential curve on SFS plot
+#' @describeIn layer_neutral_tail Plot neutral exponential curve on SFS plot
 #'
 #' @param object model fits from fit_neutral_lm
 #' @param start VAF value to start plotting model fit
@@ -53,31 +53,27 @@ calc_powerlaw_curve <- function(lm_models, binwidth) {
 }
 
 
-#' Estimate sampling rate
-#'
-#' Uses experimental SFS and power-law model to estimate the sampling rate
-#'
-#' @param sfs SFS
-#' @param lm_models output from fit_neutral_lm()
-#'
+#' @describeIn estimate_sampling_rate Uses experimental SFS and power-law model
+#'   to estimate the sampling rate
 #' @return tibble
 #' @export
-estimate_sampling_rate <- function(sfs, lm_models) {
+estimate_sampling_rate.cevodata <- function(object, ...) {
+  neutral_lm <- object$models[["neutral_lm"]]
+  sfs <- object$models[["SFS"]]
+  if (is.null(neutral_lm) || is.null(sfs)) {
+    stop("Calc SFS and and fit neutral lm first!")
+  }
+
   binwidth <- get_average_interval(sfs$VAF)
-  exp <- calc_powerlaw_curve(lm_models, binwidth = binwidth) |>
+  exp <- neutral_lm |>
+    filter(.data$best) |>
+    calc_powerlaw_curve(binwidth = binwidth) |>
     mutate(VAF = as.character(.data$f))
   sfs <- mutate(sfs, VAF = as.character(.data$VAF))
 
-  patient_id_present <- "patient_id" %in% names(sfs)
-  dt <- if (patient_id_present) {
-    exp |>
-      select(.data$patient_id, .data$sample_id, .data$VAF, .data$n) |>
-      left_join(sfs, by = c("patient_id", "sample_id", "VAF"))
-  } else {
-    exp |>
-      select(.data$sample_id, .data$VAF, .data$n) |>
-      left_join(sfs, by = c("sample_id", "VAF"))
-  }
+  dt <- exp |>
+    select(.data$patient_id, .data$sample_id, .data$VAF, .data$n) |>
+    left_join(sfs, by = c("patient_id", "sample_id", "VAF"))
 
   sampling_stats <- dt |>
     select(-.data$y_scaled) |>
