@@ -242,3 +242,33 @@ estimate_sampling_rate <- function(object, ...) {
 plot_mutations <- function(object, ...) {
   UseMethod("plot_mutations")
 }
+
+
+#' Plot CNV heatmap
+#'
+#' @param object cevodata
+#' @param granges granges list
+#' @param meta_field column to plot
+#' @param row_groups vector
+#' @param keep_sites_present_in floor(0.8*length(granges))
+#' @param color_breaks c(0, 2, 6)
+#' @param colors c("dodgerblue3", "white", "firebrick3")
+#' @param window_width window_width
+#' @param upper_limit upper limit of color scale
+#' @param cluster_rows FALSE
+#' @param show_row_names TRUE
+#' @param show_column_names FALSE
+#' @param use_raster TRUE
+#' @param cluster_columns FALSE
+#' @param border TRUE
+#' @param legend_params goes to Heatmap(heatmap_legend_param = .)
+#' @param verbose Verbose?
+#' @param ... other arguments passed to Heatmap
+#' @name cnv_plots
+
+
+#' @rdname cnv_plots
+#' @export
+plot_CNV_heatmap <- function(object, ...) {
+  UseMethod("plot_CNV_heatmap")
+}

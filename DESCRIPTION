@@ -20,12 +20,17 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
+    circlize,
     cli,
+    ComplexHeatmap,
     crayon,
     dplyr,
     forcats,
+    GenomicRanges,
     ggplot2,
+    grid,
     paletteer,
+    plyranges,
     PNWColors,
     prismatic,
     purrr,

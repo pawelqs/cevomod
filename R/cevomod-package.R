@@ -10,6 +10,9 @@
 #' @import stringr
 #' @import tibble
 #' @import tidyr
+#' @importFrom ComplexHeatmap Heatmap
+#' @importFrom ComplexHeatmap HeatmapAnnotation
+#' @importFrom grid gpar
 #' @importFrom rlang :=
 #' @importFrom rlang .data
 #' @importFrom rlang .env
