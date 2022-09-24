@@ -3,8 +3,8 @@
 #' @export
 plot_CNV_heatmap.cevodata <- function(object, meta_field, ...) {
   granges <- CNVs(object) |>
-    rename(seqnames = chrom) |>
-    group_by(sample_id) |>
+    rename(seqnames = .data$chrom) |>
+    group_by(.data$sample_id) |>
     nest() |>
     deframe() |>
     map(GenomicRanges::GRanges)
@@ -29,6 +29,7 @@ heatmap_granges <- function(granges, meta_field,
                             border = TRUE,
                             legend_params = NULL,
                             verbose = TRUE, ...) {
+  score <- NULL
 
   ########## Get common ranges
   ranges_cov <- granges %>%
@@ -38,15 +39,15 @@ heatmap_granges <- function(granges, meta_field,
 
   range_fractions <- ranges_cov %>%
     as_tibble() %>%
-    group_by(score) %>%
-    summarise(width = sum(width)) %>%
-    arrange(desc(score)) %>%
+    group_by(.data$score) %>%
+    summarise(width = sum(.data$width)) %>%
+    arrange(desc(.data$score)) %>%
     mutate(
-      total_len = sum(width),
-      frct = width / total_len,
-      cum = cumsum(frct)
+      total_len = sum(.data$width),
+      frct = .data$width / .data$total_len,
+      cum = cumsum(.data$frct)
     ) %>%
-    select(score, cum) %>%
+    select(.data$score, .data$cum) %>%
     deframe()
 
   if (verbose) {
@@ -69,8 +70,8 @@ heatmap_granges <- function(granges, meta_field,
   mat <- dt %>%
     map(as_tibble) %>%
     # Summarise values for window ranges covering more than one interval
-    map(~ select(.x, seqnames, start, end, !!sym(meta_field))) %>%
-    map(~ group_by(.x, seqnames, start, end)) %>%
+    map(~ select(.x, .data$seqnames, .data$start, .data$end, !!sym(meta_field))) %>%
+    map(~ group_by(.x, .data$seqnames, .data$start, .data$end)) %>%
     map(~ summarise(.x, val = mean(!!sym(meta_field)))) %>%
     # Create matrix
     map("val") %>%
@@ -82,8 +83,8 @@ heatmap_granges <- function(granges, meta_field,
   ######### Prepare heatmap chromosome annotation
   chr_means <- as_tibble(windows) %>%
     mutate(i = row_number()) %>%
-    group_by(seqnames) %>%
-    summarise(m = mean(i)) %>%
+    group_by(.data$seqnames) %>%
+    summarise(m = mean(.data$i)) %>%
     deframe()
   chr_labels <- vector(mode = "character", length = length(windows))
   chr_labels[chr_means] <- names(chr_means)
@@ -93,7 +94,7 @@ heatmap_granges <- function(granges, meta_field,
     mutate(code = row_number() %% 2)
   chr_bin <- tibble(seqname = as.character(GenomicRanges::seqnames(windows))) %>%
     left_join(seqname_replacements, by = "seqname") %>%
-    pull(code)
+    pull(.data$code)
 
 
   chr_bar <- HeatmapAnnotation(

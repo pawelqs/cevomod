@@ -16,5 +16,6 @@
 #' @importFrom rlang :=
 #' @importFrom rlang .data
 #' @importFrom rlang .env
+#' @importFrom stats sd
 ## usethis namespace: end
 NULL

@@ -59,7 +59,7 @@ print.cevodata <- function(x, ...) {
     "None"
   }
   n_mutations_str <- str_c(
-    summ$mutations_per_patient_mean, " ± ", summ$mutations_per_patient_sd,
+    summ$mutations_per_patient_mean, " +/- ", summ$mutations_per_patient_sd,
     " mutations per case"
   )
   n_samples_str <- if (summ$samples_per_patient_min == 1 && summ$samples_per_patient_max == 1) {
