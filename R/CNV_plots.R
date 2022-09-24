@@ -13,6 +13,24 @@ plot_CNV_heatmap.cevodata <- function(object, meta_field, ...) {
 }
 
 
+# rowdata <- tibble(
+#   name = names(seg_gr),
+#   name2 = str_replace(name, "AMLRO_", "AMLRO"),
+#   sample_short = str_replace(name2, "AMLRO_", "AMLRO")
+# ) %>%
+#   separate(name2, into = c("patient", "sample", "cnv"), remove = FALSE) %>%
+#   unite(left, patient, sample, remove = FALSE) %>%
+#   mutate(
+#     patient_ = str_replace(patient, "AMLRO", "AMLRO_"),
+#     sex = if_else(patient_ %in% male_patients, "male", "female")
+#   )
+#
+# row_ha = rowAnnotation(
+#   sex = rowdata$sex,
+#   col = list(sex = c("male" = "#d95f02", "female" = "#7570b3"))
+# )
+
+
 #' @describeIn cnv_plots Plot Granges list
 #' @export
 heatmap_granges <- function(granges, meta_field,
