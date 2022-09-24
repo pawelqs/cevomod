@@ -58,12 +58,25 @@ print.cevodata <- function(x, ...) {
   } else {
     "None"
   }
+  n_mutations_str <- str_c(
+    summ$mutations_per_patient_mean, " ± ", summ$mutations_per_patient_sd,
+    " mutations per case"
+  )
+  n_samples_str <- if (summ$samples_per_patient_min == 1 && summ$samples_per_patient_max == 1) {
+    "1 sample per case"
+  } else if (summ$samples_per_patient_min == summ$samples_per_patient_min) {
+    str_c(summ$samples_per_patient_min, " samples per case")
+  } else {
+    str_c(summ$samples_per_patient_min, " - ", summ$samples_per_patient_max, " samples per case")
+  }
 
   cli::cat_line("<cevodata> dataset: ", x$name, col = "#45681e")
   cli::cat_line("Genome: ", summ$genome, col = "#628f2f")
   cli::cat_line("SNV assays: ", SNV_assays_str)
   cli::cat_line("CNV assays: ", CNV_assays_str)
-  cli::cat_line(summ$n_patients, " patients, ", summ$n_samples, " samples")
+  cli::cat_line(summ$n_patients, " cases, ", summ$n_samples, " samples, ")
+  cli::cat_line(n_mutations_str, ", ", n_samples_str
+  )
   if (!is.null(x$active_SNVs)) {
     cli::cat_line("SNVs:")
     print(x$SNVs[[x$active_SNVs]])
@@ -77,6 +90,17 @@ print.cevodata <- function(x, ...) {
 
 #' @export
 summary.cevodata <- function(object, ...) {
+  mutations_per_patient <- SNVs(object) |>
+    select(.data$patient_id, .data$chrom:.data$alt) |>
+    unique() |>
+    group_by(.data$patient_id) |>
+    count()
+  samples_per_patient <- SNVs(object) |>
+    select(.data$patient_id:.data$sample_id) |>
+    unique() |>
+    group_by(.data$patient_id) |>
+    count()
+
   list(
     name = object$name,
     genome = object$genome,
@@ -84,8 +108,12 @@ summary.cevodata <- function(object, ...) {
     active_SNVs = object$active_SNVs,
     CNV_assays = names(object$CNVs),
     active_CNVs = object$active_CNVs,
-    n_patients = n_distinct(object$SNVs[[object$active_SNVs]]$patient_id),
-    n_samples = n_distinct(object$SNVs[[object$active_SNVs]]$sample_id)
+    n_patients = n_distinct(SNVs(object)$patient_id),
+    n_samples = n_distinct(SNVs(object)$sample_id),
+    mutations_per_patient_mean = round(mean(mutations_per_patient$n)),
+    mutations_per_patient_sd = round(sd(mutations_per_patient$n)),
+    samples_per_patient_min = min(samples_per_patient$n),
+    samples_per_patient_max = max(samples_per_patient$n)
   )
 }
 
