@@ -34,6 +34,14 @@ test_that("print.cevodata runs without error works", {
 })
 
 
+test_that("print.cevodata runs without error foe empty object", {
+  cd <- init_cevodata("TCGA BRCA small")
+  output <- print(cd) |>
+    capture.output()
+  expect_true(length(cd) > 1)
+})
+
+
 test_that("Adding SNV to cevodata works", {
   cd <- init_cevodata("TCGA BRCA small", snvs = snvs) |>
     add_SNV_data(snvs = snvs, "head")
