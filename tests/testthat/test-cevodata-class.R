@@ -128,3 +128,17 @@ test_that("Setting active SNV assay on cevodata works", {
   expect_equal(default_CNVs(cd), "cnvs")
   expect_error(default_CNVs(cd) <- "xxx")
 })
+
+
+test_that("Filtering cevodata works", {
+  cd <- init_cevodata("TCGA BRCA small", cnvs = cnvs) |>
+    add_CNV_data(cnvs = cnvs, "tcga2") |>
+    add_SNV_data(snvs = snvs, "tcga") |>
+    filter(patient_id == "TCGA-AC-A23H-01")
+  expect_equal(nrow(cd$CNVs$cnvs), 285)
+  expect_equal(nrow(cd$CNVs$tcga2), 285)
+  expect_equal(nrow(cd$SNVs$tcga), 6419)
+  expect_equal(unique(cd$CNVs$cnvs$patient_id), "TCGA-AC-A23H-01")
+  expect_equal(unique(cd$CNVs$tcga2$patient_id), "TCGA-AC-A23H-01")
+  expect_equal(unique(cd$SNVs$tcga$patient_id), "TCGA-AC-A23H-01")
+})

@@ -252,3 +252,26 @@ default_CNVs.cevodata <- function(object, ...) {
   object$active_CNVs <- value
   object
 }
+
+
+#' Filter/subset cevodata object
+#'
+#' This is a wrapper around dplyr::filter function which can be used to subset
+#' cevodata object. Works like dplyr::filter, performs the filtering on SNVs,
+#' CNVs, clones and models assays. Beware to use filtering expressions that
+#' are valid for all those assays. Take care when filtering using other colunts
+#' than patient_id, sample_id or sample
+#'
+#' @param .data cevodata object
+#' @param ... expression passed to dplyr::filter(...)
+#' @inheritParams dplyr::filter
+#' @return cevodata object
+#' @export
+filter.cevodata <- function(.data, ..., .preserve = FALSE) {
+  new_object <- .data
+  new_object$SNVs <- map(new_object$SNVs, filter, ...)
+  new_object$CNVs <- map(new_object$CNVs, filter, ...)
+  new_object$clones <- map(new_object$clones, filter, ...)
+  new_object$models <- map(new_object$models, filter, ...)
+  new_object
+}

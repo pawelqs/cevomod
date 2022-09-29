@@ -272,3 +272,8 @@ plot_mutations <- function(object, ...) {
 plot_CNV_heatmap <- function(object, ...) {
   UseMethod("plot_CNV_heatmap")
 }
+
+
+#' @export
+dplyr::filter
+
