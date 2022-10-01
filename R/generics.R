@@ -188,6 +188,7 @@ plot_Mf_1f <- function(object, ...) {
 #' cd <- init_cevodata("Test") |>
 #'   add_SNV_data(snvs) |>
 #'   calc_Mf_1f() |>
+#'   calc_SFS() |>
 #'   fit_neutral_lm(rsq_treshold = 0.99)
 #'
 #' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
@@ -212,13 +213,18 @@ layer_neutral_tail <- function(object, ...) {
 }
 
 
-#' estimate_sampling_rate
+calc_residuals <- function(object, ...) {
+  UseMethod("calc_residuals")
+}
+
+
+#' fit_subclones
 #'
 #' @param object object
 #' @param ... other arguments
 #' @export
-estimate_sampling_rate <- function(object, ...) {
-  UseMethod("estimate_sampling_rate")
+fit_subclones <- function(object, ...) {
+  UseMethod("fit_subclones")
 }
 
 

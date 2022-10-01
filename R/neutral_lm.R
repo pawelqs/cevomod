@@ -37,6 +37,7 @@ fit_neutral_lm.cevodata <- function(object, rsq_treshold = 0.98, ...) {
     unnest(.data$fits)
   class(res) <- c("cevo_lm_models_tbl", class(res))
   object$models[["neutral_lm"]] <- res
+  object <- calc_residuals(object)
   object
 }
 
@@ -68,4 +69,56 @@ tidy_lm <- function(x, y) {
     rsquared = stats::cor(y, x) ^ 2
   )
   res
+}
+
+
+calc_residuals.cevodata <- function(object, ...) {
+  neutral_lm <- object$models[["neutral_lm"]]
+  sfs <- object$models[["SFS"]]
+  if (is.null(neutral_lm) || is.null(sfs)) {
+    stop("Calc SFS and and fit neutral lm first!")
+  }
+
+  binwidth <- get_average_interval(sfs$VAF)
+  exp <- neutral_lm |>
+    filter(.data$best) |>
+    calc_powerlaw_curve(binwidth = binwidth) |>
+    mutate(VAF = as.character(.data$f))
+  sfs <- mutate(sfs, VAF = as.character(.data$VAF))
+
+  dt <- exp |>
+    select(.data$patient_id, .data$sample_id, .data$sample, .data$VAF, .data$neutral_pred) |>
+    left_join(sfs, by = c("patient_id", "sample_id", "sample", "VAF"))
+
+  residuals <- dt |>
+    select(-.data$y_scaled) |>
+    mutate(
+      VAF = parse_double(.data$VAF),
+      neutral_resid = .data$neutral_pred - .data$y,
+      neutral_resid_clones = if_else(.data$neutral_resid > 0, 0, -.data$neutral_resid),
+      sampling_rate = .data$neutral_resid / .data$neutral_pred
+    )
+
+  object$models[["residuals"]] <- residuals
+  object
+}
+
+
+calc_powerlaw_curve <- function(lm_models, binwidth) {
+  n_bins <- 1 / binwidth
+  lm_models |>
+    expand_grid(f = seq(0.01, 1, by = binwidth)) |>
+    mutate(
+      neutr = (.data$f >= .data$from & .data$f <= .data$to),
+      neutral_pred = -(.data$a / n_bins) / .data$f^2
+    )
+}
+
+
+get_average_interval <- function(vec) {
+  vec |>
+    unique() |>
+    sort() |>
+    diff() |>
+    mean()
 }
