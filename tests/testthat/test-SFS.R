@@ -2,7 +2,8 @@ data("tcga_brca_test")
 
 test_that("Calculation of SFS works", {
   cd <- calc_SFS(tcga_brca_test)
-  expected <- read_tsv("../testdata/tcga_brca_SFS.tsv", col_types = "cccdid")
+  expected <- read_tsv("../testdata/tcga_brca_SFS.tsv", col_types = "cdid")
+  # write_tsv(cd$models$SFS, "tests/testdata/tcga_brca_SFS.tsv")
   expect_identical(cd$models$SFS, expected)
 })
 

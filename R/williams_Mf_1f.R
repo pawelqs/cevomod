@@ -2,11 +2,12 @@
 #' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
 #' @export
 calc_Mf_1f.cevodata <- function(object, digits = 2, ...) {
-  object$models[["Mf_1f"]] <- SNVs(object) |>
-    group_by(.data$patient_id, .data$sample_id, .data$sample) |>
+  Mf_1f <- SNVs(object) |>
+    group_by(.data$sample_id) |>
     calc_Mf_1f() |>
     ungroup()
-  class(object$models[["Mf_1f"]]) <- c("cevo_Mf_1f_tbl", class(object$models[["Mf_1f"]]))
+  class(Mf_1f) <- c("cevo_Mf_1f_tbl", class(Mf_1f))
+  object$models[["Mf_1f"]] <- Mf_1f
   object
 }
 
@@ -91,7 +92,10 @@ plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,
 #' @export
 plot_Mf_1f <- function(object, digits = 2, from = 0.1, to = 0.25, scale = TRUE, geom = "point", ...) {
   Mf_1f <- SNVs(object) |>
-    group_by(.data$patient_id, .data$sample_id, .data$sample) |>
-    calc_Mf_1f(digits)
+    group_by(.data$sample_id) |>
+    calc_Mf_1f(digits) |>
+    left_join(object$metadata, by = "sample_id") |>
+    group_by(.data$patient_id, .data$sample_id, .data$sample)
+  class(Mf_1f) <- c("cevo_Mf_1f_tbl", class(Mf_1f))
   plot(Mf_1f, geom = geom, from = from, to = to, scale = scale,  ...)
 }

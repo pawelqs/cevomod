@@ -3,7 +3,7 @@
 #' @export
 calc_SFS.cevodata <- function(object, digits = 2, ...) {
   object$models[["SFS"]] <- SNVs(object) |>
-    group_by(.data$patient_id, .data$sample_id, .data$sample) |>
+    group_by(.data$sample_id) |>
     calc_SFS(digits = 2) |>
     ungroup()
   object

@@ -30,7 +30,7 @@ fit_neutral_lm.cevodata <- function(object, rsq_treshold = 0.98, ...) {
   Mf_1f <- object$models$Mf_1f
   res <- Mf_1f |>
     filter(.data$`1/f` < Inf, .data$VAF < 0.5) |>
-    select(.data$patient_id, .data$sample_id, .data$sample, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
+    select(.data$sample_id, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
     nest(data = c(.data$VAF, .data$`M(f)`, .data$`1/f`)) |>
     mutate(fits = map(.data$data, fit_optimal_lm, rsq_treshold)) |>
     select(-.data$data) |>
@@ -87,8 +87,8 @@ calc_residuals.cevodata <- function(object, ...) {
   sfs <- mutate(sfs, VAF = as.character(.data$VAF))
 
   dt <- exp |>
-    select(.data$patient_id, .data$sample_id, .data$sample, .data$VAF, .data$neutral_pred) |>
-    left_join(sfs, by = c("patient_id", "sample_id", "sample", "VAF"))
+    select(.data$sample_id, .data$VAF, .data$neutral_pred) |>
+    left_join(sfs, by = c("sample_id", "VAF"))
 
   residuals <- dt |>
     select(-.data$y_scaled) |>

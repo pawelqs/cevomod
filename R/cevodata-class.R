@@ -3,6 +3,7 @@ new_cevodata <- function(name, genome) {
   cd <- list(
     name = name,
     genome = genome,
+    metadata = NULL,
     SNVs = list(),
     CNVs = list(),
     clones = list(),
@@ -121,19 +122,21 @@ summary.cevodata <- function(object, ...) {
 
   if (!is.null(default_SNVs(object))) {
     mutations_per_patient <- SNVs(object) |>
+      left_join(object$metadata, by = "sample_id") |>
       select(.data$patient_id, .data$chrom:.data$alt) |>
       unique() |>
       group_by(.data$patient_id) |>
       count()
     samples_per_patient <- SNVs(object) |>
+      left_join(object$metadata, by = "sample_id") |>
       select(.data$patient_id:.data$sample_id) |>
       unique() |>
       group_by(.data$patient_id) |>
       count()
 
     summ_SNVs <- list(
-      n_patients = n_distinct(SNVs(object)$patient_id),
-      n_samples = n_distinct(SNVs(object)$sample_id),
+      n_patients = n_distinct(object$metadata$patient_id),
+      n_samples = n_distinct(object$metadata$sample_id),
       mutations_per_patient_mean = round(mean(mutations_per_patient$n)),
       mutations_per_patient_sd = round(sd(mutations_per_patient$n)),
       samples_per_patient_min = min(samples_per_patient$n),
@@ -166,13 +169,18 @@ add_SNV_data.cevodata <- function(object, snvs, name = NULL, ...) {
   validate_SNVs(snvs)
   object$SNVs[[name]] <- snvs
   default_SNVs(object) <- name
+  meta <- snvs |>
+    select(.data$sample_id) |>
+    unique() |>
+    as_tibble()
+  object <- add_sample_data(object, meta)
   object
 }
 
 
 validate_SNVs <- function(snvs) {
   required_cols <- c(
-    "patient_id", "sample_id", "sample", "chrom", "pos", "gene_symbol",
+    "sample_id", "chrom", "pos", "gene_symbol",
     "ref", "alt", "ref_reads", "alt_reads", "VAF", "impact"
   )
   missing_cols <- setdiff(required_cols, names(snvs))
@@ -220,13 +228,18 @@ add_CNV_data.cevodata <- function(object, cnvs, name = NULL, ...) {
   validate_CNVs(cnvs)
   object$CNVs[[name]] <- cnvs
   default_CNVs(object) <- name
+  meta <- cnvs |>
+    select(.data$sample_id) |>
+    unique() |>
+    as_tibble()
+  object <- add_sample_data(object, meta)
   object
 }
 
 
 validate_CNVs <- function(cnvs) {
   required_cols <- c(
-    "patient_id", "sample_id", "sample", "chrom", "start", "end",
+    "sample_id", "chrom", "start", "end",
     "log_ratio", "BAF", "total_cn", "major_cn", "minor_cn"
   )
   missing_cols <- setdiff(required_cols, names(cnvs))
@@ -273,5 +286,56 @@ filter.cevodata <- function(.data, ..., .preserve = FALSE) {
   new_object$CNVs <- map(new_object$CNVs, filter, ...)
   new_object$clones <- map(new_object$clones, filter, ...)
   new_object$models <- map(new_object$models, filter, ...)
+  new_object
+}
+
+
+#' @describeIn cevo_metadata Add patient data to cevodata object
+#' @export
+add_patient_data.cevodata <- function(object, data, ...) {
+  if ("patient_id" %not in% colnames(data)) {
+    stop("Data must have patient_id column!")
+  }
+  if (is.null(object$metadata)) {
+    object$metadata <- data
+  } else {
+    keys <- intersect(c("patient_id", "sample_id", "sample"), colnames(data))
+    object$metadata <- full_join(object$metadata, data, by = keys)
+  }
+  object
+}
+
+
+#' @describeIn cevo_metadata Add samples' data to cevodata object
+#' @export
+add_sample_data.cevodata <- function(object, data, ...) {
+  if ("sample_id" %not in% colnames(data)) {
+    stop("Data must have sample_id column!")
+  }
+  if (is.null(object$metadata)) {
+    object$metadata <- data
+  } else {
+    keys <- c("patient_id", "sample_id", "sample") |>
+      intersect(colnames(data)) |>
+      intersect(colnames(object$metadata))
+    object$metadata <- full_join(object$metadata, data, by = keys)
+  }
+  if (all(c("patient_id", "sample_id", "sample") %in% colnames(object$metadata))) {
+    object$metadata <- object$metadata |>
+      select(.data$patient_id, .data$sample_id, .data$sample, everything())
+  }
+  object
+}
+
+
+#' Merge two cevodata objects
+#' @inheritParams base::merge
+#' @export
+merge.cevodata <- function(x, y, ...) {
+  new_object <- x
+  # new_object$SNVs <- map(new_object$SNVs, filter, ...)
+  # new_object$CNVs <- map(new_object$CNVs, filter, ...)
+  # new_object$clones <- map(new_object$clones, filter, ...)
+  # new_object$models <- map(new_object$models, filter, ...)
   new_object
 }

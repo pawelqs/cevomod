@@ -71,6 +71,28 @@ default_CNVs <- function(object, ...) {
 }
 
 
+
+#' Add metadata to the cevodata object
+#' @param object object
+#' @param data name of new default assay
+#' @param ... other arguments
+#' @name cevo_metadata
+
+
+#' @rdname cevo_metadata
+#' @export
+add_patient_data <- function(object, ...) {
+  UseMethod("add_patient_data")
+}
+
+
+#' @rdname cevo_metadata
+#' @export
+add_sample_data <- function(object, ...) {
+  UseMethod("add_sample_data")
+}
+
+
 #' Site Frequency Spectra
 #'
 #' Creates  cevodata$models$SFS with the groupping variables and:
