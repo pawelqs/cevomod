@@ -59,31 +59,13 @@ print.cevodata <- function(x, ...) {
   } else {
     "None"
   }
-  n_mutations_str <- if (!is.null(summ$mutations_per_patient_mean)) {
-    str_c(
-      summ$mutations_per_patient_mean, " +/- ", summ$mutations_per_patient_sd,
-      " mutations per case"
-    )
-  } else {
-    "No mutations added"
-  }
-  n_samples_str <- stringify_number_of_samples(
-    summ$samples_per_patient_min,
-    summ$samples_per_patient_max
-  )
-  n_patients_samples_str <- if (!is.null(summ$n_patients)) {
-    str_c(summ$n_patients, " cases, ", summ$n_samples, " samples, ")
-  } else {
-    "0 cases, 0 samples"
-  }
 
   cli::cat_line("<cevodata> dataset: ", x$name, col = "#45681e")
   cli::cat_line("Genome: ", summ$genome, col = "#628f2f")
   cli::cat_line("SNV assays: ", SNV_assays_str)
   cli::cat_line("CNV assays: ", CNV_assays_str)
-  cli::cat_line(n_patients_samples_str)
-  cli::cat_line(n_mutations_str, ", ", n_samples_str
-  )
+  cli::cat_line(summ$metadata_str)
+  cli::cat_line(summ$SNVs_str)
   if (!is.null(x$active_SNVs)) {
     cli::cat_line("SNVs:")
     print(x$SNVs[[x$active_SNVs]])
@@ -92,6 +74,57 @@ print.cevodata <- function(x, ...) {
     cli::cat_line("CNVs:")
     print(x$CNVs[[x$active_CNVs]])
   }
+}
+
+
+
+#' @export
+summary.cevodata <- function(object, ...) {
+  summ <- list(
+    name = object$name,
+    genome = object$genome,
+    SNV_assays = names(object$SNVs),
+    active_SNVs = object$active_SNVs,
+    CNV_assays = names(object$CNVs),
+    active_CNVs = object$active_CNVs
+  )
+  summ <- c(
+    summ,
+    summarize_metadata(object),
+    summarize_SNVs(object)
+  )
+  summ
+}
+
+
+summarize_metadata <- function(object) {
+  meta <- object$metadata
+  patient_id_present <- !is.null(meta[["patient_id"]])
+
+  samples_per_patient <- if (patient_id_present) {
+    meta |>
+      select(.data$patient_id, .data$sample_id) |>
+      unique() |>
+      group_by(.data$patient_id) |>
+      count()
+  }
+
+  summ <- list(
+    n_patients = if (patient_id_present) n_distinct(meta$patient_id),
+    n_samples = n_distinct(meta$sample_id),
+    samples_per_patient_min = if (patient_id_present) min(samples_per_patient$n),
+    samples_per_patient_max = if (patient_id_present) max(samples_per_patient$n)
+  )
+  summ[["metadata_str"]] <- if (patient_id_present) {
+    samples_per_patient <- stringify_number_of_samples(
+      summ$samples_per_patient_min,
+      summ$samples_per_patient_max
+    )
+    str_c(summ$n_patients, " cases, ", summ$n_samples, " samples, ", samples_per_patient)
+  } else {
+    str_c(summ$n_samples, " samples")
+  }
+  summ
 }
 
 
@@ -108,43 +141,43 @@ stringify_number_of_samples <- function(min, max) {
 }
 
 
-#' @export
-summary.cevodata <- function(object, ...) {
+summarize_SNVs <- function(object) {
+  snvs_added <- !is.null(object$active_SNVs)
+  patient_id_present <- !is.null(object$metadata[["patient_id"]])
 
-  summ <- list(
-    name = object$name,
-    genome = object$genome,
-    SNV_assays = names(object$SNVs),
-    active_SNVs = object$active_SNVs,
-    CNV_assays = names(object$CNVs),
-    active_CNVs = object$active_CNVs
-  )
-
-  if (!is.null(default_SNVs(object))) {
+  summ <- list()
+  if (snvs_added) {
+    mutations_per_sample <- SNVs(object) |>
+      group_by(.data$sample_id) |>
+      count()
+    summ$mutations_per_sample_mean = round(mean(mutations_per_sample$n))
+    summ$mutations_per_sample_sd = round(sd(mutations_per_sample$n))
+    summ$n_mutations <- nrow(SNVs(object))
+    summ$SNVs_str <- str_c(
+      summ$n_mutations, " mutations total, ",
+      summ$mutations_per_sample_mean, " +/- ", summ$mutations_per_sample_sd,
+      " mutations per sample"
+    )
+  }
+  if (patient_id_present) {
     mutations_per_patient <- SNVs(object) |>
       left_join(object$metadata, by = "sample_id") |>
       select(.data$patient_id, .data$chrom:.data$alt) |>
       unique() |>
       group_by(.data$patient_id) |>
       count()
-    samples_per_patient <- SNVs(object) |>
-      left_join(object$metadata, by = "sample_id") |>
-      select(.data$patient_id:.data$sample_id) |>
-      unique() |>
-      group_by(.data$patient_id) |>
-      count()
-
-    summ_SNVs <- list(
-      n_patients = n_distinct(object$metadata$patient_id),
-      n_samples = n_distinct(object$metadata$sample_id),
-      mutations_per_patient_mean = round(mean(mutations_per_patient$n)),
-      mutations_per_patient_sd = round(sd(mutations_per_patient$n)),
-      samples_per_patient_min = min(samples_per_patient$n),
-      samples_per_patient_max = max(samples_per_patient$n)
+    summ$mutations_per_patient_mean = round(mean(mutations_per_patient$n))
+    summ$mutations_per_patient_sd = round(sd(mutations_per_patient$n))
+    summ$SNVs_str <- str_c(
+      summ$n_mutations, " mutations total, ",
+      summ$mutations_per_patient_mean, " +/- ", summ$mutations_per_patient_sd,
+      " mutations per case"
     )
-
-    summ <- c(summ, summ_SNVs)
   }
+  if (!snvs_added & !patient_id_present) {
+    summ$SNVs_str <- str_c("No mutations added")
+  }
+  summ
 }
 
 
@@ -267,31 +300,6 @@ default_CNVs.cevodata <- function(object, ...) {
 }
 
 
-#' Filter/subset cevodata object
-#'
-#' This is a wrapper around dplyr::filter function which can be used to subset
-#' cevodata object. Works like dplyr::filter, performs the filtering on SNVs,
-#' CNVs, clones and models assays. Beware to use filtering expressions that
-#' are valid for all those assays. Take care when filtering using other colunts
-#' than patient_id, sample_id or sample
-#'
-#' @param .data cevodata object
-#' @param ... expression passed to dplyr::filter(...)
-#' @inheritParams dplyr::filter
-#' @return cevodata object
-#' @export
-filter.cevodata <- function(.data, ..., .preserve = FALSE) {
-  new_object <- .data
-  new_object$metadata <- filter(new_object$metadata, ...)
-  ids <- new_object$metadata$sample_id
-  new_object$SNVs <- map(new_object$SNVs, ~filter(.x, sample_id %in% ids))
-  new_object$CNVs <- map(new_object$CNVs, ~filter(.x, sample_id %in% ids))
-  new_object$clones <- map(new_object$clones, ~filter(.x, sample_id %in% ids))
-  new_object$models <- map(new_object$models, ~filter(.x, sample_id %in% ids))
-  new_object
-}
-
-
 #' @describeIn cevo_metadata Add patient data to cevodata object
 #' @export
 add_patient_data.cevodata <- function(object, data, ...) {
@@ -330,14 +338,68 @@ add_sample_data.cevodata <- function(object, data, ...) {
 }
 
 
+#' Filter/subset cevodata object
+#'
+#' This is a wrapper around dplyr::filter function which can be used to subset
+#' cevodata object. Works like dplyr::filter, performs the filtering on metadata,
+#' then filters SNVs, CNVs, clones and models keeping samples kept in metadata
+#'
+#' @param .data cevodata object
+#' @param ... expression passed to dplyr::filter(...)
+#' @inheritParams dplyr::filter
+#' @return cevodata object
+#' @export
+filter.cevodata <- function(.data, ..., .preserve = FALSE) {
+  new_object <- .data
+  new_object$metadata <- filter(new_object$metadata, ...)
+  ids <- new_object$metadata$sample_id
+  new_object$SNVs <- map(new_object$SNVs, ~filter(.x, sample_id %in% ids))
+  new_object$CNVs <- map(new_object$CNVs, ~filter(.x, sample_id %in% ids))
+  new_object$clones <- map(new_object$clones, ~filter(.x, sample_id %in% ids))
+  new_object$models <- map(new_object$models, ~filter(.x, sample_id %in% ids))
+  new_object
+}
+
+
 #' Merge two cevodata objects
 #' @inheritParams base::merge
+#' @param name Name of the merged object
 #' @export
-merge.cevodata <- function(x, y, ...) {
-  new_object <- x
-  # new_object$SNVs <- map(new_object$SNVs, filter, ...)
-  # new_object$CNVs <- map(new_object$CNVs, filter, ...)
-  # new_object$clones <- map(new_object$clones, filter, ...)
-  # new_object$models <- map(new_object$models, filter, ...)
-  new_object
+merge.cevodata <- function(x, y, name = "Merged datasets", ...) {
+  genome <- if (x$genome == y$genome) x$genome else "multiple genomes"
+  metadata <- bind_rows(x$metadata, y$metadata)
+  cd <- init_cevodata(name = name, genome = genome) |>
+    add_sample_data(metadata)
+
+  cd$SNVs <- bind_assays(x, y, "SNVs")
+  cd$CNVs <- bind_assays(x, y, "CNVs")
+  cd$clones <- bind_assays(x, y, "clones")
+  cd$models <- bind_assays(x, y, "models")
+
+  message("Setting active SNVs to ", x$active_SNV)
+  message("Setting active CNVs to ", x$active_CNV)
+  message("Setting active clones to ", x$active_clones)
+  cd$active_SNVs <- NULL
+  cd$active_CNVs <- NULL
+  cd$active_clones <- NULL
+  active_assays <- list(
+    active_SNVs = x$active_SNVs,
+    active_CNVs = x$active_CNVs,
+    active_clones = x$active_clones
+  )
+  cd <- c(cd, active_assays)
+  structure(cd, class = "cevodata")
+}
+
+
+bind_assays <- function(x, y, slot_name) {
+  assays <- c(names(x[[slot_name]]), names(y[[slot_name]])) |>
+    unique()
+  if (length(assays) > 0) {
+    assays |>
+      set_names(assays) |>
+      map(~bind_rows(x[[slot_name]][[.x]], y[[slot_name]][[.x]]))
+  } else {
+    list()
+  }
 }
