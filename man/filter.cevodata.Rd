@@ -20,8 +20,6 @@ cevodata object
 }
 \description{
 This is a wrapper around dplyr::filter function which can be used to subset
-cevodata object. Works like dplyr::filter, performs the filtering on SNVs,
-CNVs, clones and models assays. Beware to use filtering expressions that
-are valid for all those assays. Take care when filtering using other colunts
-than patient_id, sample_id or sample
+cevodata object. Works like dplyr::filter, performs the filtering on metadata,
+then filters SNVs, CNVs, clones and models keeping samples kept in metadata
 }
