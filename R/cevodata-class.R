@@ -282,10 +282,12 @@ default_CNVs.cevodata <- function(object, ...) {
 #' @export
 filter.cevodata <- function(.data, ..., .preserve = FALSE) {
   new_object <- .data
-  new_object$SNVs <- map(new_object$SNVs, filter, ...)
-  new_object$CNVs <- map(new_object$CNVs, filter, ...)
-  new_object$clones <- map(new_object$clones, filter, ...)
-  new_object$models <- map(new_object$models, filter, ...)
+  new_object$metadata <- filter(new_object$metadata, ...)
+  ids <- new_object$metadata$sample_id
+  new_object$SNVs <- map(new_object$SNVs, ~filter(.x, sample_id %in% ids))
+  new_object$CNVs <- map(new_object$CNVs, ~filter(.x, sample_id %in% ids))
+  new_object$clones <- map(new_object$clones, ~filter(.x, sample_id %in% ids))
+  new_object$models <- map(new_object$models, ~filter(.x, sample_id %in% ids))
   new_object
 }
 
