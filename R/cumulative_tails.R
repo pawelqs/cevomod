@@ -87,6 +87,7 @@ plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, ...) {
     aes(.data$VAF, y = stat(y), color = .data$sample_id)
 
   SNVs(object) %>%
+    left_join(object$metadata, by = "sample_id") |>
     ggplot(aes) +
     stat_cumulative_tail(...) +
     scale_x_log10() +

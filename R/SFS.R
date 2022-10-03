@@ -63,7 +63,8 @@ plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
 #' @describeIn sfs Plot SFS
 #' @export
 plot_SFS.cevodata <- function(object, ...) {
-  dt <- SNVs(object)
+  dt <- SNVs(object) |>
+    left_join(object$metadata, by = "sample_id")
   ggplot(dt, aes(.data$VAF, color = .data$sample_id, fill = .data$sample_id)) +
     stat_SFS(...) +
     theme_ellie(n = n_distinct(dt$sample_id)) +

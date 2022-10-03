@@ -19,7 +19,8 @@ layer_neutral_tail.cevodata <- function(object,
   exp <- object$models$neutral_lm |>
     filter(.data$best) |>
     calc_powerlaw_curve(binwidth) |>
-    filter(.data$f >= .data$from - 0.02, .data$f <= end)
+    filter(.data$f >= .data$from - 0.02, .data$f <= end) |>
+    left_join(object$metadata, by = "sample_id")
 
   if (!is.na(start)) {
     exp <- filter(exp, .data$f >= start)

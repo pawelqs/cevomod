@@ -14,7 +14,9 @@ layer_lm_fits <- function(cd, ...) {
       color = .data$sample_id
     ),
     size = 1,
-    data = filter(cd$models$neutral_lm, .data$best),
+    data = cd$models$neutral_lm |>
+      filter(, .data$best) |>
+      left_join(cd$metadata, by = "sample_id"),
     show.legend = FALSE,
     ...
   )
