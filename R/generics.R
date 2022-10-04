@@ -302,6 +302,15 @@ plot_CNV_heatmap <- function(object, ...) {
 }
 
 
+#' Plot cevodata models
+#' @param object cevodata object
+#' @param ... other arguments
+#' @export
+plot_models <- function(object, ...) {
+  UseMethod("plot_models")
+}
+
+
 #' @export
 dplyr::filter
 
