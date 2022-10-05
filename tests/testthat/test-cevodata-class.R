@@ -1,6 +1,7 @@
 data("tcga_brca_test")
 snvs <- SNVs(tcga_brca_test)
 cnvs <- CNVs(tcga_brca_test)
+meta <- tcga_brca_test$metadata
 
 
 test_that("init_cevodata works", {
@@ -27,14 +28,23 @@ test_that("init_cevodata with SNV assay works", {
 
 
 test_that("print.cevodata runs without error works", {
-  cd <- init_cevodata("TCGA BRCA small", snvs = snvs)
+  cd <- init_cevodata("TCGA BRCA small", snvs = snvs) |>
+    add_sample_data(meta)
   output <- print(cd) |>
     capture.output()
   expect_true(length(cd) > 1)
 })
 
 
-test_that("Adding SNV to cevodata works", {
+test_that("print.cevodata runs without error foe empty object", {
+  cd <- init_cevodata("TCGA BRCA small")
+  output <- print(cd) |>
+    capture.output()
+  expect_true(length(cd) > 1)
+})
+
+
+test_that("Adding SNVs to cevodata works", {
   cd <- init_cevodata("TCGA BRCA small", snvs = snvs) |>
     add_SNV_data(snvs = snvs, "head")
   expect_s3_class(cd, "cevodata")
@@ -42,6 +52,16 @@ test_that("Adding SNV to cevodata works", {
   expect_s3_class(cd$SNVs[[1]], "tbl_df")
   expect_s3_class(cd$SNVs[[2]], "tbl_df")
   expect_equal(cd$active_SNVs, "head")
+})
+
+
+test_that("Adding SNVs to cevodata extends metadata", {
+  small_snvs <- snvs |>
+    filter(sample_id %in% c("TCGA-AC-A23H-01", "TCGA-AN-A046-01"))
+  cd <- init_cevodata("TCGA BRCA small", snvs = small_snvs)
+  expect_equal(cd$metadata$sample_id, c("TCGA-AC-A23H-01", "TCGA-AN-A046-01"))
+  cd <- add_SNV_data(cd, snvs = snvs, "head")
+  expect_equal(nrow(cd$metadata), 5)
 })
 
 
@@ -78,13 +98,23 @@ test_that("Setting active SNV assay on cevodata works", {
 })
 
 
-test_that("Adding CNV to cevodata works", {
+test_that("Adding CNVs to cevodata works", {
   cd <- init_cevodata("TCGA BRCA small", snvs = snvs) |>
     add_CNV_data(cnvs, "tcga")
   expect_s3_class(cd, "cevodata")
   expect_equal(length(cd$CNVs), 1)
   expect_s3_class(cd$CNVs[[1]], "tbl_df")
   expect_equal(cd$active_CNVs, "tcga")
+})
+
+
+test_that("Adding CNVs to cevodata extends metadata", {
+  small_cnvs <- cnvs |>
+    filter(sample_id %in% c("TCGA-AC-A23H-01", "TCGA-AN-A046-01"))
+  cd <- init_cevodata("TCGA BRCA small", cnvs = small_cnvs)
+  expect_equal(cd$metadata$sample_id, c("TCGA-AC-A23H-01", "TCGA-AN-A046-01"))
+  cd <- add_CNV_data(cd, cnvs = cnvs, "head")
+  expect_equal(nrow(cd$metadata), 5)
 })
 
 
@@ -119,4 +149,67 @@ test_that("Setting active SNV assay on cevodata works", {
   default_CNVs(cd) <- "cnvs"
   expect_equal(default_CNVs(cd), "cnvs")
   expect_error(default_CNVs(cd) <- "xxx")
+})
+
+
+test_that("Setting active SNV assay on cevodata works", {
+  cd <- init_cevodata("TCGA BRCA small", cnvs = cnvs) |>
+    add_CNV_data(cnvs = cnvs, "tcga2")
+  default_CNVs(cd) <- "cnvs"
+  expect_equal(default_CNVs(cd), "cnvs")
+  expect_error(default_CNVs(cd) <- "xxx")
+})
+
+
+test_that("Adding sample data to cevodata works", {
+  meta <- tibble(
+    sample_id =  c("TCGA-AC-A23H-01", "TCGA-AN-A046-01"),
+    meta1 = 1:2
+  )
+  cd <- init_cevodata("TCGA BRCA small") |>
+    add_sample_data(meta)
+  expect_equal(cd$metadata$sample_id, meta$sample_id)
+  expect_equal(cd$metadata$meta1, meta$meta1)
+
+  meta2 <- tibble(
+    sample_id =  c("TCGA-D8-A27V-01", "TCGA-AN-A046-01"),
+    meta2 = c("a", "b")
+  )
+  cd <- add_sample_data(cd, meta2)
+  expect_equal(cd$metadata$sample_id, c("TCGA-AC-A23H-01", "TCGA-AN-A046-01", "TCGA-D8-A27V-01"))
+  expect_equal(cd$metadata$meta1, c(1, 2, NA_real_))
+  expect_equal(cd$metadata$meta2, c(NA_character_, "b", "a"))
+
+  cd <- add_SNV_data(cd, snvs)
+  expect_equal(nrow(cd$metadata), 5)
+  expect_named(cd$metadata, c("sample_id", "meta1", "meta2"))
+  expect_true(all(unique(snvs$sample_id) %in% cd$metadata$sample_id))
+  expect_equal(cd$metadata$meta1, c(1, 2, NA_real_, NA_real_, NA_real_))
+})
+
+
+test_that("Filtering cevodata works", {
+  cd <- init_cevodata("TCGA BRCA small", cnvs = cnvs) |>
+    add_CNV_data(cnvs = cnvs, "tcga2") |>
+    add_SNV_data(snvs = snvs, "tcga") |>
+    filter(sample_id == "TCGA-AC-A23H-01")
+  expect_equal(nrow(cd$CNVs$cnvs), 285)
+  expect_equal(nrow(cd$CNVs$tcga2), 285)
+  expect_equal(nrow(cd$SNVs$tcga), 6419)
+  expect_equal(unique(cd$CNVs$cnvs$sample_id), "TCGA-AC-A23H-01")
+  expect_equal(unique(cd$CNVs$tcga2$sample_id), "TCGA-AC-A23H-01")
+  expect_equal(unique(cd$SNVs$tcga$sample_id), "TCGA-AC-A23H-01")
+})
+
+
+test_that("Merging cevodata works", {
+  cd <- init_cevodata("TCGA BRCA small", cnvs = cnvs) |>
+    add_CNV_data(cnvs = cnvs, "tcga2") |>
+    add_SNV_data(snvs = snvs, "tcga")
+  cd1 <- filter(cd, sample_id == "TCGA-AC-A23H-01")
+  cd2 <- filter(cd, sample_id != "TCGA-AC-A23H-01")
+  cd_merged <- merge(cd1, cd2, name = "TCGA BRCA small")
+  output <- print(cd_merged) |>
+    capture.output()
+  expect_equal(object.size(cd_merged), object.size(cd))
 })

@@ -14,7 +14,9 @@ layer_lm_fits <- function(cd, ...) {
       color = .data$sample_id
     ),
     size = 1,
-    data = filter(cd$models$neutral_lm, .data$best),
+    data = cd$models$neutral_lm |>
+      filter(, .data$best) |>
+      left_join(cd$metadata, by = "sample_id"),
     show.legend = FALSE,
     ...
   )
@@ -30,13 +32,14 @@ fit_neutral_lm.cevodata <- function(object, rsq_treshold = 0.98, ...) {
   Mf_1f <- object$models$Mf_1f
   res <- Mf_1f |>
     filter(.data$`1/f` < Inf, .data$VAF < 0.5) |>
-    select(.data$patient_id, .data$sample_id, .data$sample, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
+    select(.data$sample_id, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
     nest(data = c(.data$VAF, .data$`M(f)`, .data$`1/f`)) |>
     mutate(fits = map(.data$data, fit_optimal_lm, rsq_treshold)) |>
     select(-.data$data) |>
     unnest(.data$fits)
   class(res) <- c("cevo_lm_models_tbl", class(res))
   object$models[["neutral_lm"]] <- res
+  object <- calc_residuals(object)
   object
 }
 
@@ -68,4 +71,56 @@ tidy_lm <- function(x, y) {
     rsquared = stats::cor(y, x) ^ 2
   )
   res
+}
+
+
+calc_residuals.cevodata <- function(object, ...) {
+  neutral_lm <- object$models[["neutral_lm"]]
+  sfs <- object$models[["SFS"]]
+  if (is.null(neutral_lm) || is.null(sfs)) {
+    stop("Calc SFS and and fit neutral lm first!")
+  }
+
+  binwidth <- get_average_interval(sfs$VAF)
+  exp <- neutral_lm |>
+    filter(.data$best) |>
+    calc_powerlaw_curve(binwidth = binwidth) |>
+    mutate(VAF = as.character(.data$f))
+  sfs <- mutate(sfs, VAF = as.character(.data$VAF))
+
+  dt <- exp |>
+    select(.data$sample_id, .data$VAF, .data$neutral_pred) |>
+    left_join(sfs, by = c("sample_id", "VAF"))
+
+  residuals <- dt |>
+    select(-.data$y_scaled) |>
+    mutate(
+      VAF = parse_double(.data$VAF),
+      neutral_resid = .data$neutral_pred - .data$y,
+      neutral_resid_clones = if_else(.data$neutral_resid > 0, 0, -.data$neutral_resid),
+      sampling_rate = .data$neutral_resid / .data$neutral_pred
+    )
+
+  object$models[["residuals"]] <- residuals
+  object
+}
+
+
+calc_powerlaw_curve <- function(lm_models, binwidth) {
+  n_bins <- 1 / binwidth
+  lm_models |>
+    expand_grid(f = seq(0.01, 1, by = binwidth)) |>
+    mutate(
+      neutr = (.data$f >= .data$from & .data$f <= .data$to),
+      neutral_pred = -(.data$a / n_bins) / .data$f^2
+    )
+}
+
+
+get_average_interval <- function(vec) {
+  vec |>
+    unique() |>
+    sort() |>
+    diff() |>
+    mean()
 }

@@ -71,6 +71,28 @@ default_CNVs <- function(object, ...) {
 }
 
 
+
+#' Add metadata to the cevodata object
+#' @param object object
+#' @param data name of new default assay
+#' @param ... other arguments
+#' @name cevo_metadata
+
+
+#' @rdname cevo_metadata
+#' @export
+add_patient_data <- function(object, ...) {
+  UseMethod("add_patient_data")
+}
+
+
+#' @rdname cevo_metadata
+#' @export
+add_sample_data <- function(object, ...) {
+  UseMethod("add_sample_data")
+}
+
+
 #' Site Frequency Spectra
 #'
 #' Creates  cevodata$models$SFS with the groupping variables and:
@@ -188,6 +210,7 @@ plot_Mf_1f <- function(object, ...) {
 #' cd <- init_cevodata("Test") |>
 #'   add_SNV_data(snvs) |>
 #'   calc_Mf_1f() |>
+#'   calc_SFS() |>
 #'   fit_neutral_lm(rsq_treshold = 0.99)
 #'
 #' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
@@ -212,6 +235,21 @@ layer_neutral_tail <- function(object, ...) {
 }
 
 
+calc_residuals <- function(object, ...) {
+  UseMethod("calc_residuals")
+}
+
+
+#' fit_subclones
+#'
+#' @param object object
+#' @param ... other arguments
+#' @export
+fit_subclones <- function(object, ...) {
+  UseMethod("fit_subclones")
+}
+
+
 #' Show mutations in particular genes
 #'
 #' @param object cevodata
@@ -232,3 +270,47 @@ layer_neutral_tail <- function(object, ...) {
 plot_mutations <- function(object, ...) {
   UseMethod("plot_mutations")
 }
+
+
+#' Plot CNV heatmap
+#'
+#' @param object cevodata
+#' @param granges granges list
+#' @param meta_field column to plot
+#' @param row_groups vector
+#' @param keep_sites_present_in floor(0.8*length(granges))
+#' @param color_breaks c(0, 2, 6)
+#' @param colors c("dodgerblue3", "white", "firebrick3")
+#' @param window_width window_width
+#' @param upper_limit upper limit of color scale
+#' @param cluster_rows FALSE
+#' @param show_row_names TRUE
+#' @param show_column_names FALSE
+#' @param use_raster TRUE
+#' @param cluster_columns FALSE
+#' @param border TRUE
+#' @param legend_params goes to Heatmap(heatmap_legend_param = .)
+#' @param verbose Verbose?
+#' @param ... other arguments passed to Heatmap
+#' @name cnv_plots
+
+
+#' @rdname cnv_plots
+#' @export
+plot_CNV_heatmap <- function(object, ...) {
+  UseMethod("plot_CNV_heatmap")
+}
+
+
+#' Plot cevodata models
+#' @param object cevodata object
+#' @param ... other arguments
+#' @export
+plot_models <- function(object, ...) {
+  UseMethod("plot_models")
+}
+
+
+#' @export
+dplyr::filter
+

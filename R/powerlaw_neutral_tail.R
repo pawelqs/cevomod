@@ -1,5 +1,5 @@
 
-#' Plot neutral exponential curve on SFS plot
+#' @describeIn layer_neutral_tail Plot neutral exponential curve on SFS plot
 #'
 #' @param object model fits from fit_neutral_lm
 #' @param start VAF value to start plotting model fit
@@ -19,7 +19,8 @@ layer_neutral_tail.cevodata <- function(object,
   exp <- object$models$neutral_lm |>
     filter(.data$best) |>
     calc_powerlaw_curve(binwidth) |>
-    filter(.data$f >= .data$from - 0.02, .data$f <= end)
+    filter(.data$f >= .data$from - 0.02, .data$f <= end) |>
+    left_join(object$metadata, by = "sample_id")
 
   if (!is.na(start)) {
     exp <- filter(exp, .data$f >= start)
@@ -27,13 +28,13 @@ layer_neutral_tail.cevodata <- function(object,
 
   list(
     geom_line(
-      aes(.data$f, .data$n),
+      aes(.data$f, .data$neutral_pred),
       data = exp,
       color = color, size = size, linetype = "dashed", show.legend = show.legend,
       ...
     ),
     geom_line(
-      aes(.data$f, .data$n),
+      aes(.data$f, .data$neutral_pred),
       data = exp |> filter(.data$neutr),
       color = color, size = size, show.legend = show.legend,
       ...
@@ -42,59 +43,3 @@ layer_neutral_tail.cevodata <- function(object,
 }
 
 
-calc_powerlaw_curve <- function(lm_models, binwidth) {
-  n_bins <- 1 / binwidth
-  lm_models |>
-    expand_grid(f = seq(0.01, 1, by = binwidth)) |>
-    mutate(
-      neutr = (.data$f >= .data$from & .data$f <= .data$to),
-      n = -(.data$a / n_bins) / .data$f^2
-    )
-}
-
-
-#' Estimate sampling rate
-#'
-#' Uses experimental SFS and power-law model to estimate the sampling rate
-#'
-#' @param sfs SFS
-#' @param lm_models output from fit_neutral_lm()
-#'
-#' @return tibble
-#' @export
-estimate_sampling_rate <- function(sfs, lm_models) {
-  binwidth <- get_average_interval(sfs$VAF)
-  exp <- calc_powerlaw_curve(lm_models, binwidth = binwidth) |>
-    mutate(VAF = as.character(.data$f))
-  sfs <- mutate(sfs, VAF = as.character(.data$VAF))
-
-  patient_id_present <- "patient_id" %in% names(sfs)
-  dt <- if (patient_id_present) {
-    exp |>
-      select(.data$patient_id, .data$sample_id, .data$VAF, .data$n) |>
-      left_join(sfs, by = c("patient_id", "sample_id", "VAF"))
-  } else {
-    exp |>
-      select(.data$sample_id, .data$VAF, .data$n) |>
-      left_join(sfs, by = c("sample_id", "VAF"))
-  }
-
-  sampling_stats <- dt |>
-    select(-.data$y_scaled) |>
-    # filter(.data$VAF < 0.2) |>
-    mutate(
-      VAF = parse_double(.data$VAF),
-      err = .data$n - .data$y,
-      sampling_rate = .data$err / .data$n
-    )
-  sampling_stats
-}
-
-
-get_average_interval <- function(vec) {
-  vec |>
-    unique() |>
-    sort() |>
-    diff() |>
-    mean()
-}

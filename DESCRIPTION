@@ -1,6 +1,6 @@
 Package: cevomod
 Title: Cancer Evolution Models
-Version: 0.1.5
+Version: 0.2.1
 Authors@R: 
     person("Paweł", "Kuś", , "kpawel2210@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4367-9821"))
@@ -16,16 +16,24 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     tidyverse,
-    vdiffr
+    vdiffr,
+    shiny,
+    shinydashboard
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
+    circlize,
     cli,
+    ComplexHeatmap,
     crayon,
     dplyr,
     forcats,
+    GenomicRanges,
     ggplot2,
+    grid,
+    mclust,
     paletteer,
+    plyranges,
     PNWColors,
     prismatic,
     purrr,

@@ -26,3 +26,15 @@ complete_missing_VAF_levels <- function(dt, fill, digits = 2) {
     ) %>%
     group_by(!!!syms(group_variables))
 }
+
+
+#' Run cevobrowser app
+#' @export
+run_browser <- function() {
+  app_dir <- system.file("cevobrowser", package = "cevomod")
+  if (app_dir == "") {
+    stop("Could not find app directory. Try re-installing `cevomod`.", call. = FALSE)
+  }
+
+  shiny::runApp(app_dir, display.mode = "normal")
+}

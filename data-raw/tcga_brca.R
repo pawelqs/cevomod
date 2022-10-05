@@ -14,9 +14,7 @@ glimpse(mutations)
 snvs_tcga_brca <- mutations %>%
   left_join(variant_classification) %>%
   transmute(
-    patient_id = Tumor_Sample_Barcode,
     sample_id = Tumor_Sample_Barcode,
-    sample = "tumor",
     chrom = Chromosome,
     pos = Start_Position,
     gene_symbol = Hugo_Symbol,
@@ -54,9 +52,7 @@ class(snvs_tcga_brca) <- c("cevo_SNVs_tbl", class(snvs_test))
 cna_hg19 <- read_tsv("/mnt/dane/data/brca_tcga_pan_can_atlas_2018/data_cna_hg19.seg")
 cnvs_tcga_brca <- cna_hg19 |>
   transmute(
-    patient_id = ID,
     sample_id = ID,
-    sample = "tumor",
     chrom,
     start = loc.start,
     end = loc.end,
@@ -72,9 +68,15 @@ cnvs_tcga_brca <- cna_hg19 |>
 cnvs_test <- cnvs_tcga_brca %>%
   filter(sample_id %in% top_mutated_patients)
 
+samples_data <- tibble(
+  sample_id = unique(snvs_test$sample_id),
+  patient_id = sample_id,
+  sample = "tumor"
+)
 
 tcga_brca_test <- init_cevodata("TCGA BRCA test data", genome = "hg37") |>
   add_SNV_data(snvs_test, name = "TCGA") |>
-  add_CNV_data(cnvs_test, data = "TCGA")
+  add_CNV_data(cnvs_test, data = "TCGA") |>
+  add_sample_data(samples_data)
 
 usethis::use_data(tcga_brca_test, overwrite = TRUE)

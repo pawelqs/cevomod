@@ -6,8 +6,9 @@ test_that("Fitting neutral partial models works", {
   cd <- init_cevodata("Test") |>
     add_SNV_data(snvs) |>
     calc_Mf_1f() |>
+    calc_SFS() |>
     fit_neutral_lm(rsq_treshold = 0.99)
-  expected <- read_tsv("../testdata/tcga_brca_partial_neutral_models.tsv", col_types = "cccddddddl")
+  expected <- read_tsv("../testdata/tcga_brca_partial_neutral_models.tsv", col_types = "cddddddl")
   class(expected) <- c("cevo_lm_models_tbl", class(expected))
   # write_tsv(cd$models$neutral_lm, "tests/testdata/tcga_brca_partial_neutral_models.tsv")
   expect_equal(cd$models$neutral_lm, expected)

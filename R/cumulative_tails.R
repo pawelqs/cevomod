@@ -2,10 +2,12 @@
 #' @describeIn cumulative_tails Calculate the cumulative tails
 #' @export
 calc_cumulative_tails.cevodata <- function(object, digits = 2, ...) {
-  object$models[["cumulative_tails"]] <- SNVs(object) |>
-    group_by(.data$patient_id, .data$sample_id, .data$sample) |>
+  cumulative_tails <- SNVs(object) |>
+    group_by(.data$sample_id) |>
     calc_cumulative_tails(digits) %>%
     ungroup()
+  class(cumulative_tails) <- c("cevo_cumulative_tails_tbl", class(cumulative_tails))
+  object$models[["cumulative_tails"]] <- cumulative_tails
   object
 }
 
@@ -85,6 +87,7 @@ plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, ...) {
     aes(.data$VAF, y = stat(y), color = .data$sample_id)
 
   SNVs(object) %>%
+    left_join(object$metadata, by = "sample_id") |>
     ggplot(aes) +
     stat_cumulative_tail(...) +
     scale_x_log10() +
