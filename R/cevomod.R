@@ -22,4 +22,22 @@ NULL
 NULL
 
 
+#' Run cevodata pipeline
+#' @param object cevodata object
+#' @param ... other args
+#' @export
+run_cevomod <- function(object, ...) {
+  UseMethod("run_cevomod")
+}
+
+#' @export
+run_cevomod.cevodata <- function(object, ...) {
+  object |>
+    calc_SFS() |>
+    calc_cumulative_tails() |>
+    calc_Mf_1f() |>
+    fit_neutral_lm() |>
+    fit_subclones()
+}
+
 
