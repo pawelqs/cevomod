@@ -2,11 +2,10 @@ library(cevomod)
 library(cevoDatasets)
 library(shiny)
 library(shinydashboard)
+library(tibble)
 
 
-datasets <- lst(
-  AMLRO, OPUS_BRCA, OPUS_Larynx
-)
+datasets <- readr::read_rds("/mnt/dane/projects_all/cancer_evolution/cancer_evolution/cevomod_analyses/data.Rds")
 
 
 ui <- dashboardPage(
@@ -15,8 +14,8 @@ ui <- dashboardPage(
     radioButtons(
       "dataset_selection",
       label = "Dataset",
-      choices = c("OPUS_BRCA", "OPUS_Larynx", "AMLRO"),
-      selected = "AMLRO"
+      choices = names(datasets),
+      selected = names(datasets)[[1]]
     )
   ),
   dashboardBody(
