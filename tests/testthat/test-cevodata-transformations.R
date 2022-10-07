@@ -24,7 +24,7 @@ test_that("Merging cevodata works", {
     add_SNV_data(snvs = snvs, "tcga")
   cd1 <- filter(cd, sample_id == "TCGA-AC-A23H-01")
   cd2 <- filter(cd, sample_id != "TCGA-AC-A23H-01")
-  cd_merged <- merge(cd1, cd2, name = "TCGA BRCA small")
+  cd_merged <- merge(cd1, cd2, name = "TCGA BRCA small", verbose = FALSE)
   output <- print(cd_merged) |>
     capture.output()
   expect_equal(object.size(cd_merged), object.size(cd))

@@ -4,12 +4,14 @@
 \alias{merge.cevodata}
 \title{Merge two cevodata objects}
 \usage{
-\method{merge}{cevodata}(x, y, name = "Merged datasets", ...)
+\method{merge}{cevodata}(x, y, name = "Merged datasets", verbose = TRUE, ...)
 }
 \arguments{
 \item{x, y}{data frames, or objects to be coerced to one.}
 
 \item{name}{Name of the merged object}
+
+\item{verbose}{Show messages?}
 
 \item{...}{arguments to be passed to or from methods.}
 }

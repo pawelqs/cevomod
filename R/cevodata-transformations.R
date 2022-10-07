@@ -28,8 +28,9 @@ filter.cevodata <- function(.data, ..., .preserve = FALSE) {
 #' Merge two cevodata objects
 #' @inheritParams base::merge
 #' @param name Name of the merged object
+#' @param verbose Show messages?
 #' @export
-merge.cevodata <- function(x, y, name = "Merged datasets", ...) {
+merge.cevodata <- function(x, y, name = "Merged datasets", verbose = TRUE, ...) {
   genome <- if (x$genome == y$genome) x$genome else "multiple genomes"
   metadata <- bind_rows(x$metadata, y$metadata)
   cd <- init_cevodata(name = name, genome = genome) |>
@@ -40,9 +41,11 @@ merge.cevodata <- function(x, y, name = "Merged datasets", ...) {
   cd$clones <- bind_assays(x, y, "clones")
   cd$models <- bind_assays(x, y, "models")
 
-  message("Setting active SNVs to ", x$active_SNV)
-  message("Setting active CNVs to ", x$active_CNV)
-  message("Setting active clones to ", x$active_clones)
+  if (verbose) {
+    message("Setting active SNVs to ", x$active_SNV)
+    message("Setting active CNVs to ", x$active_CNV)
+    message("Setting active clones to ", x$active_clones)
+  }
   cd$active_SNVs <- NULL
   cd$active_CNVs <- NULL
   cd$active_clones <- NULL

@@ -10,7 +10,11 @@ test_that("plot_mutations() with drivers works", {
 test_that("plot_mutations() with gene list works", {
   p <- tcga_brca_test |>
     plot_mutations(genes = c("TP53", "TBX3", "BRCA1"))
+  p2 <- tcga_brca_test |>
+    SNVs() |>
+    plot_mutations(genes = c("TP53", "TBX3", "BRCA1"))
   vdiffr::expect_doppelganger("plot_mutations(genes = TP53,TBX3,BRCA1)", p)
+  vdiffr::expect_doppelganger("plot_mutations(genes = TP53,TBX3,BRCA1)", p2)
 })
 
 
