@@ -80,7 +80,6 @@ CNV_tab <- tabItem(
       width = 3L,
       box(
         uiOutput("cnv_plot_selector"),
-        # sliderInput()
         height = "95vh",
         width = NULL
       )
@@ -95,7 +94,6 @@ models_tab <- tabItem(
     column(
       width = 9L,
       tabBox(
-        # The id lets us use input$tabset1 on the server to find the current tab
         id = "modelplots_tabset", height = "80vh",
         tabPanel(
           "SFS",
@@ -104,6 +102,10 @@ models_tab <- tabItem(
         tabPanel(
           "M(f) ~ 1/f",
           plotOutput("models_Mf_1f_plot", height = "80vh")
+        ),
+        tabPanel(
+          "Cumulative tails",
+          plotOutput("models_cum_tails_plot", height = "80vh")
         ),
         width = NULL
       )
@@ -201,16 +203,6 @@ server <- function(input, output) {
     )
   })
 
-  # output$n_mutations <- renderValueBox({
-  #   n_patients <- dplyr::n_distinct(rv$cd$metadata$patient_id)
-  #   n_samples <- nrow(rv$cd$metadata)
-  #   valueBox(
-  #     value = stringr::str_c(n_patients, "/", n_samples),
-  #     subtitle = "Patients/Samples",
-  #     icon = icon("users")
-  #   )
-  # })
-
   output$SFS_plot <- renderPlot({
     plot_SFS(rv$cd, geom = "bar") +
       ggplot2::facet_wrap(~sample_id, scales = "free") +
@@ -250,7 +242,16 @@ server <- function(input, output) {
     )
     plot_Mf_1f(rv$cd, from = 0.05, to = 0.5, scale = FALSE, mapping = ggplot2::aes(color = sample)) +
       layers +
-      ggplot2::facet_wrap(~patient_id, scales = "free_y")
+      ggplot2::facet_wrap(~patient_id, scales = "free_y") +
+      ggplot2::scale_color_brewer(palette = "Dark2")
+  })
+
+  output$models_cum_tails_plot <- renderPlot({
+    plot_cumulative_tails(rv$cd) +
+      ggplot2::facet_wrap(~patient_id) +
+      ggplot2::aes(color = sample) +
+      ggplot2::coord_cartesian(xlim = c(0.01, 1)) +
+      ggplot2::scale_color_brewer(palette = "Dark2")
   })
 
   output$sampling_rate_plot <- renderPlot({
