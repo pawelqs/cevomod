@@ -300,6 +300,17 @@ default_CNVs.cevodata <- function(object, ...) {
 }
 
 
+#' @describeIn get_CNVs_var_names Get CNV variable names from cevodata object
+#' @param which CNV assay to use
+#' @export
+get_CNVs_var_names.cevodata <- function(object, which = default_CNVs(object), ...) {
+  cnvs_metadata <- CNVs(object, which = which) |>
+    select(-.data$sample_id, -.data$chrom, -.data$start, -.data$end) |>
+    keep(~all(!is.na(.x)))
+  colnames(cnvs_metadata)
+}
+
+
 #' @describeIn cevo_metadata Add patient data to cevodata object
 #' @export
 add_patient_data.cevodata <- function(object, data, ...) {
