@@ -156,8 +156,7 @@ layer_lm_fits <- function(cd, ...) {
       x = 1/.data$from,
       xend = 1/.data$to,
       y = 1/.data$from * .data$a + .data$b,
-      yend = 1/.data$to * .data$a + .data$b,
-      color = .data$sample_id
+      yend = 1/.data$to * .data$a + .data$b
     ),
     size = 1,
     data = cd$models$neutral_lm |>

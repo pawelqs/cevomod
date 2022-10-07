@@ -5,10 +5,14 @@ library(shinyWidgets)
 library(shinydashboard)
 library(tibble)
 
-datasets <- readr::read_rds("/mnt/dane/projects_all/cancer_evolution/cancer_evolution/cevomod_analyses/data.Rds")
+datasets <- readr::read_rds(
+  "/mnt/dane/projects_all/cancer_evolution/cancer_evolution/cevomod_analyses/data.Rds"
+)
 default_dataset <- names(datasets)[[1]]
 
+
 header <- dashboardHeader(title = stringr::str_c("cevobrowser ", packageVersion("cevomod")))
+
 
 sidebar <- dashboardSidebar(
   radioButtons(
@@ -28,6 +32,7 @@ sidebar <- dashboardSidebar(
     menuItem("SFS", tabName = "SFS_tab", icon = icon("chart-simple")),
     menuItem("CNV", tabName = "CNV_tab", icon = icon("square-poll-horizontal")),
     menuItem("Models", tabName = "models_tab", icon = icon("chart-line"))
+    # menuItem("Residuals", tabName = "residuals_tab", icon = icon("database"))
   )
 )
 
@@ -89,10 +94,18 @@ models_tab <- tabItem(
   fluidRow(
     column(
       width = 9L,
-      box(
-        plotOutput("models_plot", height = "80vh"),
-        height = "95vh",
-        width = NULL,
+      tabBox(
+        # The id lets us use input$tabset1 on the server to find the current tab
+        id = "modelplots_tabset", height = "80vh",
+        tabPanel(
+          "SFS",
+          plotOutput("models_SFS_plot", height = "80vh")
+        ),
+        tabPanel(
+          "M(f) ~ 1/f",
+          plotOutput("models_Mf_1f_plot", height = "80vh")
+        ),
+        width = NULL
       )
     ),
     column(
@@ -101,8 +114,8 @@ models_tab <- tabItem(
         checkboxGroupInput(
           "model_layers_checkbox",
           "Select model layers:",
-          choices = c("Neutral tail", "Clones", "Sum"),
-          selected = c("Neutral tail", "Clones", "Sum")
+          choices = c("Neutral model", "Clones", "Sum"),
+          selected = c("Neutral model", "Clones", "Sum")
         ),
         height = "95vh",
         width = NULL
@@ -111,11 +124,48 @@ models_tab <- tabItem(
   )
 )
 
+
+# residuals_tab <- tabItem(
+#   tabName = "residuals_tab",
+#   fluidRow(
+#     column(
+#       width = 9L,
+#       tabBox(
+#         id = "residualsplot_tabset", height = "80vh",
+#         tabPanel(
+#           "Sampling rate",
+#           plotOutput("models_Mf_1f_plot", height = "80vh")
+#         ),
+#         tabPanel(
+#           "Neutral model resid.",
+#           plotOutput("models_Mf_1f_plot", height = "80vh")
+#         ),
+#         width = NULL
+#       )
+#     ),
+#     column(
+#       width = 3L,
+#       box(
+#         checkboxGroupInput(
+#           "model_layers_checkbox",
+#           "Select model layers:",
+#           choices = c("Neutral model", "Clones", "Sum"),
+#           selected = c("Neutral model", "Clones", "Sum")
+#         ),
+#         height = "95vh",
+#         width = NULL
+#       )
+#     )
+#   )
+# )
+
+
 body <- dashboardBody(
   tabItems(
     SFS_tab,
     CNV_tab,
     models_tab
+    # residuals_tab
   )
 )
 
@@ -124,7 +174,6 @@ ui <- dashboardPage(header, sidebar, body)
 
 
 server <- function(input, output) {
-
   rv <- reactiveValues(cd = datasets[[default_dataset]])
 
   observeEvent(input$dataset_selection, {
@@ -182,16 +231,28 @@ server <- function(input, output) {
     plot_CNV_heatmap(rv$cd, meta_field = input$cnv_meta_field)
   })
 
-  output$models_plot <- renderPlot({
-    neutral_tail = "Neutral tail" %in% input$model_layers_checkbox
-    subclones = "Clones" %in% input$model_layers_checkbox
-    final_fit = "Sum" %in% input$model_layers_checkbox
+  output$models_SFS_plot <- renderPlot({
+    neutral_tail <- "Neutral model" %in% input$model_layers_checkbox
+    subclones <- "Clones" %in% input$model_layers_checkbox
+    final_fit <- "Sum" %in% input$model_layers_checkbox
 
     plot_models(
       rv$cd,
       neutral_tail = neutral_tail, subclones = subclones, final_fit = final_fit
-      ) +
+    ) +
       hide_legend()
+  })
+
+  output$models_Mf_1f_plot <- renderPlot({
+    neutral_lm_fitted <- "Neutral model" %in% input$model_layers_checkbox
+    layers <- list(
+      if (neutral_lm_fitted) {
+        layer_lm_fits(rv$cd)
+      }
+    )
+    plot_Mf_1f(rv$cd, from = 0.05, to = 0.5, scale = FALSE, mapping = ggplot2::aes(color = sample)) +
+      layers +
+      ggplot2::facet_wrap(~patient_id, scales = "free_y")
   })
 }
 

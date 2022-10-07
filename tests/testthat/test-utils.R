@@ -37,6 +37,6 @@ test_that("join_aes works", {
   aes_default <- aes(VAF, y, color = sample_id)
   aes_custom <- aes(color = patient_id, shape = effect)
   res <- join_aes(aes_default, aes_custom)
-  expected <- aes(VAF, y, color = sample_id, shape = effect)
+  expected <- aes(VAF, y, color = patient_id, shape = effect)
   expect_identical(res, expected)
 })

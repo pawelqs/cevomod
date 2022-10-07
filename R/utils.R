@@ -2,7 +2,7 @@
 
 
 join_aes <- function(aes_default, aes_2) {
-  aes <- c(as.list(aes_default), aes_2[!names(aes_2) %in% names(aes_default)])
+  aes <- c(as.list(aes_default[names(aes_default) %not in% names(aes_2)]), aes_2)
   class(aes) <- 'uneval'
   aes
 }
