@@ -124,6 +124,9 @@ plot_models.cevodata <- function(object,
 
   resid <- object$models$residuals |>
     left_join(lm_models, by = "sample_id") |>
+    group_by(sample_id) |>
+    mutate(ylim = max(y) * 1.2) |>
+    ungroup() |>
     filter(.data$VAF >= .data$from - 0.02) |>
     mutate(neutr = (.data$VAF >= .data$from & .data$VAF <= .data$to))
 
@@ -131,14 +134,14 @@ plot_models.cevodata <- function(object,
     if (neutral_tail && neutral_lm_fitted) {
       geom_line(
         aes(.data$VAF, .data$neutral_pred),
-        data = resid,
+        data = resid |> filter(.data$neutral_pred < .data$ylim),
         color = "black", size = 1, linetype = "dashed", show.legend = FALSE
       )
     },
     if (neutral_tail && neutral_lm_fitted) {
       geom_line(
         aes(.data$VAF, .data$neutral_pred),
-        data = resid |> filter(.data$neutr),
+        data = resid |> filter(.data$neutr, .data$neutral_pred < .data$ylim),
         color = "black", size = 1, show.legend = FALSE
       )
     },
@@ -152,7 +155,7 @@ plot_models.cevodata <- function(object,
     if (final_fit && neutral_lm_fitted && subclones_fitted) {
       geom_line(
         aes(.data$VAF, .data$model_pred),
-        data = resid,
+        data = resid |> filter(.data$model_pred < .data$ylim),
         size = 1, color = "red"
       )
     }
@@ -160,5 +163,5 @@ plot_models.cevodata <- function(object,
 
   plot_SFS(object, geom = "bar") +
     model_layers +
-    facet_wrap(~sample_id, scales = "free")
+    facet_wrap(~sample_id, scales = "free_y")
 }
