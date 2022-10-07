@@ -77,6 +77,7 @@ samples_data <- tibble(
 tcga_brca_test <- init_cevodata("TCGA BRCA test data", genome = "hg37") |>
   add_SNV_data(snvs_test, name = "TCGA") |>
   add_CNV_data(cnvs_test, data = "TCGA") |>
-  add_sample_data(samples_data)
+  add_sample_data(samples_data) |>
+  run_cevomod()
 
 usethis::use_data(tcga_brca_test, overwrite = TRUE)
