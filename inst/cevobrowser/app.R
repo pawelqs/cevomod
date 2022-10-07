@@ -22,7 +22,7 @@ sidebar <- dashboardSidebar(
     selected = default_dataset
   ),
   selectizeInput(
-    "patients_list",
+    "patients_selection",
     label = "Select patients to show",
     choices = unique(datasets[[default_dataset]]$patient_id),
     multiple = TRUE,
@@ -116,8 +116,8 @@ models_tab <- tabItem(
         checkboxGroupInput(
           "model_layers_checkbox",
           "Select model layers:",
-          choices = c("Neutral model", "Clones", "Sum"),
-          selected = c("Neutral model", "Clones", "Sum")
+          choices = c("Neutral model", "Clones", "Full model"),
+          selected = c("Neutral model", "Clones", "Full model")
         ),
         height = "95vh",
         width = NULL
@@ -180,9 +180,19 @@ server <- function(input, output) {
     rv$cd <- datasets[[input$dataset_selection]]
     updateSelectizeInput(
       getDefaultReactiveDomain(),
-      "patients_list",
+      "patients_selection",
       choices = unique(rv$cd$metadata$patient_id)
     )
+  })
+
+
+  observeEvent(input$patients_selection, {
+    rv$cd <- if (length(input$patients_selection) > 0) {
+      datasets[[input$dataset_selection]] |>
+        filter(patient_id %in% input$patients_selection)
+    } else {
+      datasets[[input$dataset_selection]]
+    }
   })
 
   output$dataset_name <- renderValueBox({
@@ -224,7 +234,7 @@ server <- function(input, output) {
   output$models_SFS_plot <- renderPlot({
     neutral_tail <- "Neutral model" %in% input$model_layers_checkbox
     subclones <- "Clones" %in% input$model_layers_checkbox
-    final_fit <- "Sum" %in% input$model_layers_checkbox
+    final_fit <- "Full model" %in% input$model_layers_checkbox
 
     plot_models(
       rv$cd,
