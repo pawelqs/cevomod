@@ -31,8 +31,8 @@ sidebar <- dashboardSidebar(
   sidebarMenu(
     menuItem("SFS", tabName = "SFS_tab", icon = icon("chart-simple")),
     menuItem("CNV", tabName = "CNV_tab", icon = icon("square-poll-horizontal")),
-    menuItem("Models", tabName = "models_tab", icon = icon("chart-line"))
-    # menuItem("Residuals", tabName = "residuals_tab", icon = icon("database"))
+    menuItem("Models", tabName = "models_tab", icon = icon("chart-line")),
+    menuItem("Residuals", tabName = "residuals_tab", icon = icon("database"))
   )
 )
 
@@ -125,47 +125,45 @@ models_tab <- tabItem(
 )
 
 
-# residuals_tab <- tabItem(
-#   tabName = "residuals_tab",
-#   fluidRow(
-#     column(
-#       width = 9L,
-#       tabBox(
-#         id = "residualsplot_tabset", height = "80vh",
-#         tabPanel(
-#           "Sampling rate",
-#           plotOutput("models_Mf_1f_plot", height = "80vh")
-#         ),
-#         tabPanel(
-#           "Neutral model resid.",
-#           plotOutput("models_Mf_1f_plot", height = "80vh")
-#         ),
-#         width = NULL
-#       )
-#     ),
-#     column(
-#       width = 3L,
-#       box(
-#         checkboxGroupInput(
-#           "model_layers_checkbox",
-#           "Select model layers:",
-#           choices = c("Neutral model", "Clones", "Sum"),
-#           selected = c("Neutral model", "Clones", "Sum")
-#         ),
-#         height = "95vh",
-#         width = NULL
-#       )
-#     )
-#   )
-# )
+residuals_tab <- tabItem(
+  tabName = "residuals_tab",
+  fluidRow(
+    column(
+      width = 9L,
+      tabBox(
+        id = "residualsplot_tabset", height = "80vh",
+        tabPanel(
+          "Sampling rate",
+          plotOutput("sampling_rate_plot", height = "80vh")
+        ),
+        tabPanel(
+          "Neutral model residuals",
+          plotOutput("neutral_model_resid_plot", height = "80vh")
+        ),
+        tabPanel(
+          "Full model residuals",
+          plotOutput("full_model_resid_plot", height = "80vh")
+        ),
+        width = NULL
+      )
+    ),
+    column(
+      width = 3L,
+      box(
+        height = "95vh",
+        width = NULL
+      )
+    )
+  )
+)
 
 
 body <- dashboardBody(
   tabItems(
     SFS_tab,
     CNV_tab,
-    models_tab
-    # residuals_tab
+    models_tab,
+    residuals_tab
   )
 )
 
@@ -253,6 +251,24 @@ server <- function(input, output) {
     plot_Mf_1f(rv$cd, from = 0.05, to = 0.5, scale = FALSE, mapping = ggplot2::aes(color = sample)) +
       layers +
       ggplot2::facet_wrap(~patient_id, scales = "free_y")
+  })
+
+  output$sampling_rate_plot <- renderPlot({
+    plot_sampling_rate(rv$cd) +
+      ggplot2::facet_wrap(~sample_id, scales = "free_y") +
+      hide_legend()
+  })
+
+  output$neutral_model_resid_plot <- renderPlot({
+    plot_residuals_neutral_model(rv$cd) +
+      ggplot2::facet_wrap(~sample_id, scales = "free_y") +
+      hide_legend()
+  })
+
+  output$full_model_resid_plot <- renderPlot({
+    plot_residuals_full_model(rv$cd) +
+      ggplot2::facet_wrap(~sample_id, scales = "free_y") +
+      hide_legend()
   })
 }
 
