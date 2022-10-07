@@ -10,6 +10,12 @@ plot_models(object, ...)
 \item{object}{cevodata object}
 
 \item{...}{other arguments}
+
+\item{neutral_tail}{TRUE,}
+
+\item{subclones}{TRUE,}
+
+\item{final_fit}{TRUE,}
 }
 \description{
 Plot cevodata models
