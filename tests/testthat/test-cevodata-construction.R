@@ -27,23 +27,6 @@ test_that("init_cevodata with SNV assay works", {
 })
 
 
-test_that("print.cevodata runs without error works", {
-  cd <- init_cevodata("TCGA BRCA small", snvs = snvs) |>
-    add_sample_data(meta)
-  output <- print(cd) |>
-    capture.output()
-  expect_true(length(cd) > 1)
-})
-
-
-test_that("print.cevodata runs without error foe empty object", {
-  cd <- init_cevodata("TCGA BRCA small")
-  output <- print(cd) |>
-    capture.output()
-  expect_true(length(cd) > 1)
-})
-
-
 test_that("Adding SNVs to cevodata works", {
   cd <- init_cevodata("TCGA BRCA small", snvs = snvs) |>
     add_SNV_data(snvs = snvs, "head")
@@ -185,31 +168,4 @@ test_that("Adding sample data to cevodata works", {
   expect_named(cd$metadata, c("sample_id", "meta1", "meta2"))
   expect_true(all(unique(snvs$sample_id) %in% cd$metadata$sample_id))
   expect_equal(cd$metadata$meta1, c(1, 2, NA_real_, NA_real_, NA_real_))
-})
-
-
-test_that("Filtering cevodata works", {
-  cd <- init_cevodata("TCGA BRCA small", cnvs = cnvs) |>
-    add_CNV_data(cnvs = cnvs, "tcga2") |>
-    add_SNV_data(snvs = snvs, "tcga") |>
-    filter(sample_id == "TCGA-AC-A23H-01")
-  expect_equal(nrow(cd$CNVs$cnvs), 285)
-  expect_equal(nrow(cd$CNVs$tcga2), 285)
-  expect_equal(nrow(cd$SNVs$tcga), 6419)
-  expect_equal(unique(cd$CNVs$cnvs$sample_id), "TCGA-AC-A23H-01")
-  expect_equal(unique(cd$CNVs$tcga2$sample_id), "TCGA-AC-A23H-01")
-  expect_equal(unique(cd$SNVs$tcga$sample_id), "TCGA-AC-A23H-01")
-})
-
-
-test_that("Merging cevodata works", {
-  cd <- init_cevodata("TCGA BRCA small", cnvs = cnvs) |>
-    add_CNV_data(cnvs = cnvs, "tcga2") |>
-    add_SNV_data(snvs = snvs, "tcga")
-  cd1 <- filter(cd, sample_id == "TCGA-AC-A23H-01")
-  cd2 <- filter(cd, sample_id != "TCGA-AC-A23H-01")
-  cd_merged <- merge(cd1, cd2, name = "TCGA BRCA small")
-  output <- print(cd_merged) |>
-    capture.output()
-  expect_equal(object.size(cd_merged), object.size(cd))
 })
