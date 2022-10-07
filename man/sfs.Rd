@@ -49,5 +49,11 @@ tcga_brca_test |>
   calc_SFS()
 
 tcga_brca_test |>
-  plot_SFS()
+  plot_SFS() +
+  layer_mutations(drivers = "BRCA")
+
+SNVs(tcga_brca_test) |>
+  dplyr::group_by(sample_id) |>
+  calc_SFS() |>
+  plot()
 }

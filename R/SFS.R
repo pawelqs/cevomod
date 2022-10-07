@@ -15,7 +15,13 @@
 #'   calc_SFS()
 #'
 #' tcga_brca_test |>
-#'   plot_SFS()
+#'   plot_SFS() +
+#'   layer_mutations(drivers = "BRCA")
+#'
+#' SNVs(tcga_brca_test) |>
+#'   dplyr::group_by(sample_id) |>
+#'   calc_SFS() |>
+#'   plot()
 #' @name sfs
 
 
@@ -24,6 +30,7 @@
 calc_SFS <- function(object, ...) {
   UseMethod("calc_SFS")
 }
+
 
 #' @describeIn sfs Calculate SFS
 #' @export
@@ -58,6 +65,7 @@ plot_SFS <- function(object, ...) {
   UseMethod("plot_SFS")
 }
 
+
 #' Plot SFS
 #'
 #' @param x tibble with calc_SFS() results
@@ -65,17 +73,6 @@ plot_SFS <- function(object, ...) {
 #' @param ... futher passed to geom_()
 #' @return ggplot obj
 #' @export
-#'
-#' @examples
-#' data("tcga_brca_test")
-#' SNVs(tcga_brca_test) |>
-#'   dplyr::group_by(sample_id) |>
-#'   calc_SFS() |>
-#'   plot()
-#'
-#' tcga_brca_test |>
-#'   plot_SFS() +
-#'   layer_mutations(drivers = "BRCA")
 plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
   group_variables <- group_vars(x)
   y <- if (y_scaled) "y_scaled" else "y"

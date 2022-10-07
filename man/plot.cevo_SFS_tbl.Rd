@@ -19,14 +19,3 @@ ggplot obj
 \description{
 Plot SFS
 }
-\examples{
-data("tcga_brca_test")
-SNVs(tcga_brca_test) |>
-  dplyr::group_by(sample_id) |>
-  calc_SFS() |>
-  plot()
-
-tcga_brca_test |>
-  plot_SFS() +
-  layer_mutations(drivers = "BRCA")
-}

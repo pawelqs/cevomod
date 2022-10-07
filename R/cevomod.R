@@ -30,6 +30,7 @@ run_cevomod <- function(object, ...) {
   UseMethod("run_cevomod")
 }
 
+
 #' @export
 run_cevomod.cevodata <- function(object, ...) {
   object |>
