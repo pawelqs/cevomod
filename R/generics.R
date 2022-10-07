@@ -71,6 +71,14 @@ default_CNVs <- function(object, ...) {
 }
 
 
+#' Get names of CNV variables
+#' @param object object
+#' @param ... other arguments
+#' @export
+get_CNVs_var_names <- function(object, ...) {
+  UseMethod("get_CNVs_var_names")
+}
+
 
 #' Add metadata to the cevodata object
 #' @param object object
