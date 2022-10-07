@@ -115,6 +115,9 @@ plot_models.cevodata <- function(object,
                                  final_fit = TRUE,
                                  ...) {
 
+  neutral_lm_fitted <- !is.null(object$models$neutral_lm)
+  subclones_fitted <- !is.null(object$models$residuals$binom_pred)
+
   lm_models <- object$models$neutral_lm |>
     filter(.data$best) |>
     select(.data$sample_id, .data$from, .data$to)
@@ -125,28 +128,28 @@ plot_models.cevodata <- function(object,
     mutate(neutr = (.data$VAF >= .data$from & .data$VAF <= .data$to))
 
   model_layers <- list(
-    if (neutral_tail) {
+    if (neutral_tail && neutral_lm_fitted) {
       geom_line(
         aes(.data$VAF, .data$neutral_pred),
         data = resid,
         color = "black", size = 1, linetype = "dashed", show.legend = FALSE
       )
     },
-    if (neutral_tail) {
+    if (neutral_tail && neutral_lm_fitted) {
       geom_line(
         aes(.data$VAF, .data$neutral_pred),
         data = resid |> filter(.data$neutr),
         color = "black", size = 1, show.legend = FALSE
       )
     },
-    if (subclones) {
+    if (subclones && subclones_fitted) {
       geom_line(
         aes(.data$VAF, .data$binom_pred),
         data = resid,
         size = 1, color = "black"
       )
     },
-    if (final_fit) {
+    if (final_fit && neutral_lm_fitted && subclones_fitted) {
       geom_line(
         aes(.data$VAF, .data$model_pred),
         data = resid,
