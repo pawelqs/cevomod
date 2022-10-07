@@ -82,7 +82,11 @@ predict_binoms <- function(Ns, means) {
 
 
 #' @export
-plot_models.cevodata <- function(object, ...) {
+plot_models.cevodata <- function(object,
+                                 neutral_tail = TRUE,
+                                 subclones = TRUE,
+                                 final_fit = TRUE,
+                                 ...) {
 
   lm_models <- object$models$neutral_lm |>
     filter(.data$best) |>
@@ -93,26 +97,38 @@ plot_models.cevodata <- function(object, ...) {
     filter(.data$VAF >= .data$from - 0.02) |>
     mutate(neutr = (.data$VAF >= .data$from & .data$VAF <= .data$to))
 
-  plot_SFS(object, geom = "bar")+
-    geom_line(
-      aes(.data$VAF, .data$neutral_pred),
-      data = resid,
-      color = "black", size = 1, linetype = "dashed", show.legend = FALSE
-    ) +
-    geom_line(
-      aes(.data$VAF, .data$neutral_pred),
-      data = resid |> filter(.data$neutr),
-      color = "black", size = 1, show.legend = FALSE
-    ) +
-    geom_line(
-      aes(.data$VAF, .data$binom_pred),
-      data = resid,
-      size = 1, color = "black"
-    ) +
-    geom_line(
-      aes(.data$VAF, .data$model_pred),
-      data = resid,
-      size = 1, color = "red"
-    ) +
+  model_layers <- list(
+    if (neutral_tail) {
+      geom_line(
+        aes(.data$VAF, .data$neutral_pred),
+        data = resid,
+        color = "black", size = 1, linetype = "dashed", show.legend = FALSE
+      )
+    },
+    if (neutral_tail) {
+      geom_line(
+        aes(.data$VAF, .data$neutral_pred),
+        data = resid |> filter(.data$neutr),
+        color = "black", size = 1, show.legend = FALSE
+      )
+    },
+    if (subclones) {
+      geom_line(
+        aes(.data$VAF, .data$binom_pred),
+        data = resid,
+        size = 1, color = "black"
+      )
+    },
+    if (final_fit) {
+      geom_line(
+        aes(.data$VAF, .data$model_pred),
+        data = resid,
+        size = 1, color = "red"
+      )
+    }
+  )
+
+  plot_SFS(object, geom = "bar") +
+    model_layers +
     facet_wrap(~sample_id, scales = "free")
 }

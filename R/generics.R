@@ -312,6 +312,9 @@ plot_CNV_heatmap <- function(object, ...) {
 
 #' Plot cevodata models
 #' @param object cevodata object
+#' @param neutral_tail TRUE,
+#' @param subclones TRUE,
+#' @param final_fit TRUE,
 #' @param ... other arguments
 #' @export
 plot_models <- function(object, ...) {

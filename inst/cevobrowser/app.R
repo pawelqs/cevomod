@@ -17,6 +17,13 @@ sidebar <- dashboardSidebar(
     choices = names(datasets),
     selected = default_dataset
   ),
+  selectizeInput(
+    "patients_list",
+    label = "Select patients to show",
+    choices = unique(datasets[[default_dataset]]$patient_id),
+    multiple = TRUE,
+    options = list(create = TRUE)
+  ),
   sidebarMenu(
     menuItem("SFS", tabName = "SFS_tab", icon = icon("chart-simple")),
     menuItem("CNV", tabName = "CNV_tab", icon = icon("square-poll-horizontal")),
@@ -29,7 +36,7 @@ SFS_tab <- tabItem(
   tabName = "SFS_tab",
   fluidRow(
     column(
-      width = 8L,
+      width = 9L,
       box(
         plotOutput("SFS_plot", height = "80vh"),
         height = "95vh",
@@ -37,20 +44,13 @@ SFS_tab <- tabItem(
       )
     ),
     column(
-      width = 4L,
+      width = 3L,
       valueBoxOutput("dataset_name", width = NULL),
       box(
         selectInput(
           "plot_type",
           label = "Plot",
           choices = c("SFS", "model")
-        ),
-        selectizeInput(
-          "patients_list",
-          label = "Select patients to show",
-          choices = unique(datasets[[default_dataset]]$patient_id),
-          multiple = TRUE,
-          options = list(create = TRUE)
         ),
         height = "80vh",
         width = NULL
@@ -64,7 +64,7 @@ CNV_tab <- tabItem(
   tabName = "CNV_tab",
   fluidRow(
     column(
-      width = 8L,
+      width = 9L,
       box(
         plotOutput("CNV_plot", height = "80vh"),
         height = "95vh",
@@ -72,7 +72,7 @@ CNV_tab <- tabItem(
       )
     ),
     column(
-      width = 4L,
+      width = 3L,
       box(
         uiOutput("cnv_plot_selector"),
         # sliderInput()
@@ -88,7 +88,7 @@ models_tab <- tabItem(
   tabName = "models_tab",
   fluidRow(
     column(
-      width = 8L,
+      width = 9L,
       box(
         plotOutput("models_plot", height = "80vh"),
         height = "95vh",
@@ -96,8 +96,14 @@ models_tab <- tabItem(
       )
     ),
     column(
-      width = 4L,
+      width = 3L,
       box(
+        checkboxGroupInput(
+          "model_layers_checkbox",
+          "Select model layers:",
+          choices = c("Neutral tail", "Clones", "Sum"),
+          selected = c("Neutral tail", "Clones", "Sum")
+        ),
         height = "95vh",
         width = NULL
       )
@@ -177,7 +183,14 @@ server <- function(input, output) {
   })
 
   output$models_plot <- renderPlot({
-    plot_models(rv$cd) +
+    neutral_tail = "Neutral tail" %in% input$model_layers_checkbox
+    subclones = "Clones" %in% input$model_layers_checkbox
+    final_fit = "Sum" %in% input$model_layers_checkbox
+
+    plot_models(
+      rv$cd,
+      neutral_tail = neutral_tail, subclones = subclones, final_fit = final_fit
+      ) +
       hide_legend()
   })
 }
