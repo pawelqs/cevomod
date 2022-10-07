@@ -1,4 +1,14 @@
+# cevomod 0.3.0
+
+* Residuals plotting done
+* shiny app for browsing results implemented
+
 # cevomod 0.2.0
 
 * Binomial model fitting and plotting v1
+
+# cevomod 0.1.0
+
+* Neutral  model fitting and plotting v1
+* cevodata class implemented
 * Added a `NEWS.md` file to track changes to the package.
