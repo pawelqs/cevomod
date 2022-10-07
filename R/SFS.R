@@ -1,4 +1,30 @@
 
+#' Site Frequency Spectra
+#'
+#' Creates  cevodata$models$SFS with the groupping variables and:
+#'   - n columnt with the number of mutations in the VAF interval
+#'   - x and y columns describing SFS
+#'   - y_scaled with y values scaled to the range 0-1
+#'
+#' @param object SNVs tibble object
+#' @param digits resolution of the cumulative tails calculation
+#' @param ... other arguments
+#' @examples
+#' data("tcga_brca_test")
+#' tcga_brca_test |>
+#'   calc_SFS()
+#'
+#' tcga_brca_test |>
+#'   plot_SFS()
+#' @name sfs
+
+
+#' @rdname sfs
+#' @export
+calc_SFS <- function(object, ...) {
+  UseMethod("calc_SFS")
+}
+
 #' @describeIn sfs Calculate SFS
 #' @export
 calc_SFS.cevodata <- function(object, digits = 2, ...) {
@@ -25,6 +51,12 @@ calc_SFS.tbl_df <- function(object, digits = 2, ...) {
   res
 }
 
+
+#' @rdname sfs
+#' @export
+plot_SFS <- function(object, ...) {
+  UseMethod("plot_SFS")
+}
 
 #' Plot SFS
 #'

@@ -1,4 +1,14 @@
 
+#' fit_subclones
+#'
+#' @param object object
+#' @param ... other arguments
+#' @export
+fit_subclones <- function(object, ...) {
+  UseMethod("fit_subclones")
+}
+
+
 #' @export
 fit_subclones.cevodata <- function(object, ...) {
   residuals <- object$models$residuals
@@ -81,6 +91,23 @@ predict_binoms <- function(Ns, means) {
 }
 
 
+#' Plot cevodata models
+#' @param object cevodata object
+#' @param neutral_tail TRUE,
+#' @param subclones TRUE,
+#' @param final_fit TRUE,
+#' @param ... other arguments
+#' @name plot_models
+
+
+#' @rdname plot_models
+#' @export
+plot_models <- function(object, ...) {
+  UseMethod("plot_models")
+}
+
+
+#' @rdname plot_models
 #' @export
 plot_models.cevodata <- function(object,
                                  neutral_tail = TRUE,

@@ -1,25 +1,31 @@
 
-#' @describeIn neutral_lm Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
+#' Fitting neutral models
 #'
-#' @param cd cevodata
-#' @param ... other params passed to geom_segment()
+#' Creates  cevodata$models$neutral_lm
+#'
+#' @param object SNVs tibble object
+#' @param rsq_treshold R-squared tresholds to keep model as neutral
+#' @param ... other arguments
+#' @examples
+#' data("tcga_brca_test")
+#' snvs <- SNVs(tcga_brca_test) |>
+#'   dplyr::filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01"))
+#'
+#' cd <- init_cevodata("Test") |>
+#'   add_SNV_data(snvs) |>
+#'   calc_Mf_1f() |>
+#'   calc_SFS() |>
+#'   fit_neutral_lm(rsq_treshold = 0.99)
+#'
+#' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
+#'   layer_lm_fits(cd)
+#' @name neutral_lm
+
+
+#' @rdname neutral_lm
 #' @export
-layer_lm_fits <- function(cd, ...) {
-  geom_segment(
-    aes(
-      x = 1/.data$from,
-      xend = 1/.data$to,
-      y = 1/.data$from * .data$a + .data$b,
-      yend = 1/.data$to * .data$a + .data$b,
-      color = .data$sample_id
-    ),
-    size = 1,
-    data = cd$models$neutral_lm |>
-      filter(, .data$best) |>
-      left_join(cd$metadata, by = "sample_id"),
-    show.legend = FALSE,
-    ...
-  )
+fit_neutral_lm <- function(object, ...) {
+  UseMethod("fit_neutral_lm")
 }
 
 
@@ -74,6 +80,10 @@ tidy_lm <- function(x, y) {
 }
 
 
+calc_residuals <- function(object, ...) {
+  UseMethod("calc_residuals")
+}
+
 calc_residuals.cevodata <- function(object, ...) {
   neutral_lm <- object$models[["neutral_lm"]]
   sfs <- object$models[["SFS"]]
@@ -123,4 +133,37 @@ get_average_interval <- function(vec) {
     sort() |>
     diff() |>
     mean()
+}
+
+
+#' layer_neutral_tail
+#'
+#' @param object object
+#' @param ... other arguments
+#' @export
+layer_neutral_tail <- function(object, ...) {
+  UseMethod("layer_neutral_tail")
+}
+
+#' @describeIn neutral_lm Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
+#'
+#' @param cd cevodata
+#' @param ... other params passed to geom_segment()
+#' @export
+layer_lm_fits <- function(cd, ...) {
+  geom_segment(
+    aes(
+      x = 1/.data$from,
+      xend = 1/.data$to,
+      y = 1/.data$from * .data$a + .data$b,
+      yend = 1/.data$to * .data$a + .data$b,
+      color = .data$sample_id
+    ),
+    size = 1,
+    data = cd$models$neutral_lm |>
+      filter(, .data$best) |>
+      left_join(cd$metadata, by = "sample_id"),
+    show.legend = FALSE,
+    ...
+  )
 }

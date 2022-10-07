@@ -28,6 +28,12 @@ complete_missing_VAF_levels <- function(dt, fill, digits = 2) {
 }
 
 
+drop_na_columns <- function(.data) {
+  .data |>
+    keep(~all(!is.na(.x)))
+}
+
+
 #' Run cevobrowser app
 #' @export
 run_browser <- function() {
