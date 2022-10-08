@@ -3,7 +3,9 @@ library(cevoDatasets)
 library(shiny)
 library(shinyWidgets)
 library(shinydashboard)
+library(paletteer)
 library(tibble)
+library(ggplot2)
 
 datasets <- readr::read_rds(
   "~/.cevomod/data.Rds"
@@ -50,12 +52,24 @@ overview_tab <- tabItem(
     valueBoxOutput("n_mutations")
   ),
   fluidRow(
-    box(
-      plotOutput("overview_plot_DP", height = "30vh"),
-      height = "35vh",
-      width = 6L,
+    tabBox(
+      id = "overview_plots_tabset", height = "35vh",
+      tabPanel(
+        "Sequencing Depth",
+        plotOutput("overview_plot_DP", height = "30vh"),
+        height = "35vh",
+        width = 6L,
+      ),
+      tabPanel(
+        "Private and shared mutations",
+        plotOutput("overview_plot_private_shared", height = "30vh"),
+        height = "35vh",
+        width = 6L
+      ),
+      width = 6L
     ),
     box(
+      # plotOutput("overview_plot_private_shared", height = "30vh"),
       height = "35vh",
       width = 6L
     )
@@ -229,6 +243,12 @@ server <- function(input, output) {
 
   output$overview_plot_DP <- renderPlot({
     plot_sequencing_depth(rv$cd) +
+      theme(axis.text.x = element_text(angle = 45))
+  })
+
+  output$overview_plot_private_shared <- renderPlot({
+    plot_private_shared_mutations(rv$cd) +
+      scale_fill_paletteer_d("PNWColors::Bay") +
       theme(axis.text.x = element_text(angle = 45))
   })
 
