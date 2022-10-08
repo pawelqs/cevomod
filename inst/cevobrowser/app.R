@@ -6,7 +6,7 @@ library(shinydashboard)
 library(tibble)
 
 datasets <- readr::read_rds(
-  "/mnt/dane/projects_all/cancer_evolution/cancer_evolution/cevomod_analyses/data.Rds"
+  "~/.cevomod/data.Rds"
 )
 default_dataset <- names(datasets)[[1]]
 
