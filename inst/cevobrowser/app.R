@@ -30,6 +30,7 @@ sidebar <- dashboardSidebar(
     options = list(create = TRUE)
   ),
   sidebarMenu(
+    menuItem("Overview", tabName = "overview_tab", icon = icon("magnifying-glass-chart")),
     menuItem("SFS", tabName = "SFS_tab", icon = icon("chart-simple")),
     menuItem("CNV", tabName = "CNV_tab", icon = icon("square-poll-horizontal")),
     menuItem("Models", tabName = "models_tab", icon = icon("chart-line")),
@@ -39,6 +40,28 @@ sidebar <- dashboardSidebar(
 
 
 # Body ----
+
+## Overview tab ----
+overview_tab <- tabItem(
+  tabName = "overview_tab",
+  fluidRow(
+    valueBoxOutput("dataset_name"),
+    valueBoxOutput("n_patients"),
+    valueBoxOutput("n_mutations")
+  ),
+  fluidRow(
+    box(
+      plotOutput("overview_plot_DP", height = "30vh"),
+      height = "35vh",
+      width = 6L,
+    ),
+    box(
+      height = "35vh",
+      width = 6L
+    )
+  )
+)
+
 
 ## SFS tab ----
 SFS_tab <- tabItem(
@@ -54,7 +77,6 @@ SFS_tab <- tabItem(
     ),
     column(
       width = 3L,
-      valueBoxOutput("dataset_name", width = NULL),
       box(
         selectInput(
           "plot_type",
@@ -173,7 +195,8 @@ body <- dashboardBody(
     SFS_tab,
     CNV_tab,
     models_tab,
-    residuals_tab
+    residuals_tab,
+    overview_tab
   )
 )
 
@@ -204,11 +227,26 @@ server <- function(input, output) {
     }
   })
 
+  output$overview_plot_DP <- renderPlot({
+    plot_sequencing_depth(rv$cd) +
+      theme(axis.text.x = element_text(angle = 45))
+  })
+
   output$dataset_name <- renderValueBox({
     valueBox(
       value = rv$cd$name,
       subtitle = "Dataset name",
       icon = icon("database")
+    )
+  })
+
+  output$n_patients <- renderValueBox({
+    n_patients <- dplyr::n_distinct(rv$cd$metadata$patient_id)
+    n_samples <- nrow(rv$cd$metadata)
+    valueBox(
+      value = str_c(n_patients, "/", n_samples),
+      subtitle = "Number of patients/samples",
+      icon = icon("user")
     )
   })
 
