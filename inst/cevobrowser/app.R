@@ -10,10 +10,11 @@ datasets <- readr::read_rds(
 )
 default_dataset <- names(datasets)[[1]]
 
-
+# Header ----
 header <- dashboardHeader(title = stringr::str_c("cevobrowser ", packageVersion("cevomod")))
 
 
+# Sidebar ----
 sidebar <- dashboardSidebar(
   radioButtons(
     "dataset_selection",
@@ -37,6 +38,9 @@ sidebar <- dashboardSidebar(
 )
 
 
+# Body ----
+
+## SFS tab ----
 SFS_tab <- tabItem(
   tabName = "SFS_tab",
   fluidRow(
@@ -65,6 +69,7 @@ SFS_tab <- tabItem(
 )
 
 
+## CNV tab ----
 CNV_tab <- tabItem(
   tabName = "CNV_tab",
   fluidRow(
@@ -88,6 +93,7 @@ CNV_tab <- tabItem(
 )
 
 
+## Models tab ----
 models_tab <- tabItem(
   tabName = "models_tab",
   fluidRow(
@@ -127,6 +133,7 @@ models_tab <- tabItem(
 )
 
 
+## Residuals tab ----
 residuals_tab <- tabItem(
   tabName = "residuals_tab",
   fluidRow(
@@ -160,6 +167,7 @@ residuals_tab <- tabItem(
 )
 
 
+# Compose UI ----
 body <- dashboardBody(
   tabItems(
     SFS_tab,
@@ -173,6 +181,7 @@ body <- dashboardBody(
 ui <- dashboardPage(header, sidebar, body)
 
 
+# Server ----
 server <- function(input, output) {
   rv <- reactiveValues(cd = datasets[[default_dataset]])
 
