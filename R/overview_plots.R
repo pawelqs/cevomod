@@ -51,7 +51,7 @@ plot_private_shared_mutations.cevodata <- function(object,
     stop("patient_id column must be present to plot this chart!")
   }
   snvs <- SNVs(object) |>
-    filter(!is.na(VAF))
+    filter(!is.na(VAF), VAF > 0.000001)
   plot_data <- snvs |>
     left_join(object$metadata, by = "sample_id") |>
     unite("mut_id", chrom, pos, ref, alt, sep = ":") |>
