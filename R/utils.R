@@ -39,8 +39,8 @@ get_VAF_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
     filter(.data$VAF > 0.00001, !is.na(.data$VAF)) |>
     group_by(.data$sample_id) |>
     summarise(
-      lower_bound = quantile(VAF, pct_left),
-      higher_bound = quantile(VAF, pct_right)
+      lower_bound = quantile(.data$VAF, pct_left),
+      higher_bound = quantile(.data$VAF, pct_right)
     )
   bounds
 }

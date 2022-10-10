@@ -39,7 +39,7 @@ fit_neutral_lm.cevodata <- function(object, rsq_treshold = 0.98, ...) {
   bounds <- get_VAF_range(SNVs(object))
   dt <- Mf_1f |>
     left_join(bounds, by = "sample_id") |>
-    filter(.data$VAF > lower_bound, .data$VAF < higher_bound) |>
+    filter(.data$VAF > .data$lower_bound, .data$VAF < .data$higher_bound) |>
     select(.data$sample_id, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
     nest(data = c(.data$VAF, .data$`M(f)`, .data$`1/f`))
   res <- dt |>

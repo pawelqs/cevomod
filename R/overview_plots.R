@@ -51,13 +51,13 @@ plot_private_shared_mutations.cevodata <- function(object,
     stop("patient_id column must be present to plot this chart!")
   }
   snvs <- SNVs(object) |>
-    filter(!is.na(VAF), VAF > 0.000001)
+    filter(!is.na(.data$VAF), .data$VAF > 0.000001)
   plot_data <- snvs |>
     left_join(object$metadata, by = "sample_id") |>
-    unite("mut_id", chrom, pos, ref, alt, sep = ":") |>
-    group_by(patient_id, mut_id) |>
+    unite("mut_id", .data$chrom, .data$pos, .data$ref, .data$alt, sep = ":") |>
+    group_by(.data$patient_id, .data$mut_id) |>
     count() |>
-    mutate(n = as.character(n))
+    mutate(n = as.character(.data$n))
 
   default_mapping <- aes(.data$patient_id, fill = .data$n)
   ggplot(plot_data, join_aes(default_mapping, mapping)) +
