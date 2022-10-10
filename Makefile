@@ -18,3 +18,7 @@ merge-to-main:
 	git merge develop
 	git push
 	git checkout develop
+
+
+run-cevomod-on-devodatasets:
+	Rscript inst/run_cevomod_on_cevodatasets.R
