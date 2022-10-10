@@ -88,6 +88,7 @@ calc_residuals <- function(object, ...) {
   UseMethod("calc_residuals")
 }
 
+
 calc_residuals.cevodata <- function(object, ...) {
   neutral_lm <- filter(object$models[["neutral_lm"]], .data$best)
   sfs <- object$models[["SFS"]]
@@ -160,4 +161,24 @@ layer_lm_fits <- function(cd, ...) {
     show.legend = FALSE,
     ...
   )
+}
+
+
+#' Plot 'a' coefficients for all fitted neutral models
+#' @param object cevodata object
+#' @param ... other parameters passed to geom
+#' @export
+plot_lm_a_coefficients <- function(object, ...) {
+  UseMethod("plot_lm_a_coefficients")
+}
+
+
+#' @export
+plot_lm_a_coefficients <- function(object, ...) {
+  ggplot(object$models$neutral_lm) +
+    aes(x = .data$from, xend = .data$to, y = .data$a, yend = .data$a, color = .data$best) +
+    geom_segment(...) +
+    facet_wrap(~.data$sample_id, scales = "free") +
+    theme_minimal() +
+    scale_color_brewer(palette = "Dark2")
 }
