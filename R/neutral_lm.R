@@ -122,7 +122,7 @@ calc_powerlaw_curve <- function(lm_models, binwidth) {
     expand_grid(f = seq(0.01, 1, by = binwidth)) |>
     mutate(
       neutr = (.data$f >= .data$from & .data$f <= .data$to),
-      neutral_pred = -(.data$a / n_bins) / .data$f^2
+      neutral_pred = (.data$a / n_bins) / .data$f^2
     )
 }
 

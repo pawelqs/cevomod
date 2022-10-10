@@ -41,13 +41,12 @@ calc_Mf_1f.cevodata <- function(object, digits = 2, ...) {
 #' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
 #' @export
 calc_Mf_1f.tbl_df <- function(object, digits = 2, ...) {
-  group_variables <- group_vars(object)
   res <- object %>%
     mutate(VAF = round(.data$VAF, digits = digits)) %>%
     group_by(.data$VAF, .add = TRUE) %>%
     summarise(n = n(), .groups = "drop_last") %>%
-    arrange(!!!syms(group_variables), .data$VAF) %>%
     complete_missing_VAF_levels(fill = list(n = 0)) %>%
+    arrange(desc(.data$VAF), .by_group = TRUE) %>%
     mutate(
       `M(f)` = cumsum(n),
       `1/f` = round(1/.data$VAF, digits = 4)
@@ -113,7 +112,7 @@ plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,
 
   ggplot(x) +
     geom +
-    scale_x_reverse(breaks = break_vals, labels = break_labs) +
+    scale_x_continuous(breaks = break_vals, labels = break_labs) +
     theme_minimal() +
     labs(title = "M(f) ~ 1/f")
 }
