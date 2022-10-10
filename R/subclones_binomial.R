@@ -127,7 +127,6 @@ plot_models.cevodata <- function(object,
     group_by(.data$sample_id) |>
     mutate(ylim = max(.data$y) * 1.2) |>
     ungroup() |>
-    filter(.data$VAF >= .data$from - 0.02) |>
     mutate(neutr = (.data$VAF >= .data$from & .data$VAF <= .data$to))
 
   model_layers <- list(
