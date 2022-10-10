@@ -17,17 +17,10 @@ test_that("calc_powerlaw_curve works", {
   )
   expect_equal(
     curve$neutral_pred[95:100],
-    c(1.893145, 1.853910, 1.815882, 1.779012, 1.743254, 1.708563),
+    c(1.956708, 1.916156, 1.876851, 1.838743, 1.801784, 1.765929),
     tolerance = 0.0001
   )
   expect_true(all(c("neutr", "neutral_pred") %in% names(curve)))
-})
-
-
-test_that("layer_neutral_tail returns list of geoms", {
-  geoms <- layer_neutral_tail(cd)
-  expect_type(geoms, "list")
-  expect_identical(map_chr(geoms, typeof) |> unique(), "environment")
 })
 
 
@@ -37,7 +30,7 @@ test_that("calc_residuals creates proper tibble", {
   expect_true(all(c("neutral_resid", "sampling_rate") %in% names(resids)))
   expect_equal(
     resids$sampling_rate[1:5],
-    c(1.0000000, 0.9997659, 0.9984197, 0.9943812, 0.9868310),
+    c(1.000000, 0.999773, 0.998471, 0.994564, 0.987259),
     tolerance = 0.0001
   )
   expect_false(any(is.na(resids)))
