@@ -36,10 +36,13 @@ fit_neutral_lm.cevodata <- function(object, rsq_treshold = 0.98, ...) {
     stop("Run calc_Mf_1f() first!")
   }
   Mf_1f <- object$models$Mf_1f
-  res <- Mf_1f |>
-    filter(.data$`1/f` < Inf, .data$VAF < 0.5) |>
+  bounds <- get_VAF_range(SNVs(object))
+  dt <- Mf_1f |>
+    left_join(bounds, by = "sample_id") |>
+    filter(.data$VAF > lower_bound, .data$VAF < higher_bound) |>
     select(.data$sample_id, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
-    nest(data = c(.data$VAF, .data$`M(f)`, .data$`1/f`)) |>
+    nest(data = c(.data$VAF, .data$`M(f)`, .data$`1/f`))
+  res <- dt |>
     mutate(fits = map(.data$data, fit_optimal_lm, rsq_treshold)) |>
     select(-.data$data) |>
     unnest(.data$fits)
@@ -51,21 +54,22 @@ fit_neutral_lm.cevodata <- function(object, rsq_treshold = 0.98, ...) {
 
 
 fit_optimal_lm <- function(dt, rsq_treshold = 0.98) {
+  min_val <- min(dt$VAF)
+  max_val <- max(dt$VAF)
   grid <- expand_grid(
-      from = seq(0.05, 0.20, by = 0.01),
-      to = seq(0.15, 0.3, by = 0.01)
+      from = seq(min_val, max_val, by = 0.01),
+      to = seq(min_val, max_val, by = 0.01)
     ) |>
     mutate(length = .data$to - .data$from) |>
-    filter(.data$length > 0.05)
+    filter(near(.data$length, 0.05))
   grid$data <- pmap(grid, function(from, to, ...) filter(dt, .data$VAF >= from, .data$VAF <= to))
   grid$fits <- map(grid$data, function(dt) tidy_lm(dt$`1/f`, dt$`M(f)`))
   grid |>
     select(-.data$data) |>
     unnest(.data$fits) |>
     filter(.data$rsquared > rsq_treshold) |>
-    arrange(desc(.data$length)) |>
-    mutate(best = (row_number() == 1)) |>
-    slice_head(n = 3)
+    arrange(.data$a) |>
+    mutate(best = (row_number() == 1))
 }
 
 
