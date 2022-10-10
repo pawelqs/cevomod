@@ -85,7 +85,7 @@ calc_residuals <- function(object, ...) {
 }
 
 calc_residuals.cevodata <- function(object, ...) {
-  neutral_lm <- object$models[["neutral_lm"]]
+  neutral_lm <- filter(object$models[["neutral_lm"]], .data$best)
   sfs <- object$models[["SFS"]]
   if (is.null(neutral_lm) || is.null(sfs)) {
     stop("Calc SFS and and fit neutral lm first!")
@@ -136,15 +136,6 @@ get_average_interval <- function(vec) {
 }
 
 
-#' layer_neutral_tail
-#'
-#' @param object object
-#' @param ... other arguments
-#' @export
-layer_neutral_tail <- function(object, ...) {
-  UseMethod("layer_neutral_tail")
-}
-
 #' @describeIn neutral_lm Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
 #'
 #' @param cd cevodata
@@ -160,7 +151,7 @@ layer_lm_fits <- function(cd, ...) {
     ),
     size = 1,
     data = cd$models$neutral_lm |>
-      filter(, .data$best) |>
+      filter(.data$best) |>
       left_join(cd$metadata, by = "sample_id"),
     show.legend = FALSE,
     ...
