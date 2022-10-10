@@ -93,6 +93,7 @@ plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
 #' @export
 plot_SFS.cevodata <- function(object, ...) {
   dt <- SNVs(object) |>
+    filter(.data$VAF > 0.00001) |>
     left_join(object$metadata, by = "sample_id")
   ggplot(dt, aes(.data$VAF, color = .data$sample_id, fill = .data$sample_id)) +
     stat_SFS(...) +
