@@ -3,6 +3,7 @@ VERSION = `grep -m1 Version DESCRIPTION | cut -f2 -d" "`
 
 release:
 	git push
+	R CMD INSTALL --preclean --no-multiarch --with-keep.source ../cevomod
 	git checkout master
 	git pull
 	git merge develop
@@ -20,7 +21,7 @@ merge-to-main:
 	git checkout develop
 
 
-run-cevomod-on-devodatasets:
+run-cevomod-on-cevodatasets:
 	Rscript inst/run_cevomod_on_cevodatasets.R
 
 
