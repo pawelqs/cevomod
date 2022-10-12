@@ -22,3 +22,8 @@ merge-to-main:
 
 run-cevomod-on-devodatasets:
 	Rscript inst/run_cevomod_on_cevodatasets.R
+
+
+run-browser:
+	R -e 'cevomod::run_browser()'
+
