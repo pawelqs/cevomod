@@ -15,7 +15,7 @@ fit_subclones.cevodata <- function(object, ...) {
   residuals$binom_pred <- NULL
   #   mutate(sm = smooth(meutral_resid))
 
-  models <- residuals |>
+  clones <- residuals |>
     group_by(.data$sample_id) |>
     nest() |>
     mutate(clones = map(.data$data, fit_binomial_models_Mclust, clones = 1:3, epochs = 100, eps = 1e-3)) |>
@@ -24,7 +24,7 @@ fit_subclones.cevodata <- function(object, ...) {
   # best_model <- models |>
   #   slice(1)
 
-  binom_residuals <- models |>
+  binom_residuals <- clones |>
     group_by(sample_id) |>
     summarise(prediction = predict_binoms(N_mutations, cellularity), .groups = "drop") |>
     unnest(.data$prediction) |>
@@ -39,7 +39,7 @@ fit_subclones.cevodata <- function(object, ...) {
       model_resid = .data$y - .data$model_pred
     )
 
-  object$models[["binomial_models"]] <- models
+  object$models[["binomial_models"]] <- clones
   object$models[["residuals"]] <- residuals
   object
 }
@@ -58,12 +58,15 @@ fit_binomial_models_Mclust <- function(residuals, clones, epochs, eps) {
   clones <- tibble(
       cellularity = model$parameters$mean,
       N_mutations = round(model$parameters$pro * nrow(data)),
-      clone = if_else(cellularity == max(cellularity), "Clone", str_c("Subclone ", row_number())),
       BIC = model$bic,
       best = TRUE
+    ) |>
+    arrange(desc(cellularity)) |>
+    mutate(
+      clone = if_else(row_number() == 1, "Clone", str_c("Subclone ", row_number() - 1)),
+      .before = "cellularity"
     )
-  clones |>
-    select(clone, everything())
+  clones
 }
 
 
