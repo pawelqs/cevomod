@@ -158,7 +158,7 @@ models_tab <- tabItem(
         checkboxGroupInput(
           "model_layers_checkbox",
           "Select model layers:",
-          choices = c("Neutral model", "Clones", "Full model"),
+          choices = c("Neutral model", "Binomial Fit", "Clones", "Full model"),
           selected = c("Neutral model", "Clones", "Full model")
         ),
         height = "95vh",
@@ -300,12 +300,14 @@ server <- function(input, output) {
 
   output$models_SFS_plot <- renderPlot({
     neutral_tail <- "Neutral model" %in% input$model_layers_checkbox
+    binomial_fit <- "Binomial Fit" %in% input$model_layers_checkbox
     subclones <- "Clones" %in% input$model_layers_checkbox
     final_fit <- "Full model" %in% input$model_layers_checkbox
 
     plot_models(
       rv$cd,
-      neutral_tail = neutral_tail, subclones = subclones, final_fit = final_fit
+      neutral_tail = neutral_tail, binomial_layer = binomial_fit,
+      subclones = subclones, final_fit = final_fit
     ) +
       hide_legend()
   })

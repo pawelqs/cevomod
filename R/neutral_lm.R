@@ -109,12 +109,14 @@ calc_residuals.cevodata <- function(object, ...) {
 
   residuals <- dt |>
     select(-.data$y_scaled) |>
+    rename(SFS = .data$y) |>
     mutate(
       VAF = parse_double(.data$VAF),
-      neutral_resid = .data$neutral_pred - .data$y,
+      neutral_resid = .data$neutral_pred - .data$SFS,
       neutral_resid_clones = if_else(.data$neutral_resid > 0, 0, -.data$neutral_resid),
       sampling_rate = .data$neutral_resid / .data$neutral_pred
-    )
+    ) |>
+    select(.data$sample_id, .data$VAF, .data$SFS, everything())
 
   object$models[["residuals"]] <- residuals
   object
