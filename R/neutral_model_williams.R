@@ -15,7 +15,7 @@
 #'   add_SNV_data(snvs) |>
 #'   calc_Mf_1f() |>
 #'   calc_SFS() |>
-#'   fit_neutral_model(rsq_treshold = 0.99)
+#'   fit_neutral_models(rsq_treshold = 0.99)
 #'
 #' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
 #'   layer_lm_fits(cd)
@@ -157,9 +157,9 @@ get_neutral_models <- function(object, ...) {
 #' @param best_only return only the best fits
 #' @export
 get_neutral_models <- function(object, best_only = TRUE, ...) {
-  models <- cd$models$neutral_models$models
+  models <- object$models$neutral_models$models
   if (best_only) {
-    filter(models, best)
+    filter(models, .data$best)
   } else {
     models
   }

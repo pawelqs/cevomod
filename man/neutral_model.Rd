@@ -50,7 +50,7 @@ cd <- init_cevodata("Test") |>
   add_SNV_data(snvs) |>
   calc_Mf_1f() |>
   calc_SFS() |>
-  fit_neutral_model(rsq_treshold = 0.99)
+  fit_neutral_models(rsq_treshold = 0.99)
 
 plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
   layer_lm_fits(cd)

@@ -22,12 +22,12 @@ fit_subclones.cevodata <- function(object, ...) {
     unnest(.data$clones) |>
     mutate(model = "binomial_clones", .before = "component") |>
     ungroup() |>
-    mutate(VAF = round(cellularity, digits = 2)) |>
+    mutate(VAF = round(.data$cellularity, digits = 2)) |>
     left_join(get_sequencing_depths(object), by = c("sample_id", "VAF")) |>
-    select(-VAF)
+    select(-.data$VAF)
 
   clonal_predictions <- clones |>
-    nest_by(sample_id) |>
+    nest_by(.data$sample_id) |>
     deframe() |>
     map(get_binomial_predictions) |>
     bind_rows(.id = "sample_id")
@@ -69,7 +69,7 @@ fit_binomial_models_Mclust <- function(residuals, clones, epochs, eps) {
       BIC = model$bic,
       best = TRUE
     ) |>
-    arrange(desc(cellularity)) |>
+    arrange(desc(.data$cellularity)) |>
     mutate(
       component = if_else(row_number() == 1, "Clone", str_c("Subclone ", row_number() - 1)),
       .before = "cellularity"
@@ -115,10 +115,10 @@ get_binomial_predictions <- function(clones) {
     subclonal_pred = map2(clones$N_mutations, clones$cellularity, ~.x * dbinom(.data$i, 100, .y)) |>
       set_names(clones$component) |>
       as_tibble(),
-    binom_pred = rowSums(subclonal_pred)
+    binom_pred = rowSums(.data$subclonal_pred)
   )
   predictions |>
-    unnest(subclonal_pred) |>
+    unnest(.data$subclonal_pred) |>
     select(-.data$i)
 }
 
@@ -127,7 +127,7 @@ get_binomial_distribution <- function(cellularity, N_mutations, sequencing_DP, .
   i <- 1:round(sequencing_DP)
   tibble(
     VAF = i/sequencing_DP,
-    pred = N_mutations * dbinom(i, round(sequencing_DP), cellularity)
+    pred = N_mutations * stats::dbinom(i, round(sequencing_DP), cellularity)
   )
 }
 
@@ -146,7 +146,7 @@ get_binomial_distribution <- function(cellularity, N_mutations, sequencing_DP, .
 classify_SNVs <- function(snvs, residuals) {
   probabilities <- get_probabilities_tbl(residuals)
   snvs |>
-    mutate(VAF_chr = as.character(round(VAF, digits = 2))) |>
+    mutate(VAF_chr = as.character(round(.data$VAF, digits = 2))) |>
     left_join(probabilities, by = c("sample_id", "VAF_chr")) |>
     select(-.data$VAF_chr)
 }
@@ -154,11 +154,17 @@ classify_SNVs <- function(snvs, residuals) {
 
 get_probabilities_tbl <- function(residuals) {
   probabilities <- residuals |>
-    mutate(VAF = as.character(VAF)) |>
-    select(sample_id, VAF, Neutral = neutral_pred, Clone, starts_with("Subclone"), model_pred) |>
+    mutate(VAF = as.character(.data$VAF)) |>
+    select(
+      .data$sample_id, .data$VAF,
+      Neutral = .data$neutral_pred,
+      .data$Clone,
+      starts_with("Subclone"),
+      .data$model_pred
+    ) |>
     transmute(
-      sample_id,
-      VAF_chr = VAF,
+      .data$sample_id,
+      VAF_chr = .data$VAF,
       across(c("Neutral", "Clone", starts_with("Subclone")), ~.x/model_pred)
     )
   probabilities
@@ -168,6 +174,7 @@ get_probabilities_tbl <- function(residuals) {
 #' Plot cevodata models
 #' @param object cevodata object
 #' @param neutral_tail TRUE,
+#' @param binomial_layer FALSE,
 #' @param subclones TRUE,
 #' @param final_fit TRUE,
 #' @param ... other arguments

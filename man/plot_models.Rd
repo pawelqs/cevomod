@@ -23,6 +23,8 @@ plot_models(object, ...)
 
 \item{neutral_tail}{TRUE,}
 
+\item{binomial_layer}{FALSE,}
+
 \item{subclones}{TRUE,}
 
 \item{final_fit}{TRUE,}

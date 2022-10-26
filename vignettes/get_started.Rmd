@@ -109,7 +109,7 @@ tcga_brca_test %>%
 cd <- tcga_brca_test |> 
   calc_Mf_1f() |> 
   calc_SFS() |> 
-  fit_neutral_lm(rsq_treshold = 0.99)
+  fit_neutral_models(rsq_treshold = 0.99)
 ```
 
 
