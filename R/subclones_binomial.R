@@ -40,7 +40,7 @@ fit_subclones.cevodata <- function(object, ...) {
     )
 
   models <- bind_rows(
-    get_neutral_models(),
+    get_neutral_models(object),
     clones
   ) |>
     arrange(.data$sample_id)
@@ -197,8 +197,8 @@ plot_models.cevodata <- function(object,
                                  final_fit = TRUE,
                                  ...) {
 
-  neutral_lm_fitted <- !is.null(object$models$neutral_models$models)
-  subclones_fitted <- !is.null(object$models$residuals$binom_pred)
+  neutral_lm_fitted <- !is.null(object$models[["neutral_models"]])
+  subclones_fitted <- !is.null(object$models[["binomial_models"]])
 
   neutral_models <- get_neutral_models(object) |>
     select(.data$sample_id, .data$from, .data$to)
