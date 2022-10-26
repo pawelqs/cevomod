@@ -1,7 +1,7 @@
 
 test_that("predict_binoms works", {
   clones <- tibble(
-    clone = c("Clone", "Subclone 1"),
+    component = c("Clone", "Subclone 1"),
     N_mutations = c(300, 100),
     cellularity = c(.5, .2)
   )

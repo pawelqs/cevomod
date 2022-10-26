@@ -11,8 +11,7 @@ fit_subclones <- function(object, ...) {
 
 #' @export
 fit_subclones.cevodata <- function(object, ...) {
-  residuals <- object$models$residuals
-  residuals$binom_pred <- NULL
+  residuals <- get_residuals(object, model = "neutral_models")
   # TODO: smooth(meutral_resid)?
 
   clones <- residuals |>
@@ -21,7 +20,11 @@ fit_subclones.cevodata <- function(object, ...) {
     mutate(clones = map(.data$data, fit_binomial_models_Mclust, clones = 1:3, epochs = 100, eps = 1e-3)) |>
     select(-.data$data) |>
     unnest(.data$clones) |>
-    ungroup()
+    mutate(model = "binomial_clones", .before = "component") |>
+    ungroup() |>
+    mutate(VAF = round(cellularity, digits = 2)) |>
+    left_join(get_sequencing_depths(object), by = c("sample_id", "VAF")) |>
+    select(-VAF)
 
   clonal_predictions <- clones |>
     nest_by(sample_id) |>
@@ -29,16 +32,23 @@ fit_subclones.cevodata <- function(object, ...) {
     map(get_binomial_predictions) |>
     bind_rows(.id = "sample_id")
 
-  residuals <- object$models$residuals |>
+  residuals <- residuals |>
     left_join(clonal_predictions, by = c("sample_id", "VAF")) |>
     mutate(
       model_pred = .data$neutral_pred + .data$binom_pred,
       model_resid = .data$SFS - .data$model_pred
     )
 
-  object$models[["binomial_models"]] <- clones
-  object$models[["residuals"]] <- residuals
-  object$SNVs[[default_SNVs(object)]] <- classify_SNVs(SNVs(object), residuals)
+  models <- bind_rows(
+    get_neutral_models(),
+    clones
+  ) |>
+    arrange(.data$sample_id)
+
+  object$models[["binomial_models"]]$models <- clones
+  object$models[["binomial_models"]]$residuals <- residuals
+  # object$SNVs[[default_SNVs(object)]] <- classify_SNVs(SNVs(object), residuals)
+  object$active_model <- "binomial_models"
   object
 }
 
@@ -61,7 +71,7 @@ fit_binomial_models_Mclust <- function(residuals, clones, epochs, eps) {
     ) |>
     arrange(desc(cellularity)) |>
     mutate(
-      clone = if_else(row_number() == 1, "Clone", str_c("Subclone ", row_number() - 1)),
+      component = if_else(row_number() == 1, "Clone", str_c("Subclone ", row_number() - 1)),
       .before = "cellularity"
     )
   clones
@@ -85,12 +95,25 @@ fit_binomial_models_Mclust <- function(residuals, clones, epochs, eps) {
 # }
 
 
+rebinarize_distribution <- function(distribution, n_bins = 100) {
+  i <- 1:n_bins
+  tibble(
+    VAF = i/n_bins,
+    pred = approx(distribution$VAF, distribution$pred, xout = VAF, rule = 2)$y
+  )
+}
+
+
 get_binomial_predictions <- function(clones) {
+  # clones_predictions <- clones |>
+  #   rename(sequencing_DP = median_DP) |>
+  #   group_by(component) |>
+  #   summarise(pmap(get_binomial_distribution))
   predictions <- tibble(
     i = 1:100,
     VAF = .data$i/100,
     subclonal_pred = map2(clones$N_mutations, clones$cellularity, ~.x * dbinom(.data$i, 100, .y)) |>
-      set_names(clones$clone) |>
+      set_names(clones$component) |>
       as_tibble(),
     binom_pred = rowSums(subclonal_pred)
   )
@@ -98,6 +121,16 @@ get_binomial_predictions <- function(clones) {
     unnest(subclonal_pred) |>
     select(-.data$i)
 }
+
+
+get_binomial_distribution <- function(cellularity, N_mutations, sequencing_DP, ...) {
+  i <- 1:round(sequencing_DP)
+  tibble(
+    VAF = i/sequencing_DP,
+    pred = N_mutations * dbinom(i, round(sequencing_DP), cellularity)
+  )
+}
+
 
 
 # predict_binomial_distribution <- function(Ns, means) {
@@ -157,15 +190,14 @@ plot_models.cevodata <- function(object,
                                  final_fit = TRUE,
                                  ...) {
 
-  neutral_lm_fitted <- !is.null(object$models$neutral_lm)
+  neutral_lm_fitted <- !is.null(object$models$neutral_models$models)
   subclones_fitted <- !is.null(object$models$residuals$binom_pred)
 
-  lm_models <- object$models$neutral_lm |>
-    filter(.data$best) |>
+  neutral_models <- get_neutral_models(object) |>
     select(.data$sample_id, .data$from, .data$to)
 
-  resid <- object$models$residuals |>
-    left_join(lm_models, by = "sample_id") |>
+  resid <- get_residuals(object) |>
+    left_join(neutral_models, by = "sample_id") |>
     group_by(.data$sample_id) |>
     mutate(ylim = max(.data$SFS) * 1.2) |>
     ungroup() |>
