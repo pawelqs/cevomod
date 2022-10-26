@@ -36,7 +36,7 @@ snvs_tcga_brca <- mutations %>%
   )
 class(snvs_tcga_brca) <- c("cevo_SNVs_tbl", class(snvs_tcga_brca))
 
-usethis::use_data(snvs_tcga_brca, overwrite = TRUE)
+# usethis::use_data(snvs_tcga_brca, overwrite = TRUE)
 
 top_mutated_patients <- snvs_tcga_brca %>%
   group_by(sample_id) %>%
