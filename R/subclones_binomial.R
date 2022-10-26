@@ -245,7 +245,7 @@ plot_models.cevodata <- function(object,
       dt <- resid |>
         pivot_longer(
           cols = c("Clone", starts_with("Subclone")),
-          names_to = "clone",
+          names_to = "component",
           values_to = "pred"
         ) |>
         filter(!is.na(.data$pred))

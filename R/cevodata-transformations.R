@@ -20,8 +20,17 @@ filter.cevodata <- function(.data, ..., .preserve = FALSE) {
   new_object$SNVs <- map(new_object$SNVs, ~filter(.x, sample_id %in% ids))
   new_object$CNVs <- map(new_object$CNVs, ~filter(.x, sample_id %in% ids))
   new_object$clones <- map(new_object$clones, ~filter(.x, sample_id %in% ids))
-  new_object$models <- map(new_object$models, ~filter(.x, sample_id %in% ids))
+  new_object$models <- map(new_object$models, filter_models, ids)
   new_object
+}
+
+
+filter_models <- function(models_item, ids) {
+  if (is_tibble(models_item)) {
+    filter(models_item, sample_id %in% ids)
+  } else {
+    map(models_item, ~filter(.x, sample_id %in% ids))
+  }
 }
 
 
