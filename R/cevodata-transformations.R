@@ -20,17 +20,9 @@ filter.cevodata <- function(.data, ..., .preserve = FALSE) {
   new_object$SNVs <- map(new_object$SNVs, ~filter(.x, sample_id %in% ids))
   new_object$CNVs <- map(new_object$CNVs, ~filter(.x, sample_id %in% ids))
   new_object$clones <- map(new_object$clones, ~filter(.x, sample_id %in% ids))
-  new_object$models <- map(new_object$models, filter_models, ids)
+  new_object$models <- map(new_object$models, ~filter(.x, sample_id %in% ids))
+  new_object$residuals <- map(new_object$residuals, ~filter(.x, sample_id %in% ids))
   new_object
-}
-
-
-filter_models <- function(models_item, ids) {
-  if (is_tibble(models_item)) {
-    filter(models_item, sample_id %in% ids)
-  } else {
-    map(models_item, ~filter(.x, sample_id %in% ids))
-  }
 }
 
 
@@ -49,6 +41,7 @@ merge.cevodata <- function(x, y, name = "Merged datasets", verbose = TRUE, ...) 
   cd$CNVs <- bind_assays(x, y, "CNVs")
   cd$clones <- bind_assays(x, y, "clones")
   cd$models <- bind_assays(x, y, "models")
+  cd$residuals <- bind_assays(x, y, "residuals")
 
   if (verbose) {
     message("Setting active SNVs to ", x$active_SNV)

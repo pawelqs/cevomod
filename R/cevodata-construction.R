@@ -8,6 +8,7 @@ new_cevodata <- function(name, genome) {
     CNVs = list(),
     clones = list(),
     models = list(),
+    residuals = list(),
     active_SNVs = "",
     active_CNVs = "",
     active_clones = "",

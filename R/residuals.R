@@ -1,6 +1,6 @@
 
 get_residuals <- function(cd, model = cd$active_model) {
-  cd$models[[model]]$residuals
+  cd$residuals[[model]]
 }
 
 

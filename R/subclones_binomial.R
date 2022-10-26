@@ -45,8 +45,8 @@ fit_subclones.cevodata <- function(object, ...) {
   ) |>
     arrange(.data$sample_id)
 
-  object$models[["binomial_models"]]$models <- clones
-  object$models[["binomial_models"]]$residuals <- residuals
+  object$models[["binomial_models"]] <- clones
+  object$residuals[["binomial_models"]] <- residuals
   # object$SNVs[[default_SNVs(object)]] <- classify_SNVs(SNVs(object), residuals)
   object$active_model <- "binomial_models"
   object
@@ -122,7 +122,7 @@ get_binomial_predictions <- function(clones) {
 
 
 get_binomial_distribution <- function(cellularity, N_mutations, sequencing_DP, ...) {
-  i <- 1:round(sequencing_DP)
+  i <- 0:round(sequencing_DP)
   tibble(
     VAF = i/sequencing_DP,
     pred = N_mutations * stats::dbinom(i, round(sequencing_DP), cellularity)

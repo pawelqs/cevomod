@@ -53,8 +53,8 @@ fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, ...) {
     unnest(.data$fits)
   class(models) <- c("cevo_lm_models_tbl", class(models))
 
-  object$models[["neutral_models"]]$models <- models
-  object$models[["neutral_models"]]$residuals <- calc_residuals(object)
+  object$models[["neutral_models"]] <- models
+  object$residuals[["neutral_models"]] <- calc_residuals(object)
   object$active_model <- "neutral_models"
   object
 }
@@ -94,7 +94,7 @@ tidy_lm <- function(x, y) {
 
 
 calc_residuals <- function(object, ...) {
-  neutral_lm <- filter(object$models[["neutral_models"]]$model, .data$best)
+  neutral_lm <- filter(object$models[["neutral_models"]])
   sfs <- object$models[["SFS"]]
   if (is.null(neutral_lm) || is.null(sfs)) {
     stop("Calc SFS and and fit neutral lm first!")
@@ -157,13 +157,14 @@ get_neutral_models <- function(object, ...) {
 #' @param best_only return only the best fits
 #' @export
 get_neutral_models <- function(object, best_only = TRUE, ...) {
-  models <- object$models$neutral_models$models
+  models <- object$models$neutral_models
   if (best_only) {
     filter(models, .data$best)
   } else {
     models
   }
 }
+
 
 #' @describeIn neutral_model Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
 #'

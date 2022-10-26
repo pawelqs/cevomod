@@ -16,8 +16,8 @@ test_that("Fitting neutral partial models works", {
       .before = "from"
     )
   class(expected) <- c("cevo_lm_models_tbl", class(expected))
-  # write_tsv(cd$models$neutral_model$models, "tests/testdata/tcga_brca_partial_neutral_models.tsv")
-  expect_equal(cd$models$neutral_model$models, expected)
+  # write_tsv(cd$models$neutral_model, "tests/testdata/tcga_brca_partial_neutral_models.tsv")
+  expect_equal(cd$models$neutral_model, expected)
 })
 
 
@@ -29,7 +29,7 @@ cd <- init_cevodata("Test") |>
 
 
 test_that("calc_powerlaw_curve works", {
-  curve <- cd$models$neutral_model$models |>
+  curve <- cd$models$neutral_model |>
     filter(best) |>
     calc_powerlaw_curve(binwidth = 0.01)
   expect_equal(nrow(curve), 100)
