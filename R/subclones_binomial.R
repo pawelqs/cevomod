@@ -132,16 +132,13 @@ get_binomial_distribution <- function(cellularity, N_mutations, sequencing_DP, .
 
 rebinarize_distribution <- function(distribution, n_bins = 100) {
   i <- 1:n_bins
-  # sum_dist <- sum(distribution$pred)
   new_distribution <- tibble(
     VAF = i/n_bins,
-    pred = approx(distribution$VAF, distribution$pred, xout = VAF, rule = 2)$y
+    pred = stats::approx(distribution$VAF, distribution$pred, xout = .data$VAF, rule = 2)$y
   )
   scaling_factor <- sum(new_distribution$pred) / sum(distribution$pred)
   new_distribution |>
-    mutate(
-      pred = pred / scaling_factor
-    )
+    mutate(pred = .data$pred / scaling_factor)
 }
 
 
@@ -220,7 +217,7 @@ plot_models.cevodata <- function(object,
     group_by(.data$sample_id) |>
     mutate(ylim = max(.data$SFS) * 1.2) |>
     ungroup() |>
-    mutate(neutr = (.data$VAF >= .data$from & .data$VAF <= .data$to))
+    mutate(neutr = .data$VAF >= .data$from & .data$VAF <= .data$to)
 
   model_layers <- list(
     if (neutral_tail && neutral_lm_fitted) {
@@ -251,9 +248,9 @@ plot_models.cevodata <- function(object,
           names_to = "clone",
           values_to = "pred"
         ) |>
-        filter(!is.na(pred))
+        filter(!is.na(.data$pred))
       geom_line(
-        aes(.data$VAF, .data$pred, group = clone),
+        aes(.data$VAF, .data$pred, group = .data$component),
         data = dt,
         size = 1, color = "black"
       )
