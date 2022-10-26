@@ -23,11 +23,11 @@ print.cevodata <- function(x, ...) {
   cli::cat_line("CNV assays: ", CNV_assays_str)
   cli::cat_line(summ$metadata_str)
   cli::cat_line(summ$SNVs_str)
-  if (!is.null(x$active_SNVs)) {
+  if (x$active_SNVs != "") {
     cli::cat_line("SNVs:")
     print(x$SNVs[[x$active_SNVs]])
   }
-  if (!is.null(x$active_CNVs)) {
+  if (x$active_CNVs != "") {
     cli::cat_line("CNVs:")
     print(x$CNVs[[x$active_CNVs]])
   }
@@ -99,7 +99,7 @@ stringify_number_of_samples <- function(min, max) {
 
 
 summarize_SNVs <- function(object) {
-  snvs_added <- !is.null(object$active_SNVs)
+  snvs_added <- object$active_SNVs != ""
   patient_id_present <- !is.null(object$metadata[["patient_id"]])
 
   summ <- list()

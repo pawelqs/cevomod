@@ -2,7 +2,7 @@
 % Please edit documentation in R/subclones_binomial.R
 \name{fit_subclones}
 \alias{fit_subclones}
-\title{fit_subclones}
+\title{Fit subclonal distributions to neutral model residuals}
 \usage{
 fit_subclones(object, ...)
 }
@@ -12,5 +12,5 @@ fit_subclones(object, ...)
 \item{...}{other arguments}
 }
 \description{
-fit_subclones
+Fit subclonal distributions to neutral model residuals
 }

@@ -8,9 +8,10 @@ new_cevodata <- function(name, genome) {
     CNVs = list(),
     clones = list(),
     models = list(),
-    active_SNVs = NULL,
-    active_CNVs = NULL,
-    active_clones = NULL
+    active_SNVs = "",
+    active_CNVs = "",
+    active_clones = "",
+    active_model = ""
   )
   structure(cd, class = "cevodata")
 }

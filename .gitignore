@@ -1,3 +1,5 @@
 .Rproj.user
 docs
 tests/testthat/Rplots.pdf
+inst/develop_file*
+

@@ -1,7 +1,7 @@
 
 #' Fitting neutral models
 #'
-#' Creates  cevodata$models$neutral_lm
+#' Creates  cevodata$models$neutral_model
 #'
 #' @param object SNVs tibble object
 #' @param rsq_treshold R-squared tresholds to keep model as neutral
@@ -15,26 +15,27 @@
 #'   add_SNV_data(snvs) |>
 #'   calc_Mf_1f() |>
 #'   calc_SFS() |>
-#'   fit_neutral_lm(rsq_treshold = 0.99)
+#'   fit_neutral_model(rsq_treshold = 0.99)
 #'
 #' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
 #'   layer_lm_fits(cd)
-#' @name neutral_lm
+#' @name neutral_model
 
 
-#' @rdname neutral_lm
+#' @rdname neutral_model
 #' @export
-fit_neutral_lm <- function(object, ...) {
-  UseMethod("fit_neutral_lm")
+fit_neutral_models <- function(object, ...) {
+  UseMethod("fit_neutral_models")
 }
 
 
-#' @describeIn neutral_lm Fit Williams neutral models to the data
+#' @describeIn neutral_model Fit Williams neutral models to the data
 #' @export
-fit_neutral_lm.cevodata <- function(object, rsq_treshold = 0.98, ...) {
+fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, ...) {
   if (is.null(object$models$Mf_1f)) {
     stop("Run calc_Mf_1f() first!")
   }
+
   Mf_1f <- object$models$Mf_1f
   bounds <- get_VAF_range(SNVs(object))
   dt <- Mf_1f |>
@@ -42,13 +43,19 @@ fit_neutral_lm.cevodata <- function(object, rsq_treshold = 0.98, ...) {
     filter(.data$VAF > .data$lower_bound, .data$VAF < .data$higher_bound) |>
     select(.data$sample_id, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
     nest(data = c(.data$VAF, .data$`M(f)`, .data$`1/f`))
-  res <- dt |>
-    mutate(fits = map(.data$data, fit_optimal_lm, rsq_treshold)) |>
+  models <- dt |>
+    mutate(
+      model = "neutral_A/f^2",
+      component = "Neutral tail",
+      fits = map(.data$data, fit_optimal_lm, rsq_treshold)
+    ) |>
     select(-.data$data) |>
     unnest(.data$fits)
-  class(res) <- c("cevo_lm_models_tbl", class(res))
-  object$models[["neutral_lm"]] <- res
-  object <- calc_residuals(object)
+  class(models) <- c("cevo_lm_models_tbl", class(models))
+
+  object$models[["neutral_models"]]$models <- models
+  object$models[["neutral_models"]]$residuals <- calc_residuals(object)
+  object$active_model <- "neutral_models"
   object
 }
 
@@ -68,7 +75,9 @@ fit_optimal_lm <- function(dt, rsq_treshold = 0.98) {
     select(-.data$data) |>
     unnest(.data$fits) |>
     filter(.data$rsquared > rsq_treshold) |>
-    arrange(.data$a) |>
+    rename(A = .data$a) |>
+    mutate(alpha = 2, .before = "rsquared") |>
+    arrange(.data$A) |>
     mutate(best = (row_number() == 1))
 }
 
@@ -85,12 +94,7 @@ tidy_lm <- function(x, y) {
 
 
 calc_residuals <- function(object, ...) {
-  UseMethod("calc_residuals")
-}
-
-
-calc_residuals.cevodata <- function(object, ...) {
-  neutral_lm <- filter(object$models[["neutral_lm"]], .data$best)
+  neutral_lm <- filter(object$models[["neutral_models"]]$model, .data$best)
   sfs <- object$models[["SFS"]]
   if (is.null(neutral_lm) || is.null(sfs)) {
     stop("Calc SFS and and fit neutral lm first!")
@@ -118,8 +122,7 @@ calc_residuals.cevodata <- function(object, ...) {
     ) |>
     select(.data$sample_id, .data$VAF, .data$SFS, everything())
 
-  object$models[["residuals"]] <- residuals
-  object
+  residuals
 }
 
 
@@ -129,7 +132,7 @@ calc_powerlaw_curve <- function(lm_models, binwidth) {
     expand_grid(f = seq(0.01, 1, by = binwidth)) |>
     mutate(
       neutr = (.data$f >= .data$from & .data$f <= .data$to),
-      neutral_pred = (.data$a / n_bins) / .data$f^2
+      neutral_pred = (.data$A / n_bins) / .data$f^2
     )
 }
 
@@ -143,7 +146,26 @@ get_average_interval <- function(vec) {
 }
 
 
-#' @describeIn neutral_lm Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
+#' @rdname neutral_model
+#' @export
+get_neutral_models <- function(object, ...) {
+  UseMethod("get_neutral_models")
+}
+
+
+#' @describeIn neutral_model Get neutral models
+#' @param best_only return only the best fits
+#' @export
+get_neutral_models <- function(object, best_only = TRUE, ...) {
+  models <- cd$models$neutral_models$models
+  if (best_only) {
+    filter(models, best)
+  } else {
+    models
+  }
+}
+
+#' @describeIn neutral_model Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
 #'
 #' @param cd cevodata
 #' @param ... other params passed to geom_segment()
@@ -153,12 +175,11 @@ layer_lm_fits <- function(cd, ...) {
     aes(
       x = 1/.data$from,
       xend = 1/.data$to,
-      y = 1/.data$from * .data$a + .data$b,
-      yend = 1/.data$to * .data$a + .data$b
+      y = 1/.data$from * .data$A + .data$b,
+      yend = 1/.data$to * .data$A + .data$b
     ),
     size = 1,
-    data = cd$models$neutral_lm |>
-      filter(.data$best) |>
+    data = get_neutral_models(cd) |>
       left_join(cd$metadata, by = "sample_id"),
     show.legend = FALSE,
     ...

@@ -10,6 +10,7 @@ plot_models(object, ...)
 \method{plot_models}{cevodata}(
   object,
   neutral_tail = TRUE,
+  binomial_layer = FALSE,
   subclones = TRUE,
   final_fit = TRUE,
   ...
