@@ -1,10 +1,11 @@
 Package: cevomod
 Title: Cancer Evolution Models
-Version: 0.3.2
+Version: 0.3.3
 Authors@R: 
     person("Paweł", "Kuś", , "kpawel2210@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4367-9821"))
-Description: Set of methods facilitating the analysis of Cancer Evolution. Developped for my PhD.
+Description: Set of methods facilitating the analysis of Cancer Evolution.
+    Developped for my PhD.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

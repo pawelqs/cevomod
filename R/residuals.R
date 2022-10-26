@@ -53,7 +53,7 @@ plot_residuals_neutral_model.cevodata <- function(object,
                                                   ...) {
   residuals <- get_residuals(object) |>
     left_join(object$metadata, by = "sample_id")
-  binomial_model_fitted <- !is.null(residuals$binom_pred)
+  binomial_model_fitted <- !is.null(residuals[["binom_pred"]])
   default_mapping <- aes(.data$VAF, .data$neutral_resid_clones, color = .data$sample_id)
   final_mapping <- join_aes(default_mapping, mapping)
   clones_fit <- if (fit_clones && binomial_model_fitted) {

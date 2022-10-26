@@ -37,7 +37,7 @@ run_cevomod.cevodata <- function(object, ...) {
     calc_SFS() |>
     calc_cumulative_tails() |>
     calc_Mf_1f() |>
-    fit_neutral_lm() |>
+    fit_neutral_models() |>
     fit_subclones()
 }
 

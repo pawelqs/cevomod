@@ -191,15 +191,16 @@ layer_lm_fits <- function(cd, ...) {
 #' @param object cevodata object
 #' @param ... other parameters passed to geom
 #' @export
-plot_lm_a_coefficients <- function(object, ...) {
-  UseMethod("plot_lm_a_coefficients")
+plot_neutral_A_coefficients <- function(object, ...) {
+  UseMethod("plot_neutral_A_coefficients")
 }
 
 
 #' @export
-plot_lm_a_coefficients <- function(object, ...) {
-  ggplot(object$models$neutral_lm) +
-    aes(x = .data$from, xend = .data$to, y = .data$a, yend = .data$a, color = .data$best) +
+plot_neutral_A_coefficients <- function(object, ...) {
+  get_neutral_models(object, best_only = FALSE) |>
+    ggplot() +
+    aes(x = .data$from, xend = .data$to, y = .data$A, yend = .data$A, color = .data$best) +
     geom_segment(...) +
     facet_wrap(~.data$sample_id, scales = "free") +
     theme_minimal() +
