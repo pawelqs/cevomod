@@ -3,7 +3,8 @@ test_that("predict_binoms works", {
   clones <- tibble(
     component = c("Clone", "Subclone 1"),
     N_mutations = c(300, 100),
-    cellularity = c(.5, .2)
+    cellularity = c(.5, .2),
+    median_DP = 100
   )
   binomial <- get_binomial_predictions(clones)
   map(binomial, sum)

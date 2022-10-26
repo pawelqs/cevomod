@@ -95,31 +95,29 @@ fit_binomial_models_Mclust <- function(residuals, clones, epochs, eps) {
 # }
 
 
-rebinarize_distribution <- function(distribution, n_bins = 100) {
-  i <- 1:n_bins
-  tibble(
-    VAF = i/n_bins,
-    pred = approx(distribution$VAF, distribution$pred, xout = VAF, rule = 2)$y
-  )
-}
-
-
 get_binomial_predictions <- function(clones) {
-  # clones_predictions <- clones |>
-  #   rename(sequencing_DP = median_DP) |>
-  #   group_by(component) |>
-  #   summarise(pmap(get_binomial_distribution))
-  predictions <- tibble(
-    i = 1:100,
-    VAF = .data$i/100,
-    subclonal_pred = map2(clones$N_mutations, clones$cellularity, ~.x * dbinom(.data$i, 100, .y)) |>
-      set_names(clones$component) |>
-      as_tibble(),
-    binom_pred = rowSums(.data$subclonal_pred)
-  )
-  predictions |>
-    unnest(.data$subclonal_pred) |>
-    select(-.data$i)
+  clones_predictions <- clones |>
+    rename(sequencing_DP = .data$median_DP) |>
+    pmap(get_binomial_distribution) |>
+    map(rebinarize_distribution, n_bins = 100) |>
+    set_names(clones$component) |>
+    bind_rows(.id = "component") |>
+    pivot_wider(names_from = "component", values_from = "pred")
+  clones_predictions$binom_pred <- clones_predictions |>
+    select(-.data$VAF) |>
+    rowSums()
+  clones_predictions
+  # predictions <- tibble(
+  #   i = 1:100,
+  #   VAF = .data$i/100,
+  #   subclonal_pred = map2(clones$N_mutations, clones$cellularity, ~.x * dbinom(.data$i, 100, .y)) |>
+  #     set_names(clones$component) |>
+  #     as_tibble(),
+  #   binom_pred = rowSums(.data$subclonal_pred)
+  # )
+  # predictions |>
+  #   unnest(.data$subclonal_pred) |>
+  #   select(-.data$i)
 }
 
 
@@ -131,6 +129,20 @@ get_binomial_distribution <- function(cellularity, N_mutations, sequencing_DP, .
   )
 }
 
+
+rebinarize_distribution <- function(distribution, n_bins = 100) {
+  i <- 1:n_bins
+  # sum_dist <- sum(distribution$pred)
+  new_distribution <- tibble(
+    VAF = i/n_bins,
+    pred = approx(distribution$VAF, distribution$pred, xout = VAF, rule = 2)$y
+  )
+  scaling_factor <- sum(new_distribution$pred) / sum(distribution$pred)
+  new_distribution |>
+    mutate(
+      pred = pred / scaling_factor
+    )
+}
 
 
 # predict_binomial_distribution <- function(Ns, means) {
