@@ -215,25 +215,30 @@ plot_models.cevodata <- function(object,
   resid <- get_residuals(object) |>
     left_join(neutral_models, by = "sample_id") |>
     group_by(.data$sample_id) |>
-    mutate(ylim = max(.data$SFS) * 1.2) |>
+    mutate(
+      ylim = max(.data$SFS) * 1.2,
+      neutral_pred = if_else(.data$neutral_pred > .data$ylim, .data$ylim, .data$neutral_pred)
+    ) |>
     ungroup() |>
     mutate(neutr = .data$VAF >= .data$from & .data$VAF <= .data$to)
 
   model_layers <- list(
     if (neutral_tail && neutral_lm_fitted) {
-      geom_line(
+      geom_area(
         aes(.data$VAF, .data$neutral_pred),
-        data = resid |> filter(.data$neutral_pred < .data$ylim),
-        color = "black", size = 1, linetype = "dashed", show.legend = FALSE
+        data = resid, # |> filter(.data$neutral_pred < .data$ylim),
+         fill = "white", color = "white",
+        alpha = 0.3,
+        size = 0.5, show.legend = FALSE
       )
     },
-    if (neutral_tail && neutral_lm_fitted) {
-      geom_line(
-        aes(.data$VAF, .data$neutral_pred),
-        data = resid |> filter(.data$neutr, .data$neutral_pred < .data$ylim),
-        color = "black", size = 1, show.legend = FALSE
-      )
-    },
+    # if (neutral_tail && neutral_lm_fitted) {
+    #   geom_line(
+    #     aes(.data$VAF, .data$neutral_pred),
+    #     data = resid |> filter(.data$neutr, .data$neutral_pred < .data$ylim),
+    #     size = 1, show.legend = FALSE
+    #   )
+    # },
     if (binomial_layer && subclones_fitted) {
       geom_line(
         aes(.data$VAF, .data$binom_pred),
@@ -249,10 +254,10 @@ plot_models.cevodata <- function(object,
           values_to = "pred"
         ) |>
         filter(!is.na(.data$pred))
-      geom_line(
+      geom_area(
         aes(.data$VAF, .data$pred, group = .data$component),
         data = dt,
-        size = 1, color = "black"
+        size = 1, alpha = 0.3, color = "black", show.legend = FALSE
       )
     },
     if (final_fit && neutral_lm_fitted && subclones_fitted) {
