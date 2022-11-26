@@ -15,13 +15,13 @@ fit_subclones.cevodata <- function(object, ...) {
   # TODO: smooth(meutral_resid)?
 
   clones <- residuals |>
-    group_by(.data$sample_id) |>
-    nest() |>
-    mutate(clones = map(.data$data, fit_binomial_models_Mclust, clones = 1:3, epochs = 100, eps = 1e-3)) |>
-    select(-.data$data) |>
+    nest_by(.data$sample_id) |>
+    summarise(
+      model = "binomial_clones",
+      clones = fit_binomial_models_Mclust(.data$data, clones = 1:3, epochs = 100, eps = 1e-3),
+      .groups = "drop"
+    ) |>
     unnest(.data$clones) |>
-    mutate(model = "binomial_clones", .before = "component") |>
-    ungroup() |>
     mutate(VAF = round(.data$cellularity, digits = 2)) |>
     left_join(get_sequencing_depths(object), by = c("sample_id", "VAF")) |>
     select(-.data$VAF)
@@ -54,7 +54,7 @@ fit_subclones.cevodata <- function(object, ...) {
 
 
 fit_binomial_models_Mclust <- function(residuals, clones, epochs, eps) {
-  data <- residuals |>
+  mutations <- residuals |>
     mutate() |>
     transmute(
       .data$VAF,
@@ -62,10 +62,10 @@ fit_binomial_models_Mclust <- function(residuals, clones, epochs, eps) {
       muts = map(.data$n, ~tibble(i = 1:.x))
     ) |>
     unnest(.data$muts)
-  model <- mclust::Mclust(data$VAF, G = 1:3, verbose = FALSE)
+  model <- mclust::Mclust(mutations$VAF, G = 1:3, verbose = FALSE)
   clones <- tibble(
       cellularity = model$parameters$mean,
-      N_mutations = round(model$parameters$pro * nrow(data)),
+      N_mutations = round(model$parameters$pro * nrow(mutations)),
       BIC = model$bic,
       best = TRUE
     ) |>
