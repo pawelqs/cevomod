@@ -32,6 +32,7 @@ Imports:
     GenomicRanges,
     ggplot2,
     grid,
+    IRanges,
     mclust,
     paletteer,
     plyranges,
