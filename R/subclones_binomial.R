@@ -10,15 +10,14 @@ fit_subclones <- function(object, ...) {
 
 
 #' @export
-fit_subclones.cevodata <- function(object, ...) {
+fit_subclones.cevodata <- function(object, N = 1:3, ...) {
   residuals <- get_residuals(object, model = "neutral_models")
-  # TODO: smooth(meutral_resid)?
 
   clones <- residuals |>
     nest_by(.data$sample_id) |>
     summarise(
       model = "binomial_clones",
-      clones = fit_binomial_models_Mclust(.data$data, clones = 1:3, epochs = 100, eps = 1e-3),
+      clones = fit_binomial_models_Mclust(.data$data, N = N),
       .groups = "drop"
     ) |>
     unnest(.data$clones) |>
@@ -53,28 +52,43 @@ fit_subclones.cevodata <- function(object, ...) {
 }
 
 
-fit_binomial_models_Mclust <- function(residuals, clones, epochs, eps) {
-  mutations <- residuals |>
-    mutate() |>
-    transmute(
-      .data$VAF,
-      n = as.integer(round(.data$neutral_resid_clones)),
-      muts = map(.data$n, ~tibble(i = 1:.x))
-    ) |>
-    unnest(.data$muts)
-  model <- mclust::Mclust(mutations$VAF, G = 1:3, verbose = FALSE)
-  clones <- tibble(
-      cellularity = model$parameters$mean,
-      N_mutations = round(model$parameters$pro * nrow(mutations)),
-      BIC = model$bic,
-      best = TRUE
-    ) |>
+fit_binomial_models_Mclust <- function(residuals, N) {
+  VAFs <- rep(residuals$VAF, times = floor(residuals$neutral_resid_clones))
+  clones <- N |>
+    map(~mclust::Mclust(VAFs, G = .x, verbose = FALSE)) |>
+    discard(any_clusters_overlap) |>
+    map(mclust_to_clones_tbl) |>
+    bind_rows() |>
+    mutate(best = .data$BIC == max(.data$BIC))
+  clones |>
+    filter(.data$best)
+}
+
+
+any_clusters_overlap <- function(mclust_res) {
+  mean <- mclust_res$parameters$mean
+  sd <- sqrt(mclust_res$parameters$variance$sigmasq)
+  clust_ranges <- IRanges::IRanges(
+    start = round(100 * (mean - sd)),
+    end = round(100 * (mean + sd)),
+  )
+  range_coverage <- IRanges::coverage(clust_ranges)
+  any(range_coverage@values > 1)
+}
+
+
+mclust_to_clones_tbl <- function(mclust_model) {
+  tibble(
+    n = length(mclust_model$parameters$mean),
+    cellularity = mclust_model$parameters$mean,
+    N_mutations = round(mclust_model$parameters$pro * nrow(mutations)),
+    BIC = mclust_model$bic
+  ) |>
     arrange(desc(.data$cellularity)) |>
     mutate(
       component = if_else(row_number() == 1, "Clone", str_c("Subclone ", row_number() - 1)),
       .before = "cellularity"
     )
-  clones
 }
 
 
