@@ -17,7 +17,7 @@ calc_SFS(object, ...)
 
 plot_SFS(object, ...)
 
-\method{plot_SFS}{cevodata}(object, ...)
+\method{plot_SFS}{cevodata}(object, ..., geom = "line", alpha = if (geom == "bar") 0.8 else 1)
 }
 \arguments{
 \item{object}{SNVs tibble object}
@@ -25,6 +25,10 @@ plot_SFS(object, ...)
 \item{...}{other arguments}
 
 \item{digits}{resolution of the cumulative tails calculation}
+
+\item{geom}{geom}
+
+\item{alpha}{alpha}
 }
 \description{
 Creates  cevodata$models$SFS with the groupping variables and:

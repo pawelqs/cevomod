@@ -8,6 +8,8 @@
 #'
 #' @param object SNVs tibble object
 #' @param digits resolution of the cumulative tails calculation
+#' @param geom geom
+#' @param alpha alpha
 #' @param ... other arguments
 #' @examples
 #' data("tcga_brca_test")
