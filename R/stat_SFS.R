@@ -91,12 +91,12 @@ plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
 
 #' @describeIn sfs Plot SFS
 #' @export
-plot_SFS.cevodata <- function(object, ..., alpha = 0.8) {
+plot_SFS.cevodata <- function(object, ..., geom = "line", alpha = if (geom == "bar") 0.8 else 1) {
   dt <- SNVs(object) |>
     filter(.data$VAF > 0.00001) |>
     left_join(object$metadata, by = "sample_id")
   ggplot(dt, aes(.data$VAF, color = .data$sample_id, fill = .data$sample_id)) +
-    stat_SFS(..., alpha = alpha) +
+    stat_SFS(..., geom = geom, alpha = alpha) +
     theme_ellie(n = n_distinct(dt$sample_id)) +
     labs(
       title = "SFS",
