@@ -17,10 +17,10 @@ stat_cumulative_tail(
 )
 }
 \arguments{
-\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}} or
-\code{\link[ggplot2:aes_]{aes_()}}. If specified and \code{inherit.aes = TRUE} (the
-default), it is combined with the default mapping at the top level of the
-plot. You must supply \code{mapping} if there is no plot mapping.}
+\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}}. If specified and
+\code{inherit.aes = TRUE} (the default), it is combined with the default mapping
+at the top level of the plot. You must supply \code{mapping} if there is no plot
+mapping.}
 
 \item{data}{The data to be displayed in this layer. There are three
 options:
@@ -39,8 +39,10 @@ from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
 
 \item{geom}{geom}
 
-\item{position}{Position adjustment, either as a string, or the result of
-a call to a position adjustment function.}
+\item{position}{Position adjustment, either as a string naming the adjustment
+(e.g. \code{"jitter"} to use \code{position_jitter}), or the result of a call to a
+position adjustment function. Use the latter if you need to change the
+settings of the adjustment.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -105,11 +107,20 @@ This geom treats each axis differently and, thus, can thus have two orientations
 
 
 \describe{
-\item{count}{number of points in bin}
-\item{density}{density of points in bin, scaled to integrate to 1}
-\item{ncount}{count, scaled to maximum of 1}
-\item{ndensity}{density, scaled to maximum of 1}
-\item{width}{widths of bins}
+\item{\code{count}}{number of points in bin}
+\item{\code{density}}{density of points in bin, scaled to integrate to 1}
+\item{\code{ncount}}{count, scaled to maximum of 1}
+\item{\code{ndensity}}{density, scaled to maximum of 1}
+\item{\code{width}}{widths of bins}
+}
+
+}
+
+\section{Dropped variables}{
+
+
+\describe{
+\item{\code{weight}}{After binning, weights of individual data points (if supplied) are no longer available.}
 }
 
 }
