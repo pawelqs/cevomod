@@ -57,7 +57,7 @@ fit_binomial_models_Mclust <- function(residuals, N) {
   clones <- N |>
     map(~mclust::Mclust(VAFs, G = .x, verbose = FALSE)) |>
     discard(any_clusters_overlap) |>
-    map(mclust_to_clones_tbl) |>
+    map(mclust_to_clones_tbl, n_mutations = length(VAFs)) |>
     bind_rows() |>
     mutate(best = .data$BIC == max(.data$BIC))
   clones |>
@@ -77,11 +77,11 @@ any_clusters_overlap <- function(mclust_res) {
 }
 
 
-mclust_to_clones_tbl <- function(mclust_model) {
+mclust_to_clones_tbl <- function(mclust_model, n_mutations) {
   tibble(
     n = length(mclust_model$parameters$mean),
     cellularity = mclust_model$parameters$mean,
-    N_mutations = round(mclust_model$parameters$pro * nrow(mutations)),
+    N_mutations = round(mclust_model$parameters$pro * n_mutations),
     BIC = mclust_model$bic
   ) |>
     arrange(desc(.data$cellularity)) |>
