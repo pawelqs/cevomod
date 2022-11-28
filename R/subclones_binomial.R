@@ -241,7 +241,7 @@ plot_models.cevodata <- function(object,
       geom_area(
         aes(.data$VAF, .data$neutral_pred),
         data = resid, # |> filter(.data$neutral_pred < .data$ylim),
-         fill = "white", color = "white",
+         fill = "white", color = "gray90",
         alpha = 0.3,
         size = 0.5, show.legend = FALSE
       )
@@ -257,7 +257,7 @@ plot_models.cevodata <- function(object,
       geom_line(
         aes(.data$VAF, .data$binom_pred),
         data = resid,
-        size = 1, color = "black"
+        size = 1, color = "black", linetype = "dashed"
       )
     },
     if (subclones && subclones_fitted) {
@@ -271,6 +271,7 @@ plot_models.cevodata <- function(object,
       geom_area(
         aes(.data$VAF, .data$pred, group = .data$component),
         data = dt,
+        position = "identity",
         size = 1, alpha = 0.3, color = "black", show.legend = FALSE
       )
     },
