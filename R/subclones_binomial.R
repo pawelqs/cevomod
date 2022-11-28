@@ -92,23 +92,6 @@ mclust_to_clones_tbl <- function(mclust_model, n_mutations) {
 }
 
 
-# fit_binomial_models <- function(er, clones, epochs, eps) {
-#   clones |>
-#     set_names(clones) |>
-#     map(~.fit_binomial_models(er, .x, epochs, eps)) |>
-#     bind_rows(.id = "clones")
-# }
-#
-#
-# .fit_binomial_models <- function(er, clones, epochs, eps) {
-#   tibble(
-#     means = list(runif(clones)),
-#     Ns = 300,
-#     BIC = runif(1)
-#   )
-# }
-
-
 get_binomial_predictions <- function(clones) {
   clones_predictions <- clones |>
     rename(sequencing_DP = .data$median_DP) |>
