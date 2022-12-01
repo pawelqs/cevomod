@@ -94,3 +94,13 @@ plot_models.cevodata <- function(object,
     facet_wrap(~.data$sample_id, scales = "free_y")
 }
 
+
+plot_clones <- function(clones) {
+  clones |>
+    get_binomial_predictions() |>
+    select(-.data$binom_pred) |>
+    pivot_longer(-VAF) |>
+    ggplot(aes(VAF, value, group = name)) +
+    geom_point()
+}
+
