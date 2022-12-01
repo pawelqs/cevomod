@@ -9,6 +9,8 @@ fit_subclones <- function(object, ...) {
 }
 
 
+#' @rdname fit_subclones
+#' @param N vector of numbers of clones to test
 #' @export
 fit_subclones.cevodata <- function(object, N = 1:3, ...) {
   residuals <- get_residuals(object, model = "neutral_models")
@@ -17,7 +19,7 @@ fit_subclones.cevodata <- function(object, N = 1:3, ...) {
     nest_by(.data$sample_id) |>
     summarise(
       model = "binomial_clones",
-      clones = fit_binomial_models_Mclust(.data$data, N = N),
+      clones = fit_binomial_models(.data$data, N = N),
       .groups = "drop"
     ) |>
     unnest(.data$clones) |>
@@ -52,14 +54,30 @@ fit_subclones.cevodata <- function(object, N = 1:3, ...) {
 }
 
 
+fit_binomial_models <- function(...) {
+  fit_binomial_models_Mclust(...)
+}
+
+
 fit_binomial_models_Mclust <- function(residuals, N) {
   VAFs <- rep(residuals$VAF, times = floor(residuals$neutral_resid_clones))
-  clones <- N |>
+  if (length(VAFs) == 0) {
+    return(empty_clones_tibble())
+  }
+
+  mclust_res <- N |>
     map(~mclust::Mclust(VAFs, G = .x, verbose = FALSE)) |>
-    discard(any_clusters_overlap) |>
-    map(mclust_to_clones_tbl, n_mutations = length(VAFs)) |>
-    bind_rows() |>
-    mutate(best = .data$BIC == max(.data$BIC))
+    discard(is.null) |>
+    discard(any_clusters_overlap)
+
+  if (length(mclust_res) > 0) {
+    clones <- mclust_res |>
+      map(mclust_to_clones_tbl, n_mutations = length(VAFs)) |>
+      bind_rows() |>
+      mutate(best = .data$BIC == max(.data$BIC))
+  } else {
+    clones <- empty_clones_tibble()
+  }
   clones |>
     filter(.data$best)
 }
@@ -92,6 +110,18 @@ mclust_to_clones_tbl <- function(mclust_model, n_mutations) {
 }
 
 
+empty_clones_tibble <- function() {
+  tibble(
+    n = integer(),
+    component = character(),
+    cellularity = double(),
+    N_mutations = double(),
+    BIC = double(),
+    best = logical()
+  )
+}
+
+
 get_binomial_predictions <- function(clones) {
   clones_predictions <- clones |>
     rename(sequencing_DP = .data$median_DP) |>
@@ -104,17 +134,6 @@ get_binomial_predictions <- function(clones) {
     select(-.data$VAF) |>
     rowSums()
   clones_predictions
-  # predictions <- tibble(
-  #   i = 1:100,
-  #   VAF = .data$i/100,
-  #   subclonal_pred = map2(clones$N_mutations, clones$cellularity, ~.x * dbinom(.data$i, 100, .y)) |>
-  #     set_names(clones$component) |>
-  #     as_tibble(),
-  #   binom_pred = rowSums(.data$subclonal_pred)
-  # )
-  # predictions |>
-  #   unnest(.data$subclonal_pred) |>
-  #   select(-.data$i)
 }
 
 

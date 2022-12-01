@@ -2,14 +2,19 @@
 % Please edit documentation in R/subclones_binomial.R
 \name{fit_subclones}
 \alias{fit_subclones}
+\alias{fit_subclones.cevodata}
 \title{Fit subclonal distributions to neutral model residuals}
 \usage{
 fit_subclones(object, ...)
+
+\method{fit_subclones}{cevodata}(object, N = 1:3, ...)
 }
 \arguments{
 \item{object}{object}
 
 \item{...}{other arguments}
+
+\item{N}{vector of numbers of clones to test}
 }
 \description{
 Fit subclonal distributions to neutral model residuals
