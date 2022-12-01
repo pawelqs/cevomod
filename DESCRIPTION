@@ -11,6 +11,9 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Suggests: 
+    circlize,
+    ComplexHeatmap,
+    grid,
     neutralitytestr,
     knitr,
     patchwork,
@@ -23,15 +26,13 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
-    circlize,
     cli,
-    ComplexHeatmap,
+    corrr,
     crayon,
     dplyr,
     forcats,
     GenomicRanges,
     ggplot2,
-    grid,
     IRanges,
     mclust,
     paletteer,

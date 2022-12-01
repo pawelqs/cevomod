@@ -77,6 +77,10 @@ heatmap_granges <- function(granges, meta_field,
                             border = TRUE,
                             legend_params = NULL,
                             verbose = TRUE, ...) {
+  require_package("ComplexHeatmap")
+  require_package("grid")
+  require_package("circlize")
+
   score <- NULL
 
   ########## Get common ranges
@@ -145,8 +149,8 @@ heatmap_granges <- function(granges, meta_field,
     pull(.data$code)
 
 
-  chr_bar <- HeatmapAnnotation(
-    chr_text = ComplexHeatmap::anno_text(chr_labels, gp = gpar(fontsize = 8)),
+  chr_bar <- ComplexHeatmap::HeatmapAnnotation(
+    chr_text = ComplexHeatmap::anno_text(chr_labels, gp = grid::gpar(fontsize = 8)),
     chr = chr_bin,
     show_legend = FALSE,
     which = "column",
@@ -154,7 +158,7 @@ heatmap_granges <- function(granges, meta_field,
   )
 
   ########### Plot Heatmap
-  Heatmap(mat,
+  ComplexHeatmap::Heatmap(mat,
     col = circlize::colorRamp2(breaks = color_breaks, colors),
     row_split = if (is.null(row_groups)) NULL else factor(row_groups, levels = unique(row_groups)),
     cluster_row_slices = FALSE,

@@ -46,6 +46,16 @@ get_VAF_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
 }
 
 
+require_package <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    stop(
+      paste0("Package '", pkg, "' must be installed to use this function."),
+      call. = FALSE
+    )
+  }
+}
+
+
 #' Run cevobrowser app
 #' @export
 run_browser <- function() {
