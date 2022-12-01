@@ -46,10 +46,12 @@ get_VAF_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
 }
 
 
-require_package <- function(pkg) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
+require_packages <- function(...) {
+  pkgs <- list(...)
+  missing <- !map_lgl(pkgs, requireNamespace, quietly = TRUE)
+  if (any(missing)) {
     stop(
-      paste0("Package '", pkg, "' must be installed to use this function."),
+      paste0("Package '", pkgs[missing], "' must be installed to use this function.\n"),
       call. = FALSE
     )
   }

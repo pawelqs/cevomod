@@ -13,6 +13,7 @@ RoxygenNote: 7.2.1
 Suggests: 
     circlize,
     ComplexHeatmap,
+    GenomicRanges,
     grid,
     neutralitytestr,
     knitr,
@@ -31,7 +32,6 @@ Imports:
     crayon,
     dplyr,
     forcats,
-    GenomicRanges,
     ggplot2,
     mclust,
     paletteer,

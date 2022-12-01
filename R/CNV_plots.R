@@ -32,6 +32,8 @@ plot_CNV_heatmap <- function(object, ...) {
 #' @describeIn cnv_plots Plot CNVs
 #' @export
 plot_CNV_heatmap.cevodata <- function(object, meta_field, ...) {
+  require_packages("GenomicRanges")
+
   granges <- CNVs(object) |>
     rename(seqnames = .data$chrom) |>
     group_by(.data$sample_id) |>
@@ -77,10 +79,7 @@ heatmap_granges <- function(granges, meta_field,
                             border = TRUE,
                             legend_params = NULL,
                             verbose = TRUE, ...) {
-  require_package("ComplexHeatmap")
-  require_package("grid")
-  require_package("circlize")
-
+  require_packages("ComplexHeatmap", "grid", "circlize", "GenomicRanges")
   score <- NULL
 
   ########## Get common ranges
