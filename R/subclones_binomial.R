@@ -15,7 +15,7 @@ fit_subclones <- function(object, ...) {
 fit_subclones.cevodata <- function(object, N = 1:3, ...) {
   residuals <- get_residuals(object, model = "neutral_models")
 
-  clones <- residuals |>
+  models <- residuals |>
     nest_by(.data$sample_id) |>
     summarise(
       model = "binomial_clones",
@@ -25,13 +25,13 @@ fit_subclones.cevodata <- function(object, N = 1:3, ...) {
     unnest(.data$clones) |>
     mutate(VAF = round(.data$cellularity, digits = 2)) |>
     left_join(get_sequencing_depths(object), by = c("sample_id", "VAF")) |>
-    select(-.data$VAF)
+    select(-.data$VAF) |>
+    evaluate_binomial_models()
 
-  clonal_predictions <- clones |>
+  clonal_predictions <- models |>
+    filter(.data$best) |>
     nest_by(.data$sample_id) |>
-    deframe() |>
-    map(get_binomial_predictions) |>
-    bind_rows(.id = "sample_id")
+    summarise(get_binomial_predictions(.data$data), .groups = "drop")
 
   residuals <- residuals |>
     left_join(clonal_predictions, by = c("sample_id", "VAF")) |>
@@ -40,13 +40,11 @@ fit_subclones.cevodata <- function(object, N = 1:3, ...) {
       model_resid = .data$SFS - .data$model_pred
     )
 
-  models <- bind_rows(
-    get_neutral_models(object),
-    clones
-  ) |>
-    arrange(.data$sample_id)
+  models <- get_neutral_models(object) |>
+    bind_rows(models) |>
+    arrange(.data$sample_id, .data$best, .data$model)
 
-  object$models[["binomial_models"]] <- clones
+  object$models[["binomial_models"]] <- models
   object$residuals[["binomial_models"]] <- residuals
   # object$SNVs[[default_SNVs(object)]] <- classify_SNVs(SNVs(object), residuals)
   object$active_model <- "binomial_models"
@@ -67,31 +65,16 @@ fit_binomial_models_Mclust <- function(residuals, N) {
 
   mclust_res <- N |>
     map(~mclust::Mclust(VAFs, G = .x, verbose = FALSE)) |>
-    discard(is.null) |>
-    discard(any_clusters_overlap)
+    discard(is.null)
 
   if (length(mclust_res) > 0) {
     clones <- mclust_res |>
       map(mclust_to_clones_tbl, n_mutations = length(VAFs)) |>
-      bind_rows() |>
-      mutate(best = .data$BIC == max(.data$BIC))
+      bind_rows()
   } else {
     clones <- empty_clones_tibble()
   }
-  clones |>
-    filter(.data$best)
-}
-
-
-any_clusters_overlap <- function(mclust_res) {
-  mean <- mclust_res$parameters$mean
-  sd <- sqrt(mclust_res$parameters$variance$sigmasq)
-  clust_ranges <- IRanges::IRanges(
-    start = round(100 * (mean - sd)),
-    end = round(100 * (mean + sd)),
-  )
-  range_coverage <- IRanges::coverage(clust_ranges)
-  any(range_coverage@values > 1)
+  clones
 }
 
 
@@ -119,6 +102,40 @@ empty_clones_tibble <- function() {
     BIC = double(),
     best = logical()
   )
+}
+
+
+evaluate_binomial_models <- function(models) {
+  models <- models |>
+    nest_by(.data$sample_id, .data$model, .data$n) |>
+    mutate(has_overlapping_clones = any_binomial_distibutions_correlate(.data$data)) |>
+    unnest(.data$data) |>
+    ungroup()
+  best_BIC_values <- models |>
+    filter(!.data$has_overlapping_clones) |>
+    group_by(.data$sample_id) |>
+    summarise(max_BIC = max(.data$BIC))
+  models |>
+    left_join(best_BIC_values, by = "sample_id") |>
+    mutate(best = (.data$BIC == .data$max_BIC) & !.data$has_overlapping_clones)
+}
+
+
+any_binomial_distibutions_correlate <- function(clones) {
+  if (nrow(clones) == 1) {
+    return(FALSE)
+  }
+  x <- clones |>
+    rename(sequencing_DP = .data$median_DP) |>
+    pmap(get_binomial_distribution) |>
+    map(rebinarize_distribution, n_bins = 100) |>
+    map("pred")
+  names(x) <- clones$component
+  x <- as_tibble(x) |>
+    corrr::correlate(quiet = TRUE) |>
+    select(-.data$term)
+  x[is.na(x)] <- 0
+  any(x > 0.5)
 }
 
 
@@ -166,32 +183,4 @@ rebinarize_distribution <- function(distribution, n_bins = 100) {
 #       reduce(`+`)
 #   )
 # }
-
-
-classify_SNVs <- function(snvs, residuals) {
-  probabilities <- get_probabilities_tbl(residuals)
-  snvs |>
-    mutate(VAF_chr = as.character(round(.data$VAF, digits = 2))) |>
-    left_join(probabilities, by = c("sample_id", "VAF_chr")) |>
-    select(-.data$VAF_chr)
-}
-
-
-get_probabilities_tbl <- function(residuals) {
-  probabilities <- residuals |>
-    mutate(VAF = as.character(.data$VAF)) |>
-    select(
-      .data$sample_id, .data$VAF,
-      Neutral = .data$neutral_pred,
-      .data$Clone,
-      starts_with("Subclone"),
-      .data$model_pred
-    ) |>
-    transmute(
-      .data$sample_id,
-      VAF_chr = .data$VAF,
-      across(c("Neutral", "Clone", starts_with("Subclone")), ~.x/model_pred)
-    )
-  probabilities
-}
 

@@ -1,6 +1,6 @@
 Package: cevomod
 Title: Cancer Evolution Models
-Version: 0.3.3
+Version: 0.3.4
 Authors@R: 
     person("Paweł", "Kuś", , "kpawel2210@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4367-9821"))
@@ -33,7 +33,6 @@ Imports:
     forcats,
     GenomicRanges,
     ggplot2,
-    IRanges,
     mclust,
     paletteer,
     plyranges,
