@@ -99,8 +99,8 @@ plot_clones <- function(clones) {
   clones |>
     get_binomial_predictions() |>
     select(-.data$binom_pred) |>
-    pivot_longer(-VAF) |>
-    ggplot(aes(VAF, value, group = name)) +
+    pivot_longer(-.data$VAF) |>
+    ggplot(aes(.data$VAF, .data$value, group = .data$name)) +
     geom_point()
 }
 
