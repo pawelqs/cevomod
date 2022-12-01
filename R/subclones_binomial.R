@@ -17,12 +17,8 @@ fit_subclones.cevodata <- function(object, N = 1:3, ...) {
 
   models <- residuals |>
     nest_by(.data$sample_id) |>
-    summarise(
-      model = "binomial_clones",
-      clones = fit_binomial_models(.data$data, N = N),
-      .groups = "drop"
-    ) |>
-    unnest(.data$clones) |>
+    summarise(fit_binomial_models(.data$data, N = N), .groups = "drop") |>
+    mutate(model = "binomial_clones", .after = "sample_id") |>
     mutate(VAF = round(.data$cellularity, digits = 2)) |>
     left_join(get_sequencing_depths(object), by = c("sample_id", "VAF")) |>
     select(-.data$VAF) |>
