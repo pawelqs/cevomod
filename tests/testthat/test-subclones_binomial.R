@@ -1,23 +1,5 @@
 
-cd <- tcga_brca_test |>
-  filter(sample_id == "TCGA-AN-A046-01")
-
-
-test_that("predict_binoms works", {
-  clones <- tibble(
-    component = c("Clone", "Subclone 1"),
-    N_mutations = c(300, 100),
-    cellularity = c(.5, .2),
-    median_DP = 100
-  )
-  binomial <- get_binomial_predictions(clones)
-  map(binomial, sum)
-  expect_equal(sum(binomial$Clone), 300)
-  expect_equal(sum(binomial$`Subclone 1`), 100)
-  expect_equal(max(binomial$Clone), 23.876771, tolerance = 0.0001)
-  expect_equal(max(binomial$`Subclone 1`), 9.930021, tolerance = 0.0001)
-})
-
+fit_binomial_models_cols <- c("N", "component", "cellularity", "N_mutations", "BIC")
 
 test_that("fit_binomial_models() works with very few remaining mutations", {
   residuals_1 <- tibble(VAF = 1:100/100) |>
@@ -30,13 +12,34 @@ test_that("fit_binomial_models() works with very few remaining mutations", {
     )
   res <- fit_binomial_models(residuals_1, N = 1:3)
   expect_equal(nrow(res), 1)
+  expect_named(res, fit_binomial_models_cols)
+})
 
+
+test_that("fit_binomial_models() works with no remaining mutations", {
   residuals_0 <- tibble(
     VAF = 1:100/100,
     neutral_resid_clones = 0
   )
   res <- fit_binomial_models(residuals_0, N = 1:3)
   expect_equal(nrow(res), 0)
+  expect_named(res, fit_binomial_models_cols)
+})
+
+
+test_that("predict_binoms() works", {
+  clones <- tibble(
+    component = c("Clone", "Subclone 1"),
+    N_mutations = c(300, 100),
+    cellularity = c(.5, .2),
+    median_DP = 100
+  )
+  binomial <- get_binomial_predictions(clones)
+  map(binomial, sum)
+  expect_equal(sum(binomial$Clone), 300)
+  expect_equal(sum(binomial$`Subclone 1`), 100)
+  expect_equal(max(binomial$Clone), 23.876771, tolerance = 0.0001)
+  expect_equal(max(binomial$`Subclone 1`), 9.930021, tolerance = 0.0001)
 })
 
 

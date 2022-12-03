@@ -76,7 +76,7 @@ fit_binomial_models_Mclust <- function(residuals, N) {
 
 mclust_to_clones_tbl <- function(mclust_model, n_mutations) {
   tibble(
-    n = length(mclust_model$parameters$mean),
+    N = length(mclust_model$parameters$mean),
     cellularity = mclust_model$parameters$mean,
     N_mutations = round(mclust_model$parameters$pro * n_mutations),
     BIC = mclust_model$bic
@@ -91,12 +91,11 @@ mclust_to_clones_tbl <- function(mclust_model, n_mutations) {
 
 empty_clones_tibble <- function() {
   tibble(
-    n = integer(),
+    N = integer(),
     component = character(),
     cellularity = double(),
     N_mutations = double(),
-    BIC = double(),
-    best = logical()
+    BIC = double()
   )
 }
 
