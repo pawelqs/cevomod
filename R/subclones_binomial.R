@@ -102,7 +102,7 @@ empty_clones_tibble <- function() {
 
 evaluate_binomial_models <- function(models) {
   models <- models |>
-    nest_by(.data$sample_id, .data$model, .data$n) |>
+    nest_by(.data$sample_id, .data$model, .data$N) |>
     mutate(has_overlapping_clones = any_binomial_distibutions_correlate(.data$data)) |>
     unnest(.data$data) |>
     ungroup()
