@@ -55,7 +55,7 @@ fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, ...) {
 
   object$models[["neutral_models"]] <- models
   object$residuals[["neutral_models"]] <- calc_residuals(object)
-  object$active_model <- "neutral_models"
+  object$active_models <- "neutral_models"
   object
 }
 

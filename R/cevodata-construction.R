@@ -12,7 +12,7 @@ new_cevodata <- function(name, genome) {
     active_SNVs = "",
     active_CNVs = "",
     active_clones = "",
-    active_model = ""
+    active_models = ""
   )
   structure(cd, class = "cevodata")
 }
@@ -300,4 +300,35 @@ add_sample_data.cevodata <- function(object, data, ...) {
       select(.data$patient_id, .data$sample_id, .data$sample, everything())
   }
   object
+}
+
+
+#' Get models from the object
+#' @export
+get_models <- function(object, ...) {
+  UseMethod("get_models")
+}
+
+#' @describeIn get_models Get models from cevodata object
+#' @param which `chr` which models to get
+#' @param best_only `lgl` return only the best models?
+#' @export
+get_models.cevodata <- function(object,
+                                which = active_models(object),
+                                best_only = TRUE,
+                                ...) {
+  models <- object$models[[which]]
+  if (best_only) {
+    filter(models, .data$best)
+  } else {
+    models
+  }
+}
+
+
+active_models <- function(object, ...) {
+  if (is.null(object$active_models) | length(object$models) == 0) {
+    stop("No models has been fitted yet!")
+  }
+  object$active_models
 }
