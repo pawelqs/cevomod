@@ -1,8 +1,9 @@
 
-new_cevodata <- function(name, genome) {
+new_cevodata <- function(name, genome, cancer) {
   cd <- list(
     name = name,
     genome = genome,
+    cancer = cancer,
     metadata = NULL,
     SNVs = list(),
     CNVs = list(),
@@ -29,11 +30,10 @@ new_cevodata <- function(name, genome) {
 #' @return `cevodata` object
 #'
 #' @export
-init_cevodata <- function(name, genome = NULL,
+init_cevodata <- function(name, genome = "unknown", cancer = "unknown",
                           snvs = NULL, snvs_name = NULL,
                           cnvs = NULL, cnvs_name = NULL) {
-  genome <- if (is.null(genome)) "unknown" else genome
-  cd <- new_cevodata(name, genome)
+  cd <- new_cevodata(name, genome, cancer)
   if (!is.null(snvs)) {
     cd <- add_SNV_data(cd, snvs, snvs_name)
   }
@@ -41,6 +41,21 @@ init_cevodata <- function(name, genome = NULL,
     cd <- add_CNV_data(cd, cnvs, cnvs_name)
   }
   cd
+}
+
+
+#' Set cancer type for the object
+#' @export
+set_cancer_type <- function(object, ...) {
+  UseMethod("set_cancer_type")
+}
+
+#' @describeIn set_cancer_type Set cancer type for cevodata object
+#' @param cancer_type cancer type
+#' @export
+set_cancer_type.cevodata <- function(object, cancer_type, ...) {
+  object$cancer <- cancer_type
+  object
 }
 
 

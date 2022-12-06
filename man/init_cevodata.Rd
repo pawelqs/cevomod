@@ -6,7 +6,8 @@
 \usage{
 init_cevodata(
   name,
-  genome = NULL,
+  genome = "unknown",
+  cancer = "unknown",
   snvs = NULL,
   snvs_name = NULL,
   cnvs = NULL,
