@@ -7,10 +7,12 @@
 \usage{
 get_models(object, ...)
 
-\method{get_models}{cevodata}(object, which = active_models(object), ...)
+\method{get_models}{cevodata}(object, which = active_models(object), best_only = TRUE, ...)
 }
 \arguments{
 \item{which}{\code{chr} which models to get}
+
+\item{best_only}{\code{lgl} return only the best models?}
 }
 \description{
 Get models from the object

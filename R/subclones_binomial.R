@@ -179,3 +179,9 @@ rebinarize_distribution <- function(distribution, n_bins = 100) {
 #   )
 # }
 
+
+were_subclonal_models_fitted <- function(object, ...) {
+  models <- get_models(object)
+  expect_colnames <- c("N", "cellularity", "N_mutations")
+  all(expect_colnames %in% colnames(models))
+}
