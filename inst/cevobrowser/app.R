@@ -158,7 +158,7 @@ models_tab <- tabItem(
         checkboxGroupInput(
           "model_layers_checkbox",
           "Select model layers:",
-          choices = c("Neutral model", "Binomial Fit", "Clones", "Full model"),
+          choices = c("Neutral model", "Binomial Fit", "Clones", "Full model", "Drivers"),
           selected = c("Neutral model", "Clones", "Full model")
         ),
         height = "95vh",
@@ -303,13 +303,18 @@ server <- function(input, output) {
     binomial_fit <- "Binomial Fit" %in% input$model_layers_checkbox
     subclones <- "Clones" %in% input$model_layers_checkbox
     final_fit <- "Full model" %in% input$model_layers_checkbox
+    show_drivers <- "Drivers" %in% input$model_layers_checkbox
 
+    layers <- list(
+      if (show_drivers) layer_mutations(drivers = rv$cd$cancer),
+      hide_legend()
+    )
     plot_models(
       rv$cd,
       neutral_tail = neutral_tail, binomial_layer = binomial_fit,
       subclones = subclones, final_fit = final_fit
     ) +
-      hide_legend()
+      layers
   })
 
   output$models_Mf_1f_plot <- renderPlot({

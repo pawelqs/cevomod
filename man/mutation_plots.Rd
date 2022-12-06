@@ -35,6 +35,7 @@ plot_mutations(object, ...)
 layer_mutations(
   genes = NULL,
   drivers = NULL,
+  show_labels = TRUE,
   color = "black",
   size = 3,
   shape = "impact",
@@ -60,6 +61,8 @@ be taken from \code{driver_genes}}
 
 \item{filter_fun}{Function for filtering mutations:
 variant_classification_filter() or impact_filter()}
+
+\item{show_labels}{\code{lgl} use ggrepel to label the mutations?}
 
 \item{color}{color}
 
