@@ -23,6 +23,7 @@ new_cevodata <- function(name, genome, cancer) {
 #'
 #' @param name dataset name
 #' @param genome genome version
+#' @param cancer cancer type from `driver_genes` tbl
 #' @param snvs tibble with SNVs
 #' @param snvs_name name for SNVs assay
 #' @param cnvs tibble with CNVs
@@ -45,6 +46,8 @@ init_cevodata <- function(name, genome = "unknown", cancer = "unknown",
 
 
 #' Set cancer type for the object
+#' @param object object to set cancer type
+#' @param ... other arguments
 #' @export
 set_cancer_type <- function(object, ...) {
   UseMethod("set_cancer_type")
@@ -319,6 +322,8 @@ add_sample_data.cevodata <- function(object, data, ...) {
 
 
 #' Get models from the object
+#' @param object object to get the models from
+#' @param ... other arguments
 #' @export
 get_models <- function(object, ...) {
   UseMethod("get_models")

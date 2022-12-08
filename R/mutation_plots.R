@@ -128,8 +128,9 @@ layer_mutations <- function(genes = NULL, drivers = NULL, show_labels = TRUE,
       ...
     ),
     if (show_labels) {
-      geom_label_repel(
-        aes(x = .data$VAF, shape = .data[[shape]], label = gene_symbol),
+      rlang::check_installed("ggrepel", reason = "to label driver mutations on the plot")
+      ggrepel::geom_label_repel(
+        aes(x = .data$VAF, shape = .data[[shape]], label = .data$gene_symbol),
         data = . %>%
           filter_SNVs(genes = NULL, drivers) %>%
           filter_fun(),

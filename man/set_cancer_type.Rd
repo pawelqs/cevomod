@@ -10,6 +10,10 @@ set_cancer_type(object, ...)
 \method{set_cancer_type}{cevodata}(object, cancer_type, ...)
 }
 \arguments{
+\item{object}{object to set cancer type}
+
+\item{...}{other arguments}
+
 \item{cancer_type}{cancer type}
 }
 \description{

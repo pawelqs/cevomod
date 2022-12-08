@@ -24,7 +24,8 @@ Suggests:
     vdiffr,
     shiny,
     shinydashboard,
-    shinyWidget
+    shinyWidgets,
+    ggrepel
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 

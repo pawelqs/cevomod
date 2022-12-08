@@ -19,6 +19,8 @@ init_cevodata(
 
 \item{genome}{genome version}
 
+\item{cancer}{cancer type from \code{driver_genes} tbl}
+
 \item{snvs}{tibble with SNVs}
 
 \item{snvs_name}{name for SNVs assay}
