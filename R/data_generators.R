@@ -33,5 +33,5 @@ generate_neutral_snvs <- function(mut_rate = 2, sample_below = 0.15, resolution 
       ),
       mut_id = map(.data$n, ~ tibble(mut_id = rep("a", times = .x)))
     ) |>
-    unnest(.data$mut_id)
+    unnest("mut_id")
 }

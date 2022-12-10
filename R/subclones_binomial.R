@@ -21,7 +21,7 @@ fit_subclones.cevodata <- function(object, N = 1:3, ...) {
     mutate(model = "binomial_clones", .after = "sample_id") |>
     mutate(VAF = round(.data$cellularity, digits = 2)) |>
     left_join(get_sequencing_depths(object), by = c("sample_id", "VAF")) |>
-    select(-.data$VAF) |>
+    select(-"VAF") |>
     evaluate_binomial_models()
 
   clonal_predictions <- models |>
@@ -104,7 +104,7 @@ evaluate_binomial_models <- function(models) {
   models <- models |>
     nest_by(.data$sample_id, .data$model, .data$N) |>
     mutate(has_overlapping_clones = any_binomial_distibutions_correlate(.data$data)) |>
-    unnest(.data$data) |>
+    unnest("data") |>
     ungroup()
   best_BIC_values <- models |>
     filter(!.data$has_overlapping_clones) |>
@@ -121,14 +121,14 @@ any_binomial_distibutions_correlate <- function(clones) {
     return(FALSE)
   }
   x <- clones |>
-    rename(sequencing_DP = .data$median_DP) |>
+    rename(sequencing_DP = "median_DP") |>
     pmap(get_binomial_distribution) |>
     map(rebinarize_distribution, n_bins = 100) |>
     map("pred")
   names(x) <- clones$component
   x <- as_tibble(x) |>
     corrr::correlate(quiet = TRUE) |>
-    select(-.data$term)
+    select(-"term")
   x[is.na(x)] <- 0
   any(x > 0.5)
 }
@@ -136,14 +136,14 @@ any_binomial_distibutions_correlate <- function(clones) {
 
 get_binomial_predictions <- function(clones) {
   clones_predictions <- clones |>
-    rename(sequencing_DP = .data$median_DP) |>
+    rename(sequencing_DP = "median_DP") |>
     pmap(get_binomial_distribution) |>
     map(rebinarize_distribution, n_bins = 100) |>
     set_names(clones$component) |>
     bind_rows(.id = "component") |>
     pivot_wider(names_from = "component", values_from = "pred")
   clones_predictions$binom_pred <- clones_predictions |>
-    select(-.data$VAF) |>
+    select(-"VAF") |>
     rowSums()
   clones_predictions
 }

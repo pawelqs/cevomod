@@ -60,7 +60,7 @@ summarize_metadata <- function(object) {
 
   samples_per_patient <- if (patient_id_present) {
     meta |>
-      select(.data$patient_id, .data$sample_id) |>
+      select("patient_id", "sample_id") |>
       unique() |>
       group_by(.data$patient_id) |>
       count()
@@ -119,7 +119,7 @@ summarize_SNVs <- function(object) {
   if (patient_id_present) {
     mutations_per_patient <- SNVs(object) |>
       left_join(object$metadata, by = "sample_id") |>
-      select(.data$patient_id, .data$chrom:.data$alt) |>
+      select("patient_id", "chrom":"alt") |>
       unique() |>
       group_by(.data$patient_id) |>
       count()

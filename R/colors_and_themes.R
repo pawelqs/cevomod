@@ -81,7 +81,7 @@ print_palettes <- function(packages = c("PNWColors", "nord"), n = 10) {
   })
 
   palettes %>%
-    select(.data$pal_name, .data$colors) %>%
+    select("pal_name", "colors") %>%
     deframe() %>%
     iwalk(pretty_color_print, pad_width = 25)
 }

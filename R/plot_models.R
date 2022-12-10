@@ -29,7 +29,7 @@ plot_models.cevodata <- function(object,
   subclones_fitted <- !is.null(object$models[["binomial_models"]])
 
   neutral_models <- get_neutral_models(object) |>
-    select(.data$sample_id, .data$from, .data$to)
+    select("sample_id", "from", "to")
 
   resid <- get_residuals(object) |>
     left_join(neutral_models, by = "sample_id") |>
@@ -98,7 +98,7 @@ plot_models.cevodata <- function(object,
 plot_clones <- function(clones) {
   clones |>
     get_binomial_predictions() |>
-    select(-.data$binom_pred) |>
+    select(-"binom_pred") |>
     pivot_longer(-.data$VAF) |>
     ggplot(aes(.data$VAF, .data$value, group = .data$name)) +
     geom_point()

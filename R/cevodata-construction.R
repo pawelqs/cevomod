@@ -106,7 +106,7 @@ add_SNV_data.cevodata <- function(object, snvs, name = NULL, ...) {
   object$SNVs[[name]] <- snvs
   default_SNVs(object) <- name
   meta <- snvs |>
-    select(.data$sample_id) |>
+    select("sample_id") |>
     unique() |>
     as_tibble()
   object <- add_sample_data(object, meta)
@@ -159,7 +159,7 @@ add_CNV_data.cevodata <- function(object, cnvs, name = NULL, ...) {
   object$CNVs[[name]] <- cnvs
   default_CNVs(object) <- name
   meta <- cnvs |>
-    select(.data$sample_id) |>
+    select("sample_id") |>
     unique() |>
     as_tibble()
   object <- add_sample_data(object, meta)
@@ -258,7 +258,7 @@ get_CNVs_var_names <- function(object, ...) {
 #' @export
 get_CNVs_var_names.cevodata <- function(object, which = default_CNVs(object), ...) {
   cnvs_metadata <- CNVs(object, which = which) |>
-    select(-.data$sample_id, -.data$chrom, -.data$start, -.data$end) |>
+    select(-"sample_id", -"chrom", -"start", -"end") |>
     drop_na_columns()
   colnames(cnvs_metadata)
 }
@@ -315,7 +315,7 @@ add_sample_data.cevodata <- function(object, data, ...) {
   }
   if (all(c("patient_id", "sample_id", "sample") %in% colnames(object$metadata))) {
     object$metadata <- object$metadata |>
-      select(.data$patient_id, .data$sample_id, .data$sample, everything())
+      select("patient_id", "sample_id", "sample", everything())
   }
   object
 }

@@ -42,9 +42,9 @@ calc_cumulative_tails.cevodata <- function(object, digits = 2, ...) {
 #' @export
 calc_cumulative_tails.tbl_df <- function(object, digits = 2, ...) {
   res <- object %>%
-    rename(x = .data$VAF) %>%
+    rename(x = "VAF") %>%
     .calc_cumulative_tails(digits) %>%
-    rename(VAF = .data$x)
+    rename(VAF = "x")
   class(res) <- c("cevo_cumulative_tails_tbl", class(res))
   res
 }

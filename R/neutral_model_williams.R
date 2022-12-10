@@ -41,16 +41,16 @@ fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, ...) {
   dt <- Mf_1f |>
     left_join(bounds, by = "sample_id") |>
     filter(.data$VAF > .data$lower_bound, .data$VAF < .data$higher_bound) |>
-    select(.data$sample_id, .data$VAF, .data$`M(f)`, .data$`1/f`) |>
-    nest(data = c(.data$VAF, .data$`M(f)`, .data$`1/f`))
+    select("sample_id", "VAF", "M(f)", "1/f") |>
+    nest(data = c("VAF", "M(f)", "1/f"))
   models <- dt |>
     mutate(
       model = "neutral_A/f^2",
       component = "Neutral tail",
       fits = map(.data$data, fit_optimal_lm, rsq_treshold)
     ) |>
-    select(-.data$data) |>
-    unnest(.data$fits)
+    select(-"data") |>
+    unnest("fits")
   class(models) <- c("cevo_lm_models_tbl", class(models))
 
   object$models[["neutral_models"]] <- models
@@ -72,10 +72,10 @@ fit_optimal_lm <- function(dt, rsq_treshold = 0.98) {
   grid$data <- pmap(grid, function(from, to, ...) filter(dt, .data$VAF >= from, .data$VAF <= to))
   grid$fits <- map(grid$data, function(dt) tidy_lm(dt$`1/f`, dt$`M(f)`))
   grid |>
-    select(-.data$data) |>
-    unnest(.data$fits) |>
+    select(-"data") |>
+    unnest("fits") |>
     filter(.data$rsquared > rsq_treshold) |>
-    rename(A = .data$a) |>
+    rename(A = "a") |>
     mutate(alpha = 2, .before = "rsquared") |>
     arrange(.data$A) |>
     mutate(best = (row_number() == 1))
@@ -108,19 +108,19 @@ calc_residuals <- function(object, ...) {
   sfs <- mutate(sfs, VAF = as.character(.data$VAF))
 
   dt <- exp |>
-    select(.data$sample_id, .data$VAF, .data$neutral_pred) |>
+    select("sample_id", "VAF", "neutral_pred") |>
     left_join(sfs, by = c("sample_id", "VAF"))
 
   residuals <- dt |>
-    select(-.data$y_scaled) |>
-    rename(SFS = .data$y) |>
+    select(-"y_scaled") |>
+    rename(SFS = "y") |>
     mutate(
       VAF = parse_double(.data$VAF),
       neutral_resid = .data$neutral_pred - .data$SFS,
       neutral_resid_clones = if_else(.data$neutral_resid > 0, 0, -.data$neutral_resid),
       sampling_rate = .data$neutral_resid / .data$neutral_pred
     ) |>
-    select(.data$sample_id, .data$VAF, .data$SFS, everything())
+    select("sample_id", "VAF", "SFS", everything())
 
   residuals
 }

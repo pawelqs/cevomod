@@ -35,7 +35,7 @@ plot_CNV_heatmap.cevodata <- function(object, meta_field, ...) {
   require_packages("GenomicRanges")
 
   granges <- CNVs(object) |>
-    rename(seqnames = .data$chrom) |>
+    rename(seqnames = "chrom") |>
     group_by(.data$sample_id) |>
     nest() |>
     deframe() |>
@@ -98,7 +98,7 @@ heatmap_granges <- function(granges, meta_field,
       frct = .data$width / .data$total_len,
       cum = cumsum(.data$frct)
     ) %>%
-    select(.data$score, .data$cum) %>%
+    select("score", "cum") %>%
     deframe()
 
   if (verbose) {
@@ -121,7 +121,7 @@ heatmap_granges <- function(granges, meta_field,
   mat <- dt %>%
     map(as_tibble) %>%
     # Summarise values for window ranges covering more than one interval
-    map(~ select(.x, .data$seqnames, .data$start, .data$end, !!sym(meta_field))) %>%
+    map(~ select(.x, "seqnames", "start", "end", !!sym(meta_field))) %>%
     map(~ group_by(.x, .data$seqnames, .data$start, .data$end)) %>%
     map(~ summarise(.x, val = mean(!!sym(meta_field)))) %>%
     # Create matrix
