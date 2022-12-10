@@ -27,7 +27,7 @@ test_that("fit_binomial_models() works with no remaining mutations", {
 })
 
 
-test_that("predict_binoms() works", {
+test_that("get_binomial_predictions() works", {
   clones <- tibble(
     component = c("Clone", "Subclone 1"),
     N_mutations = c(300, 100),
