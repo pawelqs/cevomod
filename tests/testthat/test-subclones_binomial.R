@@ -71,21 +71,13 @@ test_that("any_binomial_distibutions_correlate() works", {
 
 
 test_that("rebinarize_distribution() does not change the number of mutations", {
-  clones <- tibble(
-    sample_id   = "S1",
-    component   = c("Clone", "Subclone 1"),
-    cellularity = c(0.33, 0.16),
-    N_mutations = c(748, 1256),
-    mean_DP     = c(46, 28),
-    median_DP   = c(52, 26),
-    sd_DP       = c(25, 10),
+  predictions <- tibble(
+    VAF = 1:10/10,
+    Clone = 1:10,
+    `Subclone 1` = c(0, 3, 5, 20, 15, 13, 9, 0, 0, 0)
   )
-  predictions <- get_binomial_predictions(clones)
-  sums <- c(sum(predictions$Clone), sum(predictions$`Subclone 1`))
-  expect_equal(sums, clones$N_mutations)
-  predictions2 <- predictions |>
-    select(VAF, pred = Clone) |>
-    rebinarize_distribution(VAFs = 1:50/50)
-  sums2 <- sum(predictions2$pred)
-  expect_equal(sums2, clones$N_mutations[[1]])
+  predictions2 <- rebinarize_distribution(predictions, n_bins = 25)
+  expect_equal(sum(predictions$Clone), sum(predictions2$Clone))
+  expect_equal(sum(predictions$`Subclone 1`), sum(predictions2$`Subclone 1`))
+  expect_equal(nrow(predictions2), 25)
 })

@@ -60,7 +60,7 @@ fit_binomial_models_Mclust <- function(residuals, N) {
   }
 
   mclust_res <- N |>
-    map(~mclust::Mclust(VAFs, G = .x, verbose = FALSE)) |>
+    map(~ mclust::Mclust(VAFs, G = .x, verbose = FALSE)) |>
     discard(is.null)
 
   if (length(mclust_res) > 0) {
@@ -152,21 +152,28 @@ get_binomial_predictions <- function(clones) {
 get_binomial_distribution <- function(cellularity, N_mutations, sequencing_DP, ...) {
   i <- 0:round(sequencing_DP)
   tibble(
-    VAF = i/sequencing_DP,
+    VAF = i / sequencing_DP,
     pred = N_mutations * stats::dbinom(i, round(sequencing_DP), cellularity)
   )
 }
 
 
-rebinarize_distribution <- function(distribution, n_bins = 100) {
-  i <- 1:n_bins
-  new_distribution <- tibble(
-    VAF = i/n_bins,
-    pred = stats::approx(distribution$VAF, distribution$pred, xout = .data$VAF, rule = 2)$y
-  )
-  scaling_factor <- sum(new_distribution$pred) / sum(distribution$pred)
-  new_distribution |>
-    mutate(pred = .data$pred / scaling_factor)
+rebinarize_distribution <- function(distribution, n_bins = NULL, VAFs = NULL) {
+  if (is.null(n_bins) == is.null(VAFs)) {
+    stop("Provide n_bins OR VAFs")
+  }
+  new_VAFs <- if (is.null(VAFs)) (1:n_bins) / n_bins else VAFs
+  original_VAFs <- distribution$VAF
+  distribution$VAF <- NULL
+
+  new_distributions <- distribution |>
+    map_dfc(~ stats::approx(original_VAFs, .x, xout = new_VAFs, rule = 2)$y)
+  scaling_factors <- map2(new_distributions, distribution, ~ sum(.x) / sum(.y))
+  rescaled_distributions <- map2_dfc(new_distributions, scaling_factors, ~ .x / .y)
+
+  rescaled_distributions |>
+    mutate(VAF = new_VAFs) |>
+    select("VAF", everything())
 }
 
 
