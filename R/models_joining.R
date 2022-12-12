@@ -12,7 +12,7 @@ get_selected_mutations <- function(object, ...) {
   colsample <- samples_data$sample[[2]]
 
   mutations_mat <- object |>
-    get_2d_SNVs_matrix(rows_sample = rowsample, cols_sample = colsample, bins = 100)
+    get_SNVs_2d_matrix(rows_sample = rowsample, cols_sample = colsample, bins = 100)
 
   intervals <- tibble(
     interval = rownames(mutations_mat),
@@ -57,7 +57,7 @@ get_selected_mutations <- function(object, ...) {
   upper_limits <- round(upper_limits)[1:5, 1:5]
   # upper_limits[1:5, 1:5]
 
-  iter <- 2000
+  iter <- 10000
   mc_arr <- array(
     dim = c(nrow(mutations_mat), ncol(mutations_mat), iter),
     dimnames = list(rownames(mutations_mat), colnames(mutations_mat), 1:iter)
@@ -69,80 +69,40 @@ get_selected_mutations <- function(object, ...) {
   }
   mc_arr[, , 1]
 
-
-
-
-}
-
-
-get_2d_SNVs_matrix <- function(object,
-                               rows_sample = NULL, cols_sample = NULL,
-                               bins = 100) {
-  patients_to_samples <- object$metadata |>
-    select(patient_id:sample)
-
-  if (is.null(rows_sample) || is.null(cols_sample)) {
-    rows_sample <- patients_to_samples$sample[[1]]
-    cols_sample <- patients_to_samples$sample[[2]]
-    message("Using '", rows_sample, "' as rows and '", cols_sample, "' as cols")
+  # Evaluate
+  err <- rep(NA_real_, iter)
+  rsums <- matrix(NA, nrow = iter, ncol = nrow(mutations_mat))
+  csums <- matrix(NA, nrow = iter, ncol = ncol(mutations_mat))
+  # non_zero_sums <- matrix(NA, nrow = iter, ncol = length(row_predictions) - 1)
+  for (i in 1:iter) {
+    rsums[i, ] <- rowSums(mc_arr[, , i])
+    csums[i, ] <- colSums(mc_arr[, , i])
+    non_zero_sums <- c(rsums[i, -1], csums[i, -1])
+    non_zero_preds <- c(row_predictions[-1], col_predictions[-1])
+    err[i] <- sum((non_zero_sums - non_zero_preds)^2)
   }
-  if (rows_sample %not in% patients_to_samples$sample) {
-    stop("Sample requested for rows is not present for this sample")
-  }
-  if (cols_sample %not in% patients_to_samples$sample) {
-    stop("Sample requested for cols is not present for this sample")
-  }
+  hist(err)
 
-  breaks <- c(-0.1, seq(0, 1, length.out = bins + 1))
+  err <- tibble(err, i = 1:iter) |>
+    mutate(rank = percent_rank(err))
 
-  # Prepare SNVs wider tibble
-  mutations <-get_SNVs_wider(object, fill_na = 0)
-  mutations <- mutations[c("mutation_id", rows_sample, cols_sample)]
-  colnames(mutations) <- c("mutation_id", "rows_sample", "cols_sample")
+  selected_solutions <- err |>
+    filter(rank < 0.01) |>
+    arrange(err)
 
-  # Cut intervals
-  mutations <- mutations |>
-    mutate(across(where(is.double), ~cut(.x, breaks = breaks)))
-  intervals <- levels(mutations$rows_sample)
+  sel <- err$i[[1]]
 
-  # Prepare square matrix
-  incomplete_mat <- mutations |>
-    mutate(across(c("rows_sample", "cols_sample"), as.character)) |>
-    group_by(rows_sample, cols_sample) |>
-    count() |>
-    ungroup() |>
-    pivot_wider(names_from = cols_sample, values_from = n) |>
-    column_to_rownames("rows_sample")
-  incomplete_mat[is.na(incomplete_mat)] <- 0
+  plot(row_predictions)
+  points(rsums[sel, -1], col = "red")
 
-  mat <- matrix(0, nrow = length(intervals), ncol = length(intervals))
-  colnames(mat) <- intervals
-  rownames(mat) <- intervals
-  mat[rownames(incomplete_mat), colnames(incomplete_mat)] <- as.matrix(incomplete_mat)
 
-  attr(mat, "rows_sample") <- rows_sample
-  attr(mat, "cols_sample") <- cols_sample
-  mat
+  plot(col_predictions)
+  points(csums[sel, -1], col = "red")
+
+  pheatmap::pheatmap(
+    mc_arr[, , sel], cluster_rows = FALSE, cluster_cols = FALSE
+  )
 }
 
 
-get_interval_centers <- function(intervals) {
-  intervals |>
-    str_replace_all("[\\(\\)\\[\\]]", "") |>
-    str_split(pattern = ",") |>
-    map(parse_double) |>
-    map(mean) |>
-    unlist()
-}
-
-
-get_interval_width <- function(intervals) {
-  intervals |>
-    str_replace_all("[\\(\\)\\[\\]]", "") |>
-    str_split(pattern = ",") |>
-    map(parse_double) |>
-    map(~.x[[2]] - .x[[1]]) |>
-    unlist() |>
-    median()
-}
 
