@@ -296,3 +296,186 @@ plot.non_neutral_2d_fit <- function(x, ...) {
   )
 }
 
+# join_patient_models <- function(object, ...) {
+#   if (!were_subclonal_models_fitted(object)) {
+#     stop("Fit subclonal models first!")
+#   }
+#
+#   binom_models <- get_models(object) |>
+#     left_join(object$metadata, by = "sample_id")
+#   total_list_of_clones <- binom_models |>
+#     filter(component != "Neutral tail") |>
+#     select(patient_id, sample, component, N_mutations, cellularity) |>
+#     mutate(clone_id = str_c(component, sample, sep = "_"), .before = "sample")
+#
+#   snvs <- SNVs(object) |>
+#     select(sample_id, chrom:alt, VAF, DP, impact) |>
+#     left_join(object$metadata |> select(patient_id:sample), by = "sample_id") |>
+#     unite(mutation_id, chrom:alt, sep = "-")
+#
+#   mut_predictions <- snvs |>
+#     classify_SNVs(get_residuals(object)) |>
+#     select(patient_id, mutation_id, sample, starts_with("Clone"), starts_with("Subclone"))
+#
+#   mut_predictions_wide <- mut_predictions |>
+#     pivot_wider(id_cols = patient_id:mutation_id, names_from = sample, values_from = Clone:`Subclone 2`) |>
+#     binarise_mut_predictions()
+#
+#   clone_links <- mut_predictions |>
+#     select(-mutation_id) |>
+#     nest_by(patient_id) |>
+#     deframe() |>
+#     map(count_clone_linking_mutations) |>
+#     bind_rows(.id = "patient_id") |>
+#     separate(cloneid1, into = c("clone1", "sample1"), sep = "_", remove = FALSE) |>
+#     separate(cloneid2, into = c("clone2", "sample2"), sep = "_", remove = FALSE) |>
+#     filter(sample1 != sample2)
+#
+#   x <- clone_links |>
+#     left_join(total_list_of_clones |> select(patient_id, cloneid1 = clone_id, N_mutations1 = N_mutations)) |>
+#     left_join(total_list_of_clones |> select(patient_id, cloneid2 = clone_id, N_mutations2 = N_mutations)) |>
+#     mutate(
+#       clone1_link_frct = common_mutations / N_mutations1,
+#       clone2_link_frct = common_mutations / N_mutations2,
+#       link_type = case_when(
+#         clone1_link_frct > 0.8 & clone2_link_frct > 0.8 ~ "strong link",
+#         clone1_link_frct > 0.8 & clone2_link_frct < 0.8 ~ "clone1 part of clone2",
+#         clone1_link_frct < 0.8 & clone2_link_frct > 0.8 ~ "clone2 part of clone1",
+#         TRUE ~ "no link"
+#       )
+#     )
+#
+#   x <- total_list_of_clones |>
+#     left_join(clone_links, by = c("patient_id", "sample", "clone"))
+#
+#   clones <- tibble(
+#     patient_id,
+#     clone_id,
+#     sample_id,
+#     clone_name,
+#     cellularity,
+#     N_mutations
+#   )
+#
+#   object$models[["clones"]] <- clones
+#   # re-classify mutations
+#   # draw tree
+#   # get evo params
+# }
+#
+#
+#
+# binarise_mut_predictions <- function(mut_predictions) {
+#   probability_cols <- colnames(mut_predictions) |>
+#     str_subset(pattern = "[Cc]lone")
+#   mut_predictions |>
+#     group_by(.data$patient_id) |>
+#     mutate_at(probability_cols, replace_na, 0) |>
+#     mutate_at(probability_cols, ~.x/max(.x, na.rm = TRUE)) |>
+#     mutate_at(probability_cols, ~.x >= 0.0001) |>
+#     ungroup()
+# }
+#
+#
+# # # binary_links_df <- mut_predictions |>
+# # #   filter(patient_id == "AMLRO-10") |>
+# # #   select(-patient_id, -mutation_id)
+# #
+# # count_clone_linking_mutations <- function(binary_links_df) {
+# #   variables <- colnames(binary_links_df)
+# #   res <- utils::combn(variables, 2, simplify = FALSE) |>
+# #     map(set_names, c("cloneid1", "cloneid2")) |>
+# #     bind_rows() |>
+# #     mutate(
+# #       common_mutations = map2_int(
+# #         .data$cloneid1, .data$cloneid2,
+# #         ~sum(binary_links_df[[.x]] & binary_links_df[[.y]])
+# #       )
+# #     ) |>
+# #     filter(!is.na(common_mutations))
+# #   res
+# # }
+# # #   object$models$binomial_models |>
+# # #     left_join(object$metadata) |>
+# # #     transmute(
+# # #       patient_id,
+# # #       full_clone_id_1 = str_c(sample, clone, sep = "_")
+# # #     ) |>
+# # #     nest_by(patient_id) |>
+# # #     deframe() |>
+# # #     map(~expand_grid(.x, full_clone_id_2 = .x$full_clone_id_1))
+# # #   expand_grid(full_clone_id_2 = full_clone_id)
+# # #
+# # #   connections <- object$metadata |>
+# # #     select(patient_id, sample) |>
+# # #     nest_by(patient_id) |>
+# # #     deframe() |>
+# # #     map("sample") |>
+# # #     map(sort) |>
+# # #     map(function(samples) {
+# # #       samples |>
+# # #         combn(2) |>
+# # #         t() |>
+# # #         as.data.frame() |>
+# # #         as_tibble() |>
+# # #         set_names(c("sample1", "sample2"))
+# # #     }) |>
+# # #     bind_rows(.id = "patient_id")
+# # #   expand_grid(sample2 = sample)
+# # #
+# # #
+# # #   corr <- classifications |>
+# # #     select(-Neutral) |>
+# # #     pivot_wider(id_cols = patient_id:mutation_id, names_from = sample, values_from = Clone:`Subclone 2`) |>
+# # #     select(-mutation_id) |>
+# # #     nest() |>
+# # #     deframe() |>
+# # #     map(corrr::correlate, quiet = TRUE) |>
+# # #     map(corrr::shave) |>
+# # #     map(corrr::stretch) |>
+# # #     map(~separate(.x, into = ""))
+# # #   map(~filter(.x, !is.na(.data$r)))
+# # #   map(column_to_rownames, "term") |>
+# # #     map(janitor::remove_empty, which = c("rows", "cols")) |>
+# # #     map(rownames_to_column, "term")
+# # #   select(-data)
+# # #   corr
+# # #
+# # #   p <- corr$corr_res |>
+# # #     map(function(x) {
+# # #       x <- x |>
+# # #         keep(~!all(is.na(.x)))
+# # #       x[is.na(x)] <- 0
+# # #       x |>
+# # #         column_to_rownames("term")
+# # #     }) |>
+# # #     map(pheatmap::pheatmap)
+# # # }
+#
+#
+# classify_SNVs <- function(snvs, residuals) {
+#   probabilities <- get_VAF_clonal_probabilities_tbl(residuals)
+#   snvs |>
+#     mutate(VAF_chr = as.character(round(.data$VAF, digits = 2))) |>
+#     left_join(probabilities, by = c("sample_id", "VAF_chr")) |>
+#     select(-.data$VAF_chr)
+# }
+#
+#
+# get_VAF_clonal_probabilities_tbl <- function(residuals) {
+#   probabilities <- residuals |>
+#     mutate(VAF = as.character(.data$VAF)) |>
+#     select(
+#       .data$sample_id, .data$VAF,
+#       Neutral = .data$neutral_pred,
+#       starts_with("Clone"),
+#       starts_with("Subclone"),
+#       .data$model_pred
+#     ) |>
+#     transmute(
+#       .data$sample_id,
+#       VAF_chr = .data$VAF,
+#       across(c("Neutral", starts_with("Clone"), starts_with("Subclone")), ~.x/model_pred)
+#     )
+#   probabilities
+# }
