@@ -41,7 +41,7 @@ get_selected_mutations <- function(object, ...) {
 
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
   # limits$upper[1:5, 1:5]
-  mc_arr <- run_MC_simulation(upper_limits = limits$upper, iter = 2000)
+  mc_arr <- run_MC_simulation(upper_limits = limits$upper, iters = 2000)
   # mc_arr[, , 1]
   ev_res <- evaluate_MC_runs(mc_arr, row_predictions, col_predictions)
   plot(ev_res)
@@ -86,16 +86,21 @@ init_MC_simulation_limits <- function(mutations_mat, row_predictions, col_predic
 }
 
 
-run_MC_simulation <- function(upper_limits, lower_limits = NULL, iter = 2000) {
+run_MC_simulation <- function(upper_limits, lower_limits = NULL, iters = 2000) {
   mc_arr <- array(
-    dim = c(nrow(upper_limits), ncol(upper_limits), iter),
-    dimnames = list(rownames(upper_limits), colnames(upper_limits), 1:iter)
+    dim = c(nrow(upper_limits), ncol(upper_limits), iters),
+    dimnames = list(rownames(upper_limits), colnames(upper_limits), 1:iters)
   )
   for (row in rownames(upper_limits)) {
     for (col in colnames(upper_limits)) {
-      mc_arr[row, col, ] <- round(runif(iter, max = upper_limits[row, col]))
+      mc_arr[row, col, ] <- runif(
+        n = iters,
+        min = if (is.null(lower_limits)) 0 else lower_limits[row, col],
+        max = upper_limits[row, col]
+      )
     }
   }
+  mc_arr <- round(mc_arr)
   mc_arr
 }
 
