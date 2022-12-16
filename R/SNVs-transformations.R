@@ -17,7 +17,6 @@ get_SNVs_wider <- function(object, fill_na = NULL) {
 }
 
 
-
 get_SNVs_2d_matrix <- function(object,
                                rows_sample = NULL, cols_sample = NULL,
                                bins = 100) {
