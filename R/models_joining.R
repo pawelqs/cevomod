@@ -39,27 +39,10 @@ get_selected_mutations <- function(object, ...) {
   row_predictions <- deframe(predictions_by_interval[, c("interval", "rowsample")])
   col_predictions <- deframe(predictions_by_interval[, c("interval", "colsample")])
 
-  upper_limits <- mutations_mat
-  zero_interval <- rownames(mutations_mat)[[1]]
-  for (row in rownames(mutations_mat)) {
-    for (col in colnames(mutations_mat)) {
-      if (row == zero_interval && col == zero_interval) {
-        upper_limits[row, col] <- 0
-      } else if (row == zero_interval) {
-        upper_limits[row, col] <- min(mutations_mat[row, col], col_predictions[col] * 1.1)
-      } else if (col == zero_interval) {
-        upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1)
-      } else {
-        upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1, col_predictions[col] * 1.1)
-      }
-    }
-  }
-  upper_limits <- round(upper_limits)
-  # upper_limits[1:5, 1:5]
-
-  mc_arr <- run_MC_simulation(upper_limits, iter = 2000)
-  mc_arr[, , 1]
-
+  limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
+  # limits$upper[1:5, 1:5]
+  mc_arr <- run_MC_simulation(upper_limits = limits$upper, iter = 2000)
+  # mc_arr[, , 1]
   ev_res <- evaluate_MC_runs(mc_arr, row_predictions, col_predictions)
   plot(ev_res)
 
@@ -78,6 +61,28 @@ get_selected_mutations <- function(object, ...) {
   top_model_ev
 
   plot(mean_top_solution)
+}
+
+
+init_MC_simulation_limits <- function(mutations_mat, row_predictions, col_predictions) {
+  upper_limits <- mutations_mat
+  zero_interval <- rownames(mutations_mat)[[1]]
+  for (row in rownames(mutations_mat)) {
+    for (col in colnames(mutations_mat)) {
+      if (row == zero_interval && col == zero_interval) {
+        upper_limits[row, col] <- 0
+      } else if (row == zero_interval) {
+        upper_limits[row, col] <- min(mutations_mat[row, col], col_predictions[col] * 1.1)
+      } else if (col == zero_interval) {
+        upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1)
+      } else {
+        upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1, col_predictions[col] * 1.1)
+      }
+    }
+  }
+  upper_limits <- round(upper_limits)
+  limits <- list(lower = NULL, upper = upper_limits)
+  limits
 }
 
 
@@ -104,7 +109,6 @@ extract_models_to_tibble <- function(mc_arr, which) {
     map(~pivot_longer(.x, -rowsample, names_to = "colsample", values_to = "N")) |>
     bind_rows(.id = "i")
 }
-
 
 
 average_solutions <- function(mc_arr, which) {
