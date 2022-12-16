@@ -46,7 +46,8 @@ Imports:
     stats,
     stringr,
     tibble,
-    tidyr
+    tidyr,
+    yardstick
 Depends: 
     R (>= 2.10)
 LazyData: true

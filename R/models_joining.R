@@ -54,55 +54,167 @@ get_selected_mutations <- function(object, ...) {
       }
     }
   }
-  upper_limits <- round(upper_limits)[1:5, 1:5]
+  upper_limits <- round(upper_limits)
   # upper_limits[1:5, 1:5]
 
-  iter <- 10000
+  mc_arr <- run_MC_simulation(upper_limits, iter = 2000)
+  mc_arr[, , 1]
+
+  ev_res <- evaluate_MC_runs(mc_arr, row_predictions, col_predictions)
+  plot(ev_res)
+
+  top_models <- ev_res$err |>
+    filter(rank < 0.01) |>
+    arrange(err)
+  # selected_solutions <- extract_models_to_tibble(mc_arr, top_models$i)
+  plot_predictions_vs_fits(row_predictions, ev_res$rsums[top_models$i, ])
+  plot_predictions_vs_fits(col_predictions, ev_res$csums[top_models$i, ])
+
+  # average
+  mean_top_solution <- average_solutions(mc_arr, top_models$i)
+  plot_predictions_vs_fits(row_predictions, top_solution_rsums)
+  plot_predictions_vs_fits(col_predictions, top_solution_csums)
+  top_model_ev <- evaluate_MC_runs(mean_top_solution, row_predictions, col_predictions)
+  top_model_ev
+
+  plot(mean_top_solution)
+}
+
+
+run_MC_simulation <- function(upper_limits, lower_limits = NULL, iter = 2000) {
   mc_arr <- array(
-    dim = c(nrow(mutations_mat), ncol(mutations_mat), iter),
-    dimnames = list(rownames(mutations_mat), colnames(mutations_mat), 1:iter)
+    dim = c(nrow(upper_limits), ncol(upper_limits), iter),
+    dimnames = list(rownames(upper_limits), colnames(upper_limits), 1:iter)
   )
-  for (row in rownames(mutations_mat)) {
-    for (col in colnames(mutations_mat)) {
+  for (row in rownames(upper_limits)) {
+    for (col in colnames(upper_limits)) {
       mc_arr[row, col, ] <- round(runif(iter, max = upper_limits[row, col]))
     }
   }
-  mc_arr[, , 1]
+  mc_arr
+}
 
-  # Evaluate
+
+extract_models_to_tibble <- function(mc_arr, which) {
+  which |>
+    set_names(which) |>
+    map(~mc_arr[, , .x]) |>
+    map(as.data.frame) |>
+    map(rownames_to_column, "rowsample") |>
+    map(~pivot_longer(.x, -rowsample, names_to = "colsample", values_to = "N")) |>
+    bind_rows(.id = "i")
+}
+
+
+
+average_solutions <- function(mc_arr, which) {
+  mean_solution <- array(
+    dim = dim(mc_arr)[1:2],
+    dimnames = dimnames(mc_arr)[1:2]
+  )
+  for (row in rownames(mean_solution)) {
+    for (col in colnames(mean_solution)) {
+      mean_solution[row, col] <- mean(mc_arr[row, col, which])
+    }
+  }
+  mean_solution
+  class(mean_solution) <- c("non_neutral_2d_fit", class(mean_solution))
+  mean_solution
+}
+
+
+# ----------------------- Models evaluation -----------------------------------
+
+#' @export
+evaluate_MC_runs <- function(mc_arr, rowsums_pred, colsums_pred) {
+  UseMethod("evaluate_MC_runs")
+}
+
+
+#' @export
+evaluate_MC_runs.array <- function(mc_arr, rowsums_pred, colsums_pred) {
+  iter <- dim(mc_arr)[[3]]
   err <- rep(NA_real_, iter)
-  rsums <- matrix(NA, nrow = iter, ncol = nrow(mutations_mat))
-  csums <- matrix(NA, nrow = iter, ncol = ncol(mutations_mat))
+  rsums <- matrix(NA, nrow = iter, ncol = dim(mc_arr)[[1]])
+  csums <- matrix(NA, nrow = iter, ncol = dim(mc_arr)[[2]])
   # non_zero_sums <- matrix(NA, nrow = iter, ncol = length(row_predictions) - 1)
   for (i in 1:iter) {
     rsums[i, ] <- rowSums(mc_arr[, , i])
     csums[i, ] <- colSums(mc_arr[, , i])
     non_zero_sums <- c(rsums[i, -1], csums[i, -1])
-    non_zero_preds <- c(row_predictions[-1], col_predictions[-1])
+    non_zero_preds <- c(rowsums_pred[-1], colsums_pred[-1])
     err[i] <- sum((non_zero_sums - non_zero_preds)^2)
   }
-  hist(err)
-
   err <- tibble(err, i = 1:iter) |>
     mutate(rank = percent_rank(err))
-
-  selected_solutions <- err |>
-    filter(rank < 0.01) |>
-    arrange(err)
-
-  sel <- err$i[[1]]
-
-  plot(row_predictions)
-  points(rsums[sel, -1], col = "red")
-
-
-  plot(col_predictions)
-  points(csums[sel, -1], col = "red")
-
-  pheatmap::pheatmap(
-    mc_arr[, , sel], cluster_rows = FALSE, cluster_cols = FALSE
-  )
+  res <- lst(err, rsums, csums)
+  class(res) <- c("cevo_MC_solutions_eval", class(res))
+  res
 }
 
 
+#' @export
+evaluate_MC_runs.matrix <- function(mc_arr, rowsums_pred, colsums_pred) {
+  rsums <- rowSums(mc_arr)
+  csums <- colSums(mc_arr)
+  non_zero_sums <- c(rsums[-1], csums[-1])
+  non_zero_preds <- c(rowsums_pred[-1], colsums_pred[-1])
+  err <- sum((non_zero_sums - non_zero_preds)^2)
+  rsq_rows <- rsq_vec(rowsums_pred[-1], rsums[-1])
+  rsq_cols <- rsq_vec(colsums_pred[-1], csums[-1])
+  rsq_total <- rsq_vec(non_zero_preds, non_zero_sums)
+  res <- lst(err, rsq_rows, rsq_cols, rsq_total, rsums, csums)
+  class(res) <- c("non_neutral_2d_fit_eval", class(res))
+  res
+}
+
+
+#' @export
+print.non_neutral_2d_fit_eval <- function(x, ...) {
+  cli::cat_line("MSE:     ", round(x$err, digits = 2))
+  cli::cat_line("Rows R^2:    ", round(x$rsq_rows, digits = 2))
+  cli::cat_line("Cols R^2:    ", round(x$rsq_cols, digits = 2))
+  cli::cat_line("Total R^2:   ", round(x$rsq_total, digits = 2))
+  cli::cat_line("Row sums:  ", paste0(x$rsums[1:5], collapse = ", "), "...")
+  cli::cat_line("Col sums:  ", paste0(x$csums[1:5], collapse = ", "), "...")
+}
+
+
+#' @export
+print.cevo_MC_solutions_eval <- function(x, ...) {
+  MSE_range_str <- x$err$err |>
+    range() |>
+    round(digits = 0) |>
+    paste0(collapse = " - ")
+  cli::cat_line("Iters:     ", nrow(x$err))
+  cli::cat_line("MSE range: ", MSE_range_str)
+}
+
+
+#' @export
+plot.cevo_MC_solutions_eval <- function(x, ...) {
+  hist(x$err$err)
+}
+
+
+# -------------------------------- Plots --------------------------------------
+
+plot_predictions_vs_fits <- function(predictions, fits) {
+  plot(predictions)
+  if (is.null(dim(fits))) {
+    points(fits[-1], col = "red")
+  } else {
+    for (i in 1:nrow(fits)) {
+      points(fits[i, -1], col = "red")
+    }
+  }
+}
+
+
+#' @export
+plot.non_neutral_2d_fit <- function(x, ...) {
+  pheatmap::pheatmap(
+    x, cluster_rows = FALSE, cluster_cols = FALSE
+  )
+}
 
