@@ -40,6 +40,8 @@ get_selected_mutations <- function(object, ...) {
   col_predictions <- deframe(predictions_by_interval[, c("interval", "colsample")])
 
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
+  limit_ranges(limits) |> sum()
+
   # limits$upper[1:5, 1:5]
   mc_arr <- run_MC_simulation(upper_limits = limits$upper, iters = 2000)
   # mc_arr[, , 1]
@@ -59,8 +61,31 @@ get_selected_mutations <- function(object, ...) {
   plot_predictions_vs_fits(col_predictions, top_solution_csums)
   top_model_ev <- evaluate_MC_runs(mean_top_solution, row_predictions, col_predictions)
   top_model_ev
-
   plot(mean_top_solution)
+
+  # Another round
+  new_limits <- tune_limits(limits, mc_arr[, , top_models$i], row_predictions, col_predictions)
+  limit_ranges(limits) |> sum()
+  limit_ranges(new_limits) |> sum()
+
+  # Loop
+  limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
+  limit_ranges(limits) |> sum()
+  for (i in 1:5) {
+    limit_ranges(limits) |> sum() |> print()
+    mc_arr <- run_MC_simulation(upper_limits = limits$upper, lower_limits = limits$lower, iters = 20000)
+    ev_res <- evaluate_MC_runs(mc_arr, row_predictions, col_predictions)
+
+    top_models <- ev_res$err |>
+      filter(rank < 0.01) |>
+      arrange(err)
+
+    mean_top_solution <- average_solutions(mc_arr, top_models$i)
+    top_model_ev <- evaluate_MC_runs(mean_top_solution, row_predictions, col_predictions)
+    top_model_ev |> print()
+
+    limits <- tune_limits(limits, mc_arr[, , top_models$i], row_predictions, col_predictions)
+  }
 }
 
 
@@ -81,7 +106,51 @@ init_MC_simulation_limits <- function(mutations_mat, row_predictions, col_predic
     }
   }
   upper_limits <- round(upper_limits)
-  limits <- list(lower = NULL, upper = upper_limits)
+  lower_limits <- upper_limits
+  lower_limits[, ] <- 0
+  limits <- list(lower = lower_limits, upper = upper_limits)
+  class(limits) <- c("cevo_MC_sim_limits", class(limits))
+  limits
+}
+
+
+limit_ranges <- function(limits, zero.rm = TRUE) {
+  zero_limits <- limits$upper == 0
+  limits_diff <- limits$upper - limits$lower
+  c(limits_diff[!zero_limits])
+}
+
+
+tune_limits <- function(limits, mc_arr, row_predictions, col_predictions) {
+  upper_limits <- limits$upper
+  lower_limits <- limits$lower
+  for (row in rownames(upper_limits)) {
+    for (col in colnames(upper_limits)) {
+      max_val <- max(mc_arr[row, col, ])
+      min_val <- min(mc_arr[row, col, ])
+      # mean_val <- mean(mc_arr[row, col, ])
+      # sd <- sd(mc_arr[row, col, ])
+      # max_val <- mean_val + 2 * sd
+      # min_val <- mean_val - 2 * sd
+      # upper
+      if (max_val < row_predictions[row] || max_val < col_predictions[col]) {
+        upper_limits[row, col] <- upper_limits[row, col]
+      } else {
+        upper_limits[row, col] <- max_val
+      }
+      # lower
+      if (min_val > row_predictions[row] || min_val > col_predictions[col]) {
+        # lower_limits[row, col] <- 0
+        lower_limits[row, col] <- lower_limits[row, col]
+      } else {
+        lower_limits[row, col] <- min_val
+      }
+    }
+  }
+  upper_limits <- round(upper_limits)
+  lower_limits <- round(lower_limits)
+  limits <- list(lower = lower_limits, upper = upper_limits)
+  class(limits) <- c("cevo_MC_sim_limits", class(limits))
   limits
 }
 
