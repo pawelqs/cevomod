@@ -1,3 +1,9 @@
+data("AMLRO", package = "cevoDatasets")
+object <- AMLRO |>
+  filter(.data$patient_id == "AMLRO-15") |>
+  run_cevomod()
+# snvs <- SNVs(object)
+
 
 test_that("get_interval_centers() works", {
   intervals <- (1:1000/1000) |>
