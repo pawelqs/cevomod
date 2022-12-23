@@ -39,53 +39,44 @@ get_selected_mutations <- function(object, ...) {
   row_predictions <- deframe(predictions_by_interval[, c("interval", "rowsample")])
   col_predictions <- deframe(predictions_by_interval[, c("interval", "colsample")])
 
-  limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
-  limit_ranges(limits) |> sum()
-
-  # limits$upper[1:5, 1:5]
-  mc_arr <- run_MC_simulation(upper_limits = limits$upper, iters = 2000)
-  # mc_arr[, , 1]
-  ev_res <- evaluate_MC_runs(mc_arr, row_predictions, col_predictions)
-  plot(ev_res)
-
-  top_models <- ev_res$err |>
-    filter(rank < 0.01) |>
-    arrange(err)
-  # selected_solutions <- extract_models_to_tibble(mc_arr, top_models$i)
-  plot_predictions_vs_fits(row_predictions, ev_res$rsums[top_models$i, ])
-  plot_predictions_vs_fits(col_predictions, ev_res$csums[top_models$i, ])
-
-  # average
-  mean_top_solution <- average_solutions(mc_arr, top_models$i)
-  plot_predictions_vs_fits(row_predictions, top_solution_rsums)
-  plot_predictions_vs_fits(col_predictions, top_solution_csums)
-  top_model_ev <- evaluate_MC_runs(mean_top_solution, row_predictions, col_predictions)
-  top_model_ev
-  plot(mean_top_solution)
-
-  # Another round
-  new_limits <- tune_limits(limits, mc_arr[, , top_models$i], row_predictions, col_predictions)
-  limit_ranges(limits) |> sum()
-  limit_ranges(new_limits) |> sum()
-
+  x <- solve_MC1(mutations_mat, row_predictions, col_predictions, N = 5)
   # Loop
+  plot_predictions_vs_fits(row_predictions, rowSums(x$solution))
+  plot_predictions_vs_fits(col_predictions, colSums(x$solution))
+  plot_predictions_vs_fits(row_predictions, x$metrics$rsums[x$top_models$i, ])
+  plot_predictions_vs_fits(col_predictions, x$metrics$csums[x$top_models$i, ])
+  plot(x$solution)
+  top_model_ev <- evaluate_MC_runs(x$solution, row_predictions, col_predictions)
+  top_model_ev
+}
+
+
+solve_MC1 <- function(mutations_mat, row_predictions, col_predictions, N = 5) {
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
   limit_ranges(limits) |> sum()
-  for (i in 1:5) {
+  for (i in 1:N) {
     limit_ranges(limits) |> sum() |> print()
-    mc_arr <- run_MC_simulation(upper_limits = limits$upper, lower_limits = limits$lower, iters = 20000)
-    ev_res <- evaluate_MC_runs(mc_arr, row_predictions, col_predictions)
+    mc_arr <- run_MC_simulation(upper_limits = limits$upper, lower_limits = limits$lower, iters = 3000)
+    metrics <- evaluate_MC_runs(mc_arr, row_predictions, col_predictions)
+    # plot(metrics)
 
-    top_models <- ev_res$err |>
-      filter(rank < 0.01) |>
-      arrange(err)
+    top_models <- metrics |>
+      filter(percent_rank(MSE) < 0.01) |>
+      arrange(percent_rank(MSE))
+    # plot_predictions_vs_fits(row_predictions, ev_res$rsums[top_models$i, ])
+    # plot_predictions_vs_fits(col_predictions, ev_res$csums[top_models$i, ])
 
     mean_top_solution <- average_solutions(mc_arr, top_models$i)
     top_model_ev <- evaluate_MC_runs(mean_top_solution, row_predictions, col_predictions)
     top_model_ev |> print()
 
-    limits <- tune_limits(limits, mc_arr[, , top_models$i], row_predictions, col_predictions)
+    limits <- tune_limits(limits, mc_arr, metrics, row_predictions, col_predictions, verbose = FALSE)
   }
+  list(
+    solution = mean_top_solution,
+    metrics = metrics,
+    top_models = top_models
+  )
 }
 
 
@@ -121,13 +112,27 @@ limit_ranges <- function(limits, zero.rm = TRUE) {
 }
 
 
-tune_limits <- function(limits, mc_arr, row_predictions, col_predictions) {
+tune_limits <- function(limits, mc_arr, metrics, row_predictions, col_predictions, verbose = FALSE) {
   upper_limits <- limits$upper
   lower_limits <- limits$lower
   for (row in rownames(upper_limits)) {
+    if (verbose) print(row)
     for (col in colnames(upper_limits)) {
-      max_val <- max(mc_arr[row, col, ])
-      min_val <- min(mc_arr[row, col, ])
+      if (upper_limits[row, col] == lower_limits[row, col]) {
+        next
+      }
+      metrics2 <- tibble(
+        i = metrics$i,
+        row_dist = (metrics$rsums[, row] - row_predictions[row])^2,
+        col_dist = (metrics$csums[, col] - col_predictions[col])^2,
+        dist = row_dist + col_dist
+      )
+      top_fits <- metrics2 |>
+        mutate(rank = percent_rank(dist)) |>
+        filter(rank < 0.01)
+      top_fits_arr <- mc_arr[, , top_fits$i]
+      max_val <- max(top_fits_arr[row, col, ])
+      min_val <- min(top_fits_arr[row, col, ])
       # mean_val <- mean(mc_arr[row, col, ])
       # sd <- sd(mc_arr[row, col, ])
       # max_val <- mean_val + 2 * sd
@@ -162,11 +167,15 @@ run_MC_simulation <- function(upper_limits, lower_limits = NULL, iters = 2000) {
   )
   for (row in rownames(upper_limits)) {
     for (col in colnames(upper_limits)) {
-      mc_arr[row, col, ] <- runif(
+      mc_arr[row, col, ] <- if (upper_limits[row, col] == 0) {
+        0
+      } else {
+        runif(
         n = iters,
         min = if (is.null(lower_limits)) 0 else lower_limits[row, col],
         max = upper_limits[row, col]
       )
+      }
     }
   }
   mc_arr <- round(mc_arr)
@@ -212,22 +221,31 @@ evaluate_MC_runs <- function(mc_arr, rowsums_pred, colsums_pred) {
 #' @export
 evaluate_MC_runs.array <- function(mc_arr, rowsums_pred, colsums_pred) {
   iter <- dim(mc_arr)[[3]]
-  err <- rep(NA_real_, iter)
   rsums <- matrix(NA, nrow = iter, ncol = dim(mc_arr)[[1]])
+  colnames(rsums) <- dimnames(mc_arr)[[1]]
   csums <- matrix(NA, nrow = iter, ncol = dim(mc_arr)[[2]])
+  colnames(csums) <- dimnames(mc_arr)[[2]]
+  rsums_MSE <- rep(NA_real_, iter)
+  csums_MSE <- rep(NA_real_, iter)
+  MSE <- rep(NA_real_, iter)
   # non_zero_sums <- matrix(NA, nrow = iter, ncol = length(row_predictions) - 1)
   for (i in 1:iter) {
     rsums[i, ] <- rowSums(mc_arr[, , i])
     csums[i, ] <- colSums(mc_arr[, , i])
-    non_zero_sums <- c(rsums[i, -1], csums[i, -1])
-    non_zero_preds <- c(rowsums_pred[-1], colsums_pred[-1])
-    err[i] <- sum((non_zero_sums - non_zero_preds)^2)
+    rsums_MSE[i] <- sum((rsums[i, -1] - rowsums_pred[-1])^2)
+    csums_MSE[i] <- sum((csums[i, -1] - colsums_pred[-1])^2)
+    MSE[i] <- rsums_MSE[i] + csums_MSE[i]
   }
-  err <- tibble(err, i = 1:iter) |>
-    mutate(rank = percent_rank(err))
-  res <- lst(err, rsums, csums)
-  class(res) <- c("cevo_MC_solutions_eval", class(res))
-  res
+  metrics <- tibble(
+    i = 1:iter,
+    rsums_MSE,
+    csums_MSE,
+    MSE,
+    rsums,
+    csums
+  )
+  class(metrics) <- c("cevo_MC_solutions_eval", class(metrics))
+  metrics
 }
 
 
@@ -258,20 +276,20 @@ print.non_neutral_2d_fit_eval <- function(x, ...) {
 }
 
 
-#' @export
-print.cevo_MC_solutions_eval <- function(x, ...) {
-  MSE_range_str <- x$err$err |>
-    range() |>
-    round(digits = 0) |>
-    paste0(collapse = " - ")
-  cli::cat_line("Iters:     ", nrow(x$err))
-  cli::cat_line("MSE range: ", MSE_range_str)
-}
+# @export
+# print.cevo_MC_solutions_eval <- function(x, ...) {
+#   MSE_range_str <- x$err$err |>
+#     range() |>
+#     round(digits = 0) |>
+#     paste0(collapse = " - ")
+#   cli::cat_line("Iters:     ", nrow(x$err))
+#   cli::cat_line("MSE range: ", MSE_range_str)
+# }
 
 
 #' @export
 plot.cevo_MC_solutions_eval <- function(x, ...) {
-  hist(x$err$err)
+  hist(x$MSE)
 }
 
 
