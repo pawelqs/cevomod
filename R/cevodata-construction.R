@@ -352,3 +352,8 @@ active_models <- function(object, ...) {
   }
   object$active_models
 }
+
+
+count_patients <- function(cd) {
+  n_distinct(cd$metadata$patient_id)
+}
