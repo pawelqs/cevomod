@@ -397,6 +397,7 @@ plot_predictions_vs_fits <- function(predictions, fits) {
 
 #' @export
 plot.non_neutral_2d_fit <- function(x, ...) {
+  rlang::check_installed("pheatmap", reason = "to plot the 2d model")
   pheatmap::pheatmap(
     x, cluster_rows = FALSE, cluster_cols = FALSE
   )
