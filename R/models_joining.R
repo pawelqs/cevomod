@@ -39,17 +39,147 @@ get_selected_mutations <- function(object, ...) {
   row_predictions <- deframe(predictions_by_interval[, c("interval", "rowsample")])
   col_predictions <- deframe(predictions_by_interval[, c("interval", "colsample")])
 
-  x <- solve_MC1(mutations_mat, row_predictions, col_predictions, N = 5)
+  # x <- solve_MC1(mutations_mat, row_predictions, col_predictions, N = 5)
+  x <- solve_MC2(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000)
   # Loop
-  plot_predictions_vs_fits(row_predictions, rowSums(x$solution))
-  plot_predictions_vs_fits(col_predictions, colSums(x$solution))
-  plot_predictions_vs_fits(row_predictions, x$metrics$rsums[x$top_models$i, ])
-  plot_predictions_vs_fits(col_predictions, x$metrics$csums[x$top_models$i, ])
+  plot_predictions_vs_fits(row_predictions, x$metrics$rsums)
+  plot_predictions_vs_fits(col_predictions, x$metrics$csums)
   plot(x$solution)
   top_model_ev <- evaluate_MC_runs(x$solution, row_predictions, col_predictions)
   top_model_ev
 }
 
+
+init_MC_simulation_limits <- function(mutations_mat, row_predictions, col_predictions) {
+  upper_limits <- mutations_mat
+  zero_interval <- rownames(mutations_mat)[[1]]
+  for (row in rownames(mutations_mat)) {
+    for (col in colnames(mutations_mat)) {
+      if (row == zero_interval && col == zero_interval) {
+        upper_limits[row, col] <- 0
+      } else if (row == zero_interval) {
+        upper_limits[row, col] <- min(mutations_mat[row, col], col_predictions[col] * 1.1)
+      } else if (col == zero_interval) {
+        upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1)
+      } else {
+        upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1, col_predictions[col] * 1.1)
+      }
+    }
+  }
+  upper_limits <- round(upper_limits)
+  lower_limits <- upper_limits
+  lower_limits[, ] <- 0
+  limits <- list(lower = lower_limits, upper = upper_limits)
+  class(limits) <- c("cevo_MC_sim_limits", class(limits))
+  limits
+}
+
+
+run_MC_simulation <- function(upper_limits, lower_limits = NULL, iters = 2000) {
+  mc_arr <- array(
+    dim = c(nrow(upper_limits), ncol(upper_limits), iters),
+    dimnames = list(rownames(upper_limits), colnames(upper_limits), 1:iters)
+  )
+  for (row in rownames(upper_limits)) {
+    for (col in colnames(upper_limits)) {
+      mc_arr[row, col, ] <- if (upper_limits[row, col] == 0) {
+        0
+      } else {
+        runif(
+        n = iters,
+        min = if (is.null(lower_limits)) 0 else lower_limits[row, col],
+        max = upper_limits[row, col]
+      )
+      }
+    }
+  }
+  mc_arr <- round(mc_arr)
+  mc_arr
+}
+
+
+extract_models_to_tibble <- function(mc_arr, which) {
+  which |>
+    set_names(which) |>
+    map(~mc_arr[, , .x]) |>
+    map(as.data.frame) |>
+    map(rownames_to_column, "rowsample") |>
+    map(~pivot_longer(.x, -rowsample, names_to = "colsample", values_to = "N")) |>
+    bind_rows(.id = "i")
+}
+
+
+average_solutions <- function(mc_arr, which = NULL) {
+  mean_solution <- array(
+    dim = dim(mc_arr)[1:2],
+    dimnames = dimnames(mc_arr)[1:2]
+  )
+  if (is.null(which)) {
+    which <- 1:dim(mc_arr)[[3]]
+  }
+  for (row in rownames(mean_solution)) {
+    for (col in colnames(mean_solution)) {
+      mean_solution[row, col] <- mean(mc_arr[row, col, which])
+    }
+  }
+  mean_solution
+  class(mean_solution) <- c("non_neutral_2d_fit", class(mean_solution))
+  mean_solution
+}
+
+
+# ------------------------- MC solver 2 ---------------------------------------
+
+solve_MC2 <- function(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000) {
+  limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
+
+  mc_arr <- run_MC_simulation(upper_limits = limits$upper, lower_limits = limits$lower, iters = N)
+
+  for (i in 1:N) {
+    mc_mat <- mc_arr[, , i]
+    metrics <- evaluate_MC_runs(mc_mat, row_predictions, col_predictions)
+    for (j in 1:epochs) {
+      print(metrics$MSE)
+
+      rsums <- rowSums(mc_mat)
+      scaling_factors <- row_predictions / rsums
+      scaling_factors[is.infinite(scaling_factors)] <- 1
+      scaling_factors[is.na(scaling_factors)] <- 1
+      for (row in rownames(mc_mat)) {
+        mc_mat[row, ] <- mc_mat[row, ] * scaling_factors[row]
+      }
+      mc_mat[mc_mat > limits$upper] <- limits$upper[mc_mat > limits$upper]
+
+      csums <- colSums(mc_mat)
+      scaling_factors <- col_predictions / csums
+      scaling_factors[is.infinite(scaling_factors)] <- 1
+      scaling_factors[is.na(scaling_factors)] <- 1
+      for (col in colnames(mc_mat)) {
+        mc_mat[, col] <- mc_mat[, col] * scaling_factors[col]
+      }
+      mc_mat[mc_mat > limits$upper] <- limits$upper[mc_mat > limits$upper]
+
+      mew_metrics <- evaluate_MC_runs(mc_mat, row_predictions, col_predictions)
+      MSE_diff <- metrics$MSE - mew_metrics$MSE
+      metrics <- mew_metrics
+      mc_arr[, , i] <- mc_mat
+      if (MSE_diff < 10) {
+        message("MSE_diff < threshold, exiting")
+        break
+      }
+    }
+  }
+  metrics <- evaluate_MC_runs(mc_arr, row_predictions, col_predictions)
+  final_solution <- average_solutions(mc_arr)
+  list(
+    solution = final_solution,
+    mc_arr = mc_arr,
+    metrics = metrics
+  )
+}
+
+
+# ------------------------- MC solver 1 ---------------------------------------
 
 solve_MC1 <- function(mutations_mat, row_predictions, col_predictions, N = 5) {
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
@@ -77,31 +207,6 @@ solve_MC1 <- function(mutations_mat, row_predictions, col_predictions, N = 5) {
     metrics = metrics,
     top_models = top_models
   )
-}
-
-
-init_MC_simulation_limits <- function(mutations_mat, row_predictions, col_predictions) {
-  upper_limits <- mutations_mat
-  zero_interval <- rownames(mutations_mat)[[1]]
-  for (row in rownames(mutations_mat)) {
-    for (col in colnames(mutations_mat)) {
-      if (row == zero_interval && col == zero_interval) {
-        upper_limits[row, col] <- 0
-      } else if (row == zero_interval) {
-        upper_limits[row, col] <- min(mutations_mat[row, col], col_predictions[col] * 1.1)
-      } else if (col == zero_interval) {
-        upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1)
-      } else {
-        upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1, col_predictions[col] * 1.1)
-      }
-    }
-  }
-  upper_limits <- round(upper_limits)
-  lower_limits <- upper_limits
-  lower_limits[, ] <- 0
-  limits <- list(lower = lower_limits, upper = upper_limits)
-  class(limits) <- c("cevo_MC_sim_limits", class(limits))
-  limits
 }
 
 
@@ -160,56 +265,6 @@ tune_limits <- function(limits, mc_arr, metrics, row_predictions, col_prediction
 }
 
 
-run_MC_simulation <- function(upper_limits, lower_limits = NULL, iters = 2000) {
-  mc_arr <- array(
-    dim = c(nrow(upper_limits), ncol(upper_limits), iters),
-    dimnames = list(rownames(upper_limits), colnames(upper_limits), 1:iters)
-  )
-  for (row in rownames(upper_limits)) {
-    for (col in colnames(upper_limits)) {
-      mc_arr[row, col, ] <- if (upper_limits[row, col] == 0) {
-        0
-      } else {
-        runif(
-        n = iters,
-        min = if (is.null(lower_limits)) 0 else lower_limits[row, col],
-        max = upper_limits[row, col]
-      )
-      }
-    }
-  }
-  mc_arr <- round(mc_arr)
-  mc_arr
-}
-
-
-extract_models_to_tibble <- function(mc_arr, which) {
-  which |>
-    set_names(which) |>
-    map(~mc_arr[, , .x]) |>
-    map(as.data.frame) |>
-    map(rownames_to_column, "rowsample") |>
-    map(~pivot_longer(.x, -rowsample, names_to = "colsample", values_to = "N")) |>
-    bind_rows(.id = "i")
-}
-
-
-average_solutions <- function(mc_arr, which) {
-  mean_solution <- array(
-    dim = dim(mc_arr)[1:2],
-    dimnames = dimnames(mc_arr)[1:2]
-  )
-  for (row in rownames(mean_solution)) {
-    for (col in colnames(mean_solution)) {
-      mean_solution[row, col] <- mean(mc_arr[row, col, which])
-    }
-  }
-  mean_solution
-  class(mean_solution) <- c("non_neutral_2d_fit", class(mean_solution))
-  mean_solution
-}
-
-
 # ----------------------- Models evaluation -----------------------------------
 
 #' @export
@@ -255,11 +310,11 @@ evaluate_MC_runs.matrix <- function(mc_arr, rowsums_pred, colsums_pred) {
   csums <- colSums(mc_arr)
   non_zero_sums <- c(rsums[-1], csums[-1])
   non_zero_preds <- c(rowsums_pred[-1], colsums_pred[-1])
-  err <- sum((non_zero_sums - non_zero_preds)^2)
+  MSE <- sum((non_zero_sums - non_zero_preds)^2)
   rsq_rows <- rsq_vec(rowsums_pred[-1], rsums[-1])
   rsq_cols <- rsq_vec(colsums_pred[-1], csums[-1])
   rsq_total <- rsq_vec(non_zero_preds, non_zero_sums)
-  res <- lst(err, rsq_rows, rsq_cols, rsq_total, rsums, csums)
+  res <- lst(MSE, rsq_rows, rsq_cols, rsq_total, rsums, csums)
   class(res) <- c("non_neutral_2d_fit_eval", class(res))
   res
 }
@@ -267,7 +322,7 @@ evaluate_MC_runs.matrix <- function(mc_arr, rowsums_pred, colsums_pred) {
 
 #' @export
 print.non_neutral_2d_fit_eval <- function(x, ...) {
-  cli::cat_line("MSE:     ", round(x$err, digits = 2))
+  cli::cat_line("MSE:     ", round(x$MSE, digits = 2))
   cli::cat_line("Rows R^2:    ", round(x$rsq_rows, digits = 2))
   cli::cat_line("Cols R^2:    ", round(x$rsq_cols, digits = 2))
   cli::cat_line("Total R^2:   ", round(x$rsq_total, digits = 2))
