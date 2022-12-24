@@ -1,11 +1,18 @@
 
-# Get selected mutations based on 2 sample models
+#' Get selected mutations based on 2 sample models
+#' @param object object
+#' @param ... other arguments
 #' @export
 get_selected_mutations <- function(object, ...) {
   UseMethod("get_selected_mutations")
 }
 
 
+#' @rdname get_selected_mutations
+#' @param sample1 sample1
+#' @param sample2 sample2
+#' @param method method
+#' @export
 get_selected_mutations.cevodata <- function(object,
                                             sample1 = NULL, sample2 = NULL,
                                             method = "basic", ...) {
@@ -27,7 +34,8 @@ get_selected_mutations.cevodata <- function(object,
 }
 
 
-
+#' @rdname get_selected_mutations
+#' @export
 get_selected_mutations.singlepatient_cevodata <- function(object,
                                                           sample1 = NULL,
                                                           sample2 = NULL,
@@ -164,7 +172,6 @@ average_solutions <- function(mc_arr, which = NULL) {
 
 solve_basic <- function(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000, eps = 10) {
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
-
   mc_arr <- run_MC_simulation(upper_limits = limits$upper, lower_limits = limits$lower, iters = N)
 
   for (i in 1:N) {
@@ -173,6 +180,7 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions, N = 10,
     for (j in 1:epochs) {
       print(metrics$MSE)
 
+      # TODO: randomize order of row and col fitting
       rsums <- rowSums(mc_mat)
       scaling_factors <- row_predictions / rsums
       scaling_factors[is.infinite(scaling_factors)] <- 1
@@ -201,8 +209,10 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions, N = 10,
       }
     }
   }
+
   metrics <- evaluate_MC_runs(mc_arr, row_predictions, col_predictions)
   final_solution <- average_solutions(mc_arr)
+
   list(
     solution = final_solution,
     mc_arr = mc_arr,
@@ -300,6 +310,10 @@ tune_limits <- function(limits, mc_arr, metrics, row_predictions, col_prediction
 
 # ----------------------- Models evaluation -----------------------------------
 
+#' Evaluate Monte Carlo results
+#' @param mc_arr Monte Carlo simutations array
+#' @param rowsums_pred expected row sums
+#' @param colsums_pred predicted col sums
 #' @export
 evaluate_MC_runs <- function(mc_arr, rowsums_pred, colsums_pred) {
   UseMethod("evaluate_MC_runs")

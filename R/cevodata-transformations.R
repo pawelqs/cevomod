@@ -78,15 +78,17 @@ bind_assays <- function(x, y, slot_name) {
 }
 
 
+#' Split object
+#' @param object object to split
+#' @param ... other arguments
 #' @export
 split_by <- function(object, ...) {
   UseMethod("split_by")
 }
 
 
-#' Split cevodata object
-#'
-#' @param object, cevodata object
+#' @describeIn split_by Split cevodata object
+#' @param object cevodata object
 #' @param x name of column in metadata
 #' @export
 split_by.cevodata <- function(object, x, ...) {
