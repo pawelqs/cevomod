@@ -40,10 +40,13 @@ get_selected_mutations <- function(object, ...) {
   col_predictions <- deframe(predictions_by_interval[, c("interval", "colsample")])
 
   # x <- solve_MC1(mutations_mat, row_predictions, col_predictions, N = 5)
-  x <- solve_MC2(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000)
+  x <- solve_MC2(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000, eps = 5)
   # Loop
   plot_predictions_vs_fits(row_predictions, x$metrics$rsums)
   plot_predictions_vs_fits(col_predictions, x$metrics$csums)
+
+  plot_predictions_vs_fits(row_predictions, rowSums(x$solution))
+  plot_predictions_vs_fits(col_predictions, colSums(x$solution))
   plot(x$solution)
   top_model_ev <- evaluate_MC_runs(x$solution, row_predictions, col_predictions)
   top_model_ev
@@ -130,7 +133,7 @@ average_solutions <- function(mc_arr, which = NULL) {
 
 # ------------------------- MC solver 2 ---------------------------------------
 
-solve_MC2 <- function(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000) {
+solve_MC2 <- function(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000, eps = 10) {
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
 
   mc_arr <- run_MC_simulation(upper_limits = limits$upper, lower_limits = limits$lower, iters = N)
@@ -145,7 +148,7 @@ solve_MC2 <- function(mutations_mat, row_predictions, col_predictions, N = 10, e
       scaling_factors <- row_predictions / rsums
       scaling_factors[is.infinite(scaling_factors)] <- 1
       scaling_factors[is.na(scaling_factors)] <- 1
-      for (row in rownames(mc_mat)) {
+      for (row in rownames(mc_mat)[-1]) {
         mc_mat[row, ] <- mc_mat[row, ] * scaling_factors[row]
       }
       mc_mat[mc_mat > limits$upper] <- limits$upper[mc_mat > limits$upper]
@@ -154,7 +157,7 @@ solve_MC2 <- function(mutations_mat, row_predictions, col_predictions, N = 10, e
       scaling_factors <- col_predictions / csums
       scaling_factors[is.infinite(scaling_factors)] <- 1
       scaling_factors[is.na(scaling_factors)] <- 1
-      for (col in colnames(mc_mat)) {
+      for (col in colnames(mc_mat)[-1]) {
         mc_mat[, col] <- mc_mat[, col] * scaling_factors[col]
       }
       mc_mat[mc_mat > limits$upper] <- limits$upper[mc_mat > limits$upper]
@@ -163,8 +166,8 @@ solve_MC2 <- function(mutations_mat, row_predictions, col_predictions, N = 10, e
       MSE_diff <- metrics$MSE - mew_metrics$MSE
       metrics <- mew_metrics
       mc_arr[, , i] <- mc_mat
-      if (MSE_diff < 10) {
-        message("MSE_diff < threshold, exiting")
+      if (MSE_diff < eps) {
+        message("MSE_diff < eps, exiting")
         break
       }
     }
