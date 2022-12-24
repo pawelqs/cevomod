@@ -1,15 +1,35 @@
 
-# Get selected mutations based on 2 sample models
+#' @export
 get_selected_mutations <- function(object, ...) {
+  UseMethod("get_selected_mutations")
+}
+
+
+get_selected_mutations.cevodata <- function(object,
+                                            sample1 = NULL, sample2 = NULL,
+                                            method = "basic", ...) {
   # As for now for one patient only
   if (!were_subclonal_models_fitted(object)) {
     stop("Fit subclonal models first!")
   }
 
+  splits <- object |>
+    split_by("patient_id")
+  res <- map(splits, get_selected_mutations)
+}
+
+
+# Get selected mutations based on 2 sample models
+get_selected_mutations.singlepatient_cevodata <- function(object,
+                                                          sample1 = NULL,
+                                                          sample2 = NULL,
+                                                          method = "basic",
+                                                          ...) {
+
   samples_data <- object$metadata |>
     select(sample_id:sample)
-  rowsample <- samples_data$sample[[1]]
-  colsample <- samples_data$sample[[2]]
+  rowsample <- if (is.null(sample1)) samples_data$sample[[1]]
+  colsample <- if (is.null(sample2)) samples_data$sample[[2]]
 
   mutations_mat <- object |>
     get_SNVs_2d_matrix(rows_sample = rowsample, cols_sample = colsample, bins = 100)
