@@ -90,7 +90,7 @@ split_by <- function(object, ...) {
 #' @param x name of column in metadata
 #' @export
 split_by.cevodata <- function(object, x, ...) {
-  split_names <- object$metadata[[f]] |>
+  split_names <- object$metadata[[x]] |>
     unique()
   splits <- split_names |>
     set_names(split_names) |>
