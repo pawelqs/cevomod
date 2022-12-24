@@ -1,4 +1,5 @@
 
+# Get selected mutations based on 2 sample models
 #' @export
 get_selected_mutations <- function(object, ...) {
   UseMethod("get_selected_mutations")
@@ -8,7 +9,6 @@ get_selected_mutations <- function(object, ...) {
 get_selected_mutations.cevodata <- function(object,
                                             sample1 = NULL, sample2 = NULL,
                                             method = "basic", ...) {
-  # As for now for one patient only
   if (!were_subclonal_models_fitted(object)) {
     stop("Fit subclonal models first!")
   }
@@ -16,16 +16,23 @@ get_selected_mutations.cevodata <- function(object,
   splits <- object |>
     split_by("patient_id")
   res <- map(splits, get_selected_mutations)
+
+  # Loop
+  plot_predictions_vs_fits(row_predictions, x$metrics$rsums)
+  plot_predictions_vs_fits(col_predictions, x$metrics$csums)
+
+  plot_predictions_vs_fits(row_predictions, rowSums(x$solution))
+  plot_predictions_vs_fits(col_predictions, colSums(x$solution))
+  plot(x$solution)
 }
 
 
-# Get selected mutations based on 2 sample models
+
 get_selected_mutations.singlepatient_cevodata <- function(object,
                                                           sample1 = NULL,
                                                           sample2 = NULL,
                                                           method = "basic",
                                                           ...) {
-
   samples_data <- object$metadata |>
     select(sample_id:sample)
   rowsample <- if (is.null(sample1)) samples_data$sample[[1]]
@@ -64,16 +71,14 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
   } else if (method == "MC") {
     solve_MC
   }
-  x <- join_models(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000, eps = 5)
-  # Loop
-  plot_predictions_vs_fits(row_predictions, x$metrics$rsums)
-  plot_predictions_vs_fits(col_predictions, x$metrics$csums)
-
-  plot_predictions_vs_fits(row_predictions, rowSums(x$solution))
-  plot_predictions_vs_fits(col_predictions, colSums(x$solution))
-  plot(x$solution)
+  x <- join_models(
+    mutations_mat,
+    row_predictions,
+    col_predictions,
+    N = 10, epochs = 1000, eps = 5
+  )
   top_model_ev <- evaluate_MC_runs(x$solution, row_predictions, col_predictions)
-  top_model_ev
+  x
 }
 
 
