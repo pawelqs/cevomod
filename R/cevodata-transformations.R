@@ -72,3 +72,32 @@ bind_assays <- function(x, y, slot_name) {
     list()
   }
 }
+
+
+#' @export
+split_by <- function(object, ...) {
+  UseMethod("split_by")
+}
+
+
+#' Split cevodata object
+#'
+#' @param object, cevodata object
+#' @param x name of column in metadata
+#' @export
+split_by.cevodata <- function(object, x, ...) {
+  split_names <- object$metadata[[f]] |>
+    unique()
+  splits <- split_names |>
+    set_names(split_names) |>
+    map(~filter(object, .data[[x]] == .x))
+  class(splits) <- c("cevo_splits", "list")
+  splits
+}
+
+
+# @export
+# print.cevo_splits <- function(x, ...) {
+#   cli::cat_line("<cevo_splits> object. Splits:")
+#   cli::cat_line(paste0(names(x), collapse = ", "))
+# }
