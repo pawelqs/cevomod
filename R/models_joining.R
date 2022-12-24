@@ -39,8 +39,12 @@ get_selected_mutations <- function(object, ...) {
   row_predictions <- deframe(predictions_by_interval[, c("interval", "rowsample")])
   col_predictions <- deframe(predictions_by_interval[, c("interval", "colsample")])
 
-  # x <- solve_MC1(mutations_mat, row_predictions, col_predictions, N = 5)
-  x <- solve_MC2(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000, eps = 5)
+  join_models <- if (method == "basic") {
+    solve_basic
+  } else if (method == "MC") {
+    solve_MC
+  }
+  x <- join_models(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000, eps = 5)
   # Loop
   plot_predictions_vs_fits(row_predictions, x$metrics$rsums)
   plot_predictions_vs_fits(col_predictions, x$metrics$csums)
@@ -131,9 +135,9 @@ average_solutions <- function(mc_arr, which = NULL) {
 }
 
 
-# ------------------------- MC solver 2 ---------------------------------------
+# ------------------------- method: basic ---------------------------------------
 
-solve_MC2 <- function(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000, eps = 10) {
+solve_basic <- function(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000, eps = 10) {
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
 
   mc_arr <- run_MC_simulation(upper_limits = limits$upper, lower_limits = limits$lower, iters = N)
@@ -182,9 +186,9 @@ solve_MC2 <- function(mutations_mat, row_predictions, col_predictions, N = 10, e
 }
 
 
-# ------------------------- MC solver 1 ---------------------------------------
+# ------------------------- method: MC ---------------------------------------
 
-solve_MC1 <- function(mutations_mat, row_predictions, col_predictions, N = 5) {
+solve_MC <- function(mutations_mat, row_predictions, col_predictions, N = 5) {
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
   limit_ranges(limits) |> sum()
   for (i in 1:N) {
@@ -207,6 +211,7 @@ solve_MC1 <- function(mutations_mat, row_predictions, col_predictions, N = 5) {
   }
   list(
     solution = mean_top_solution,
+    mc_arr = mc_arr[, , top_models$i],
     metrics = metrics,
     top_models = top_models
   )
