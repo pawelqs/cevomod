@@ -7,7 +7,8 @@ get_SNVs_wider <- function(object, fill_na = NULL) {
     select(sample_id, chrom:alt, VAF) |>
     left_join(patients_to_samples, by = "sample_id") |>
     unite(mutation_id, chrom:alt, sep = "-") |>
-    select(-sample_id, -patient_id) |>
+    select(-sample_id) |>
+    select(patient_id, everything()) |>
     pivot_wider(names_from = "sample", values_from = "VAF")
 
   if (!is.null(fill_na)) {
