@@ -1,14 +1,14 @@
 
 get_SNVs_wider <- function(object, fill_na = NULL) {
   patients_to_samples <- object$metadata |>
-    select(patient_id:sample)
+    select("patient_id":"sample")
 
   snvs <- SNVs(object) |>
-    select(sample_id, chrom:alt, VAF) |>
+    select("sample_id", "chrom":"alt", "VAF") |>
     left_join(patients_to_samples, by = "sample_id") |>
-    unite(mutation_id, chrom:alt, sep = "-") |>
-    select(-sample_id) |>
-    select(patient_id, everything()) |>
+    unite("mutation_id", "chrom":"alt", sep = "-") |>
+    select(-"sample_id") |>
+    select("patient_id", everything()) |>
     pivot_wider(names_from = "sample", values_from = "VAF")
 
   if (!is.null(fill_na)) {
@@ -22,7 +22,7 @@ get_SNVs_2d_matrix <- function(object,
                                rows_sample = NULL, cols_sample = NULL,
                                bins = 100) {
   patients_to_samples <- object$metadata |>
-    select(patient_id:sample)
+    select("patient_id":"sample")
 
   if (is.null(rows_sample) || is.null(cols_sample)) {
     rows_sample <- patients_to_samples$sample[[1]]
@@ -51,10 +51,10 @@ get_SNVs_2d_matrix <- function(object,
   # Prepare square matrix
   incomplete_mat <- mutations |>
     mutate(across(c("rows_sample", "cols_sample"), as.character)) |>
-    group_by(rows_sample, cols_sample) |>
+    group_by(.data$rows_sample, .data$cols_sample) |>
     count() |>
     ungroup() |>
-    pivot_wider(names_from = cols_sample, values_from = n) |>
+    pivot_wider(names_from = "cols_sample", values_from = "n") |>
     column_to_rownames("rows_sample")
   incomplete_mat[is.na(incomplete_mat)] <- 0
 
@@ -86,5 +86,5 @@ get_interval_width <- function(intervals) {
     map(parse_double) |>
     map(~.x[[2]] - .x[[1]]) |>
     unlist() |>
-    median()
+    stats::median()
 }
