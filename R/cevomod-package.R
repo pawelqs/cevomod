@@ -15,6 +15,7 @@
 #' @importFrom rlang .data
 #' @importFrom rlang .env
 #' @importFrom stats sd
+#' @importFrom tidyselect where
 #' @importFrom yardstick rsq_vec
 ## usethis namespace: end
 NULL
