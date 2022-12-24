@@ -22,6 +22,10 @@ filter.cevodata <- function(.data, ..., .preserve = FALSE) {
   new_object$clones <- map(new_object$clones, ~filter(.x, sample_id %in% ids))
   new_object$models <- map(new_object$models, ~filter(.x, sample_id %in% ids))
   new_object$residuals <- map(new_object$residuals, ~filter(.x, sample_id %in% ids))
+
+  if (count_patients(new_object) == 1) {
+    class(new_object) <- c("singlepatient_cevodata", class(new_object))
+  }
   new_object
 }
 
