@@ -21,18 +21,16 @@ get_selected_mutations.cevodata <- function(object,
   if (!were_subclonal_models_fitted(object)) {
     stop("Fit subclonal models first!")
   }
+  object[["joined_models"]] <- NULL
 
   splits <- object |>
     split_by("patient_id")
-  res <- map(splits, get_selected_mutations, verbose = verbose)
+  splits <- map(splits, get_selected_mutations, verbose = verbose)
+  object[["joined_models"]] <- splits |>
+    map("joined_models") |>
+    reduce(c)
 
-  # Loop
-  plot_predictions_vs_fits(row_predictions, x$metrics$rsums)
-  plot_predictions_vs_fits(col_predictions, x$metrics$csums)
-
-  plot_predictions_vs_fits(row_predictions, rowSums(x$solution))
-  plot_predictions_vs_fits(col_predictions, colSums(x$solution))
-  plot(x$solution)
+  object
 }
 
 
@@ -43,7 +41,8 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
                                                           sample2 = NULL,
                                                           method = "basic",
                                                           verbose = TRUE, ...) {
-  msg("Processing patient ", unique(object$metadata$patient_id), verbose = verbose)
+  patient_id <- unique(object$metadata$patient_id)
+  msg("Processing patient ", patient_id, "\t", new_line = FALSE, verbose = verbose)
 
   samples_data <- object$metadata |>
     select(sample_id:sample)
@@ -83,15 +82,24 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
   } else if (method == "MC") {
     solve_MC
   }
-  x <- join_models(
+  joined_models <- join_models(
     mutations_mat,
     row_predictions,
     col_predictions,
     N = 10, epochs = 1000, eps = 5,
     verbose = verbose
   )
-  top_model_ev <- evaluate_MC_runs(x$solution, row_predictions, col_predictions)
-  x
+  top_model_ev <- evaluate_MC_runs(joined_models$solution, row_predictions, col_predictions)
+
+  object[["joined_models"]][[patient_id]] <- list(
+    fit = joined_models$solution,
+    fit_metrics = top_model_ev,
+    row_predictions = row_predictions,
+    col_predictions = col_predictions,
+    mc_arr = joined_models$mc_arr,
+    metrics = joined_models$metrics
+  )
+  object
 }
 
 
@@ -182,6 +190,7 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions,
   mc_arr <- run_MC_simulation(upper_limits = limits$upper, lower_limits = limits$lower, iters = N)
 
   for (i in 1:N) {
+    msg(".", new_line = FALSE, verbose = verbose)
     mc_mat <- mc_arr[, , i]
     metrics <- evaluate_MC_runs(mc_mat, row_predictions, col_predictions)
     for (j in 1:epochs) {
@@ -218,6 +227,7 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions,
       }
     }
   }
+  msg("", verbose = verbose)
 
   metrics <- evaluate_MC_runs(mc_arr, row_predictions, col_predictions)
   final_solution <- average_solutions(mc_arr)

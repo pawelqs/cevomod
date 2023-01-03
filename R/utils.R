@@ -46,10 +46,12 @@ get_VAF_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
 }
 
 
-msg <- function(..., collapse = "", col = "steelblue3", verbose = TRUE) {
+msg <- function(..., collapse = "", col = "steelblue3", new_line = TRUE, verbose = TRUE) {
   msg <- str_c(list(...), collapse = collapse)
-  if (verbose) {
+  if (verbose && new_line) {
     cli::cat_line(msg, col = col)
+  } else if (verbose) {
+   cat(crayon::blue(msg))
   }
 }
 
