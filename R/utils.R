@@ -46,6 +46,14 @@ get_VAF_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
 }
 
 
+msg <- function(..., collapse = "", col = "steelblue3", verbose = TRUE) {
+  msg <- str_c(list(...), collapse = collapse)
+  if (verbose) {
+    cli::cat_line(msg, col = col)
+  }
+}
+
+
 require_packages <- function(...) {
   pkgs <- list(...)
   missing <- !map_lgl(pkgs, requireNamespace, quietly = TRUE)

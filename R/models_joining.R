@@ -12,17 +12,19 @@ get_selected_mutations <- function(object, ...) {
 #' @param sample1 sample1
 #' @param sample2 sample2
 #' @param method method
+#' @param verbose lgl
 #' @export
 get_selected_mutations.cevodata <- function(object,
                                             sample1 = NULL, sample2 = NULL,
-                                            method = "basic", ...) {
+                                            method = "basic",
+                                            verbose = TRUE, ...) {
   if (!were_subclonal_models_fitted(object)) {
     stop("Fit subclonal models first!")
   }
 
   splits <- object |>
     split_by("patient_id")
-  res <- map(splits, get_selected_mutations)
+  res <- map(splits, get_selected_mutations, verbose = verbose)
 
   # Loop
   plot_predictions_vs_fits(row_predictions, x$metrics$rsums)
@@ -40,7 +42,9 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
                                                           sample1 = NULL,
                                                           sample2 = NULL,
                                                           method = "basic",
-                                                          ...) {
+                                                          verbose = TRUE, ...) {
+  msg("Processing patient ", unique(object$metadata$patient_id), verbose = verbose)
+
   samples_data <- object$metadata |>
     select(sample_id:sample)
   rowsample <- if (is.null(sample1)) samples_data$sample[[1]]
@@ -83,7 +87,8 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
     mutations_mat,
     row_predictions,
     col_predictions,
-    N = 10, epochs = 1000, eps = 5
+    N = 10, epochs = 1000, eps = 5,
+    verbose = verbose
   )
   top_model_ev <- evaluate_MC_runs(x$solution, row_predictions, col_predictions)
   x
@@ -170,7 +175,9 @@ average_solutions <- function(mc_arr, which = NULL) {
 
 # ------------------------- method: basic ---------------------------------------
 
-solve_basic <- function(mutations_mat, row_predictions, col_predictions, N = 10, epochs = 1000, eps = 10) {
+solve_basic <- function(mutations_mat, row_predictions, col_predictions,
+                        N = 10, epochs = 1000, eps = 10,
+                        verbose = TRUE) {
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
   mc_arr <- run_MC_simulation(upper_limits = limits$upper, lower_limits = limits$lower, iters = N)
 
@@ -178,7 +185,9 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions, N = 10,
     mc_mat <- mc_arr[, , i]
     metrics <- evaluate_MC_runs(mc_mat, row_predictions, col_predictions)
     for (j in 1:epochs) {
-      print(metrics$MSE)
+      if (verbose == 2) {
+        print(metrics$MSE)
+      }
 
       # TODO: randomize order of row and col fitting
       rsums <- rowSums(mc_mat)
@@ -204,7 +213,7 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions, N = 10,
       metrics <- mew_metrics
       mc_arr[, , i] <- mc_mat
       if (MSE_diff < eps) {
-        message("MSE_diff < eps, exiting")
+        msg("MSE_diff < eps, exiting", verbose = verbose == 2)
         break
       }
     }
@@ -223,7 +232,7 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions, N = 10,
 
 # ------------------------- method: MC ---------------------------------------
 
-solve_MC <- function(mutations_mat, row_predictions, col_predictions, N = 5) {
+solve_MC <- function(mutations_mat, row_predictions, col_predictions, N = 5, verbose = TRUE) {
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
   limit_ranges(limits) |> sum()
   for (i in 1:N) {

@@ -13,6 +13,7 @@ get_selected_mutations(object, ...)
   sample1 = NULL,
   sample2 = NULL,
   method = "basic",
+  verbose = TRUE,
   ...
 )
 
@@ -21,6 +22,7 @@ get_selected_mutations(object, ...)
   sample1 = NULL,
   sample2 = NULL,
   method = "basic",
+  verbose = TRUE,
   ...
 )
 }
@@ -34,6 +36,8 @@ get_selected_mutations(object, ...)
 \item{sample2}{sample2}
 
 \item{method}{method}
+
+\item{verbose}{lgl}
 }
 \description{
 Get selected mutations based on 2 sample models
