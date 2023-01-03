@@ -25,7 +25,12 @@ get_selected_mutations.cevodata <- function(object,
 
   splits <- object |>
     split_by("patient_id")
-  splits <- map(splits, get_selected_mutations, verbose = verbose)
+  splits <- splits |>
+    map(
+      get_selected_mutations,
+      sample1 = sample1, sample2 = sample2,
+      method = method, verbose = verbose
+    )
   object[["joined_models"]] <- splits |>
     map("joined_models") |>
     reduce(c)
@@ -97,7 +102,9 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
     row_predictions = row_predictions,
     col_predictions = col_predictions,
     mc_arr = joined_models$mc_arr,
-    metrics = joined_models$metrics
+    metrics = joined_models$metrics,
+    rowsample = rowsample,
+    colsample = colsample
   )
   object
 }
