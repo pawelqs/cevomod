@@ -22,11 +22,32 @@ filter.cevodata <- function(.data, ..., .preserve = FALSE) {
   new_object$clones <- map(new_object$clones, ~filter(.x, sample_id %in% ids))
   new_object$models <- map(new_object$models, ~filter(.x, sample_id %in% ids))
   new_object$residuals <- map(new_object$residuals, ~filter(.x, sample_id %in% ids))
+  new_object$joined_models <- filter_joined_models(new_object$joined_models, ...)
 
   if (count_patients(new_object) == 1) {
     class(new_object) <- c("singlepatient_cevodata", class(new_object))
   }
   new_object
+}
+
+
+filter_joined_models <- function(joined_models, ...) {
+  samples <- joined_models |>
+    map(~tibble(sample = c(.x$rowsample, .x$colsample))) |>
+    bind_rows(.id = "patient_id")
+
+  samples_kept <- samples |>
+    filter(...) |>
+    mutate(sample_kept = TRUE)
+
+  kept_patients <- samples |>
+    left_join(samples_kept, by = c("patient_id", "sample")) |>
+    group_by(patient_id) |>
+    filter(all(sample_kept)) |>
+    pull(patient_id) |>
+    unique()
+
+  joined_models[kept_patients]
 }
 
 
@@ -46,6 +67,7 @@ merge.cevodata <- function(x, y, name = "Merged datasets", verbose = TRUE, ...) 
   cd$clones <- bind_assays(x, y, "clones")
   cd$models <- bind_assays(x, y, "models")
   cd$residuals <- bind_assays(x, y, "residuals")
+  # TODO merge joined_models slot
 
   if (verbose) {
     message("Setting active SNVs to ", x$active_SNV)
