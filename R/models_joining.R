@@ -436,6 +436,43 @@ plot_predictions_vs_fits <- function(predictions, fits) {
 
 
 #' @export
+plot_non_neutral_mutations_2D <- function(object, ...) {
+  UseMethod("plot_non_neutral_mutations_2D")
+}
+
+
+#' @export
+plot_non_neutral_mutations_2D.cevodata <- function(object, ...) {
+  joined_models <- object[["joined_models"]]
+  joined_models |>
+    map(function(model) {
+      if (rlang::is_installed("ComplexHeatmap")) {
+        mat <- model$fit
+        mat <- mat[rev(rownames(mat)), ]
+        ComplexHeatmap::Heatmap(
+          mat,
+          name = "N mutations",
+          col = circlize::colorRamp2(breaks = c(0, max(mat)/2, max(mat)), colors = c("black", "white", "red")),
+          cluster_rows = FALSE,
+          cluster_columns = FALSE,
+          show_row_names = FALSE,
+          show_column_names = FALSE,
+          row_title = model$rowsample,
+          column_title = model$colsample
+        )
+      } else if (rlang::is_installed("pheatmap")) {
+        pheatmap::pheatmap(
+          model$fit, cluster_rows = FALSE, cluster_cols = FALSE
+        )
+      } else {
+        stop("You need to iinstall pheatmap of ComplexHeatmap")
+      }
+    })
+
+}
+
+
+#' @export
 plot.non_neutral_2d_fit <- function(x, ...) {
   rlang::check_installed("pheatmap", reason = "to plot the 2d model")
   pheatmap::pheatmap(
