@@ -97,14 +97,17 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
   top_model_ev <- evaluate_MC_runs(joined_models$solution, row_predictions, col_predictions)
 
   object[["joined_models"]][[patient_id]] <- list(
-    fit = joined_models$solution,
-    fit_metrics = top_model_ev,
+    rowsample = rowsample,
+    colsample = colsample,
     row_predictions = row_predictions,
     col_predictions = col_predictions,
+    all_mutations_mat = mutations_mat,
+    sel_mutations_mat = joined_models$solution,
+    fit_metrics = top_model_ev,
     mc_arr = joined_models$mc_arr,
     metrics = joined_models$metrics,
-    rowsample = rowsample,
-    colsample = colsample
+    neu_mutations_mat = mutations_mat - joined_models$solution,
+    sel_probability_mat = joined_models$solution / mutations_mat
   )
   object
 }
@@ -442,33 +445,33 @@ plot_non_neutral_mutations_2D <- function(object, ...) {
 
 
 #' @export
-plot_non_neutral_mutations_2D.cevodata <- function(object, ...) {
+plot_non_neutral_mutations_2D.cevodata <- function(object,
+                                                   colors = c("black", "white", "red"),
+                                                   ...) {
   joined_models <- object[["joined_models"]]
   joined_models |>
-    map(function(model) {
-      if (rlang::is_installed("ComplexHeatmap")) {
-        mat <- model$fit
-        mat <- mat[rev(rownames(mat)), ]
-        ComplexHeatmap::Heatmap(
-          mat,
-          name = "N mutations",
-          col = circlize::colorRamp2(breaks = c(0, max(mat)/2, max(mat)), colors = c("black", "white", "red")),
-          cluster_rows = FALSE,
-          cluster_columns = FALSE,
-          show_row_names = FALSE,
-          show_column_names = FALSE,
-          row_title = model$rowsample,
-          column_title = model$colsample
-        )
-      } else if (rlang::is_installed("pheatmap")) {
-        pheatmap::pheatmap(
-          model$fit, cluster_rows = FALSE, cluster_cols = FALSE
-        )
-      } else {
-        stop("You need to iinstall pheatmap of ComplexHeatmap")
-      }
+    map(function(x) {
+      plot_2d(
+        x$sel_mutations_mat,
+        name = "N mutations",
+        row_title = x$rowsample, column_title = x$colsample,
+        col = circlize::colorRamp2(breaks = c(0, max(mat)/2, max(mat)), colors),
+      )
     })
+}
 
+
+plot_2d <- function(mat, ...) {
+  rlang::check_installed("ComplexHeatmap", reason = "Required to plot the heatmap")
+  mat <- mat[rev(rownames(mat)), ]
+  ComplexHeatmap::Heatmap(
+    mat,
+    cluster_rows = FALSE,
+    cluster_columns = FALSE,
+    show_row_names = FALSE,
+    show_column_names = FALSE,
+    ...
+  )
 }
 
 
