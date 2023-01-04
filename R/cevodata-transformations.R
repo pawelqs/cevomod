@@ -32,6 +32,9 @@ filter.cevodata <- function(.data, ..., .preserve = FALSE) {
 
 
 filter_joined_models <- function(joined_models, ...) {
+  if (is.null(joined_models)) {
+    return(NULL)
+  }
   samples <- joined_models |>
     map(~tibble(sample = c(.x$rowsample, .x$colsample))) |>
     bind_rows(.id = "patient_id")
