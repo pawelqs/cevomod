@@ -12,7 +12,7 @@ stat_cumulative_tail(
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE,
-  digits = 2,
+  bins = 100,
   ...
 )
 }
@@ -58,12 +58,14 @@ rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 
-\item{digits}{cumulative tail calculation avurracy}
+\item{bins}{Number of bins. Overridden by \code{binwidth}. Defaults to 30.}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
+
+\item{digits}{cumulative tail calculation avurracy}
 }
 \description{
 Visualise the distribution of a single continuous variable by dividing

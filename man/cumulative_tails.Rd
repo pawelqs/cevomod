@@ -4,29 +4,29 @@
 \alias{cumulative_tails}
 \alias{calc_cumulative_tails}
 \alias{calc_cumulative_tails.cevodata}
-\alias{calc_cumulative_tails.tbl_df}
+\alias{calc_cumulative_tails.cevo_snvs}
 \alias{plot_cumulative_tails}
 \alias{plot_cumulative_tails.cevodata}
 \title{Cumulative tails}
 \usage{
 calc_cumulative_tails(object, ...)
 
-\method{calc_cumulative_tails}{cevodata}(object, digits = 2, ...)
+\method{calc_cumulative_tails}{cevodata}(object, bins = 100, ...)
 
-\method{calc_cumulative_tails}{tbl_df}(object, digits = 2, ...)
+\method{calc_cumulative_tails}{cevo_snvs}(object, bins = 100, ...)
 
 plot_cumulative_tails(object, ...)
 
-\method{plot_cumulative_tails}{cevodata}(object, scale_y = TRUE, ...)
+\method{plot_cumulative_tails}{cevodata}(object, scale_y = TRUE, scales = "loglog", ...)
 }
 \arguments{
 \item{object}{SNVs tibble object}
 
 \item{...}{passed to stat_cumulative_tail}
 
-\item{digits}{resolution of the cumulative tails calculation}
-
 \item{scale_y}{scale y vaules to 1?}
+
+\item{digits}{resolution of the cumulative tails calculation}
 }
 \value{
 ggplot obj
@@ -43,7 +43,7 @@ Creates  cevodata$models$cumulative_tails tbl with the groupping variables and:
 \itemize{
 \item \code{calc_cumulative_tails(cevodata)}: Calculate the cumulative tails
 
-\item \code{calc_cumulative_tails(tbl_df)}: Calculate the cumulative tails
+\item \code{calc_cumulative_tails(cevo_snvs)}: Calculate the cumulative tails
 
 \item \code{plot_cumulative_tails(cevodata)}: Shortcut to plot cum tails from SNVs dataframe
 

@@ -25,14 +25,12 @@ calc_cumulative_tails <- function(object, ...) {
   UseMethod("calc_cumulative_tails")
 }
 
+
 #' @describeIn cumulative_tails Calculate the cumulative tails
 #' @export
-calc_cumulative_tails.cevodata <- function(object, digits = 2, ...) {
+calc_cumulative_tails.cevodata <- function(object, bins = 100, ...) {
   cumulative_tails <- SNVs(object) |>
-    group_by(.data$sample_id) |>
-    calc_cumulative_tails(digits) %>%
-    ungroup()
-  class(cumulative_tails) <- c("cevo_cumulative_tails_tbl", class(cumulative_tails))
+    calc_cumulative_tails(bins)
   object$models[["cumulative_tails"]] <- cumulative_tails
   object
 }
@@ -40,21 +38,25 @@ calc_cumulative_tails.cevodata <- function(object, digits = 2, ...) {
 
 #' @describeIn cumulative_tails Calculate the cumulative tails
 #' @export
-calc_cumulative_tails.tbl_df <- function(object, digits = 2, ...) {
-  res <- object %>%
+calc_cumulative_tails.cevo_snvs <- function(object, bins = 100, ...) {
+  res <-object %>%
+    group_by(.data$sample_id) |>
     rename(x = "VAF") %>%
-    .calc_cumulative_tails(digits) %>%
-    rename(VAF = "x")
+    .calc_cumulative_tails(bins) %>%
+    rename(VAF = "x", VAF_interval = "x_interval") |>
+    ungroup()
   class(res) <- c("cevo_cumulative_tails_tbl", class(res))
   res
 }
 
 
-.calc_cumulative_tails <- function(dt, digits = 2) {
+.calc_cumulative_tails <- function(dt, bins = 100) {
+  breaks <- c(-1/bins, seq(0, 1, length.out = bins + 1))
   dt %>%
-    mutate(x = round(.data$x, digits = digits)) %>%
-    group_by(.data$x, .add = TRUE) %>%
+    mutate(x_interval = cut(.data$x, breaks = breaks)) %>%
+    group_by(.data$x_interval, .add = TRUE) %>%
     summarise(n = n()) %>%
+    mutate(x = get_interval_centers(.data$x_interval), .after = "x_interval") |>
     arrange(desc(.data$x), .by_group = TRUE) %>%
     mutate(
       y = cumsum(.data$n),
@@ -110,21 +112,8 @@ plot.cevo_cumulative_tails_tbl <- function(x, scale_y = TRUE, scales = "loglog",
 #' @param ... passed to stat_cumulative_tail
 #' @return ggplot obj
 #' @export
-plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, ...) {
-  y <- NULL
-
-  aes <- if (scale_y)
-    aes(.data$VAF, color = .data$sample_id)
-  else
-    aes(.data$VAF, y = stat(y), color = .data$sample_id)
-
-  SNVs(object) %>%
-    left_join(object$metadata, by = "sample_id") |>
-    ggplot(aes) +
-    stat_cumulative_tail(...) +
-    scale_x_log10() +
-    scale_y_log10() +
-    theme_minimal()
+plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, scales = "loglog", ...) {
+  plot(object$models$cumulative_tails, scale_y = scale_y, scales = scales)
 }
 
 
@@ -147,11 +136,11 @@ plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, ...) {
 #' @export
 stat_cumulative_tail <- function(mapping = NULL, data = NULL, geom = "point",
                                  position = "identity", na.rm = FALSE, show.legend = NA,
-                                 inherit.aes = TRUE, digits = 2, ...) {
+                                 inherit.aes = TRUE, bins = 100, ...) {
   layer(
     stat = StatCumulativeTail, data = data, mapping = mapping, geom = geom,
     position = position, show.legend = show.legend, inherit.aes = inherit.aes,
-    params = list(digits = digits, na.rm = na.rm, ...)
+    params = list(bins = bins, na.rm = na.rm, ...)
   )
 }
 
@@ -161,7 +150,7 @@ StatCumulativeTail <- ggproto("StatCumulativeTail", Stat,
   required_aes = c("x"),
   default_aes = aes(x = stat(x), y = stat(y_scaled)),
 
-  compute_group = function(data, scales, digits = 2) {
-    .calc_cumulative_tails(data, digits)
+  compute_group = function(data, scales, bins = 100) {
+    .calc_cumulative_tails(data, bins)
   }
 )
