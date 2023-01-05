@@ -80,3 +80,10 @@ run_browser <- function() {
 
   shiny::runApp(app_dir, display.mode = "normal")
 }
+
+
+#' @export
+print.cevo_snvs <- function(x, ...) {
+  msg("<cevo_snvs> tibble")
+  NextMethod()
+}

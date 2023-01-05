@@ -4,12 +4,10 @@
 \alias{plot.cevo_SFS_tbl}
 \title{Plot SFS}
 \usage{
-\method{plot}{cevo_SFS_tbl}(x, y_scaled = FALSE, ...)
+\method{plot}{cevo_SFS_tbl}(x, ..., geom = "bar")
 }
 \arguments{
 \item{x}{tibble with calc_SFS() results}
-
-\item{y_scaled}{logical}
 
 \item{...}{futher passed to geom_()}
 }
