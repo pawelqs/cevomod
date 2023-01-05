@@ -1,7 +1,7 @@
-data("AMLRO", package = "cevoDatasets")
-object <- AMLRO |>
-  filter(.data$patient_id %in% c("AMLRO-15")) |>
-  run_cevomod()
+# data("AMLRO", package = "cevoDatasets")
+# object <- AMLRO |>
+#   filter(.data$patient_id %in% c("AMLRO-15", "AMLRO-1", "AMLRO-9")) |>
+#   run_cevomod()
 # snvs <- SNVs(object)
 
 

@@ -3,17 +3,11 @@
 \name{sfs}
 \alias{sfs}
 \alias{calc_SFS}
-\alias{calc_SFS.cevodata}
-\alias{calc_SFS.tbl_df}
 \alias{plot_SFS}
 \alias{plot_SFS.cevodata}
 \title{Site Frequency Spectra}
 \usage{
 calc_SFS(object, ...)
-
-\method{calc_SFS}{cevodata}(object, digits = 2, ...)
-
-\method{calc_SFS}{tbl_df}(object, digits = 2, ...)
 
 plot_SFS(object, ...)
 
@@ -24,11 +18,11 @@ plot_SFS(object, ...)
 
 \item{...}{other arguments}
 
-\item{digits}{resolution of the cumulative tails calculation}
-
 \item{geom}{geom}
 
 \item{alpha}{alpha}
+
+\item{digits}{resolution of the cumulative tails calculation}
 }
 \description{
 Creates  cevodata$models$SFS with the groupping variables and:
@@ -40,9 +34,9 @@ Creates  cevodata$models$SFS with the groupping variables and:
 }
 \section{Functions}{
 \itemize{
-\item \code{calc_SFS(cevodata)}: Calculate SFS
+\item \code{calc_SFS()}: Calculate SFS
 
-\item \code{calc_SFS(tbl_df)}: Calculate SFS
+\item \code{plot_SFS()}: Plot SFS
 
 \item \code{plot_SFS(cevodata)}: Plot SFS
 

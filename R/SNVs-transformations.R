@@ -67,24 +67,3 @@ get_SNVs_2d_matrix <- function(object,
   attr(mat, "cols_sample") <- cols_sample
   mat
 }
-
-
-get_interval_centers <- function(intervals) {
-  intervals |>
-    str_replace_all("[\\(\\)\\[\\]]", "") |>
-    str_split(pattern = ",") |>
-    map(parse_double) |>
-    map(mean) |>
-    unlist()
-}
-
-
-get_interval_width <- function(intervals) {
-  intervals |>
-    str_replace_all("[\\(\\)\\[\\]]", "") |>
-    str_split(pattern = ",") |>
-    map(parse_double) |>
-    map(~.x[[2]] - .x[[1]]) |>
-    unlist() |>
-    stats::median()
-}

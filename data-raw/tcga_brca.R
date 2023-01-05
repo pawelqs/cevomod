@@ -34,7 +34,7 @@ snvs_tcga_brca <- mutations %>%
     consequence = Consequence,
     NCBI_Build
   )
-class(snvs_tcga_brca) <- c("cevo_SNVs_tbl", class(snvs_tcga_brca))
+class(snvs_tcga_brca) <- c("cevo_snvs", class(snvs_tcga_brca))
 
 # usethis::use_data(snvs_tcga_brca, overwrite = TRUE)
 
@@ -47,7 +47,7 @@ top_mutated_patients <- snvs_tcga_brca %>%
 
 snvs_test <- snvs_tcga_brca %>%
   filter(sample_id %in% top_mutated_patients)
-class(snvs_tcga_brca) <- c("cevo_SNVs_tbl", class(snvs_test))
+class(snvs_tcga_brca) <- c("cevo_snvs", class(snvs_test))
 
 
 cna_hg19 <- read_tsv("/mnt/dane/data/brca_tcga_pan_can_atlas_2018/data_cna_hg19.seg")
@@ -78,7 +78,7 @@ samples_data <- tibble(
 tcga_brca_test <- init_cevodata("TCGA BRCA test data", genome = "hg37") |>
   add_SNV_data(snvs_test, name = "TCGA") |>
   add_CNV_data(cnvs_test, data = "TCGA") |>
-  add_sample_data(samples_data) |>
-  run_cevomod()
+  add_sample_data(samples_data)
+  # run_cevomod()
 
 usethis::use_data(tcga_brca_test, overwrite = TRUE)

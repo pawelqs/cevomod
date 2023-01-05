@@ -103,6 +103,7 @@ add_SNV_data.cevodata <- function(object, snvs, name = NULL, ...) {
     name <- if (n == 0) "snvs" else str_c("snvs", n)
   }
   validate_SNVs(snvs)
+  class(snvs) <- c("cevo_snvs", "tbl_df", "tbl", "data.frame")
   object$SNVs[[name]] <- snvs
   default_SNVs(object) <- name
   meta <- snvs |>
@@ -354,6 +355,22 @@ active_models <- function(object, ...) {
 }
 
 
+is_cevodata_singlepatient <- function(object) {
+  n_patients <- count_patients(object)
+  if (is.na(n_patients)) {
+    return(FALSE)
+  } else if (n_patients > 1) {
+    return(FALSE)
+  } else {
+    return(TRUE)
+  }
+}
+
+
 count_patients <- function(cd) {
-  n_distinct(cd$metadata$patient_id)
+  if (!is.null(cd$metadata[["patient_id"]])) {
+    n_distinct(cd$metadata$patient_id)
+  } else {
+    NA_integer_
+  }
 }
