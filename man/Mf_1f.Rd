@@ -10,13 +10,13 @@
 \usage{
 calc_Mf_1f(object, ...)
 
-\method{calc_Mf_1f}{cevodata}(object, digits = 2, ...)
+\method{calc_Mf_1f}{cevodata}(object, bins = NULL, ...)
 
 \method{calc_Mf_1f}{cevo_snvs}(object, bins = NULL, ...)
 
 plot_Mf_1f(
   object,
-  digits = 2,
+  bins = NULL,
   from = 0.1,
   to = 0.25,
   scale = TRUE,
@@ -26,7 +26,7 @@ plot_Mf_1f(
 
 plot_Mf_1f(
   object,
-  digits = 2,
+  bins = NULL,
   from = 0.1,
   to = 0.25,
   scale = TRUE,
@@ -39,8 +39,6 @@ plot_Mf_1f(
 
 \item{...}{other arguments}
 
-\item{digits}{resolution of the cumulative tails calculation}
-
 \item{from}{min VAF to plot}
 
 \item{to}{max VAF to plot}
@@ -48,6 +46,8 @@ plot_Mf_1f(
 \item{scale}{scale data?}
 
 \item{geom}{ggplot geom to use, eg. geom_line()}
+
+\item{digits}{resolution of the cumulative tails calculation}
 }
 \value{
 ggplot obj
