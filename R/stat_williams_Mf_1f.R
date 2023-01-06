@@ -29,7 +29,7 @@ calc_Mf_1f <- function(object, ...) {
 
 #' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
 #' @export
-calc_Mf_1f.cevodata <- function(object, bins = 100, ...) {
+calc_Mf_1f.cevodata <- function(object, bins = 101, ...) {
   Mf_1f <- SNVs(object) |>
     calc_Mf_1f(bins = bins)
   # class(Mf_1f) <- c("cevo_Mf_1f_tbl", class(Mf_1f))

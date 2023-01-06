@@ -28,7 +28,7 @@ calc_cumulative_tails <- function(object, ...) {
 
 #' @describeIn cumulative_tails Calculate the cumulative tails
 #' @export
-calc_cumulative_tails.cevodata <- function(object, bins = 100, ...) {
+calc_cumulative_tails.cevodata <- function(object, bins = 101, ...) {
   cumulative_tails <- SNVs(object) |>
     calc_cumulative_tails(bins)
   object$models[["cumulative_tails"]] <- cumulative_tails

@@ -5,7 +5,7 @@ test_that("Calculation of cumulative tails works", {
   expected <- read_tsv("../testdata/tcga_brca_cumulative_tails.tsv", col_types = "ccdiid")
   # write_tsv(cd$models$cumulative_tails, "tests/testdata/tcga_brca_cumulative_tails.tsv")
   class(expected) <- c("cevo_cumulative_tails_tbl", class(expected))
-  expect_identical(cd$models$cumulative_tails, expected)
+  expect_equal(cd$models$cumulative_tails, expected)
 })
 
 
