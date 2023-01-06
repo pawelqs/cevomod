@@ -32,11 +32,11 @@ fit_neutral_models <- function(object, ...) {
 #' @describeIn neutral_model Fit Williams neutral models to the data
 #' @export
 fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, ...) {
-  if (is.null(object$models$Mf_1f)) {
+  Mf_1f <- object$models$Mf_1f
+  if (is.null(Mf_1f)) {
     stop("Run calc_Mf_1f() first!")
   }
 
-  Mf_1f <- object$models$Mf_1f
   bounds <- get_VAF_range(SNVs(object))
   dt <- Mf_1f |>
     left_join(bounds, by = "sample_id") |>
@@ -94,55 +94,34 @@ tidy_lm <- function(x, y) {
 
 
 calc_residuals <- function(object, ...) {
-  neutral_lm <- filter(object$models[["neutral_models"]])
+  neutral_lm <- object$models[["neutral_models"]]
   sfs <- object$models[["SFS"]]
   if (is.null(neutral_lm) || is.null(sfs)) {
     stop("Calc SFS and and fit neutral lm first!")
   }
 
-  binwidth <- get_average_interval(sfs$VAF)
-  exp <- neutral_lm |>
+  nbins <- get_sample_sequencing_depths(SNVs(object)) |>
+    transmute(.data$sample_id, nbins = .data$median_DP)
+  neutral_params <- neutral_lm |>
     filter(.data$best) |>
-    calc_powerlaw_curve(binwidth = binwidth) |>
-    mutate(VAF = as.character(.data$f))
-  sfs <- mutate(sfs, VAF = as.character(.data$VAF))
+    select("sample_id", "from", "to", "A", "b", "alpha")
 
-  dt <- exp |>
-    select("sample_id", "VAF", "neutral_pred") |>
-    left_join(sfs, by = c("sample_id", "VAF"))
-
-  residuals <- dt |>
-    select(-"y_scaled") |>
-    rename(SFS = "y") |>
+  residuals <- sfs |>
+    select("sample_id", "VAF_interval", "VAF", SFS = "y") |>
+    filter(.data$sample_id %in% neutral_params$sample_id) |>
+    left_join(nbins, by = "sample_id") |>
+    left_join(neutral_params, by = "sample_id") |>
     mutate(
-      VAF = parse_double(.data$VAF),
+      neutr = (.data$VAF >= .data$from & .data$VAF <= .data$to),
+      neutral_pred = if_else(.data$VAF < 0, 0, (.data$A / .data$nbins) / .data$VAF^2),
       neutral_resid = .data$neutral_pred - .data$SFS,
       neutral_resid_clones = if_else(.data$neutral_resid > 0, 0, -.data$neutral_resid),
-      sampling_rate = .data$neutral_resid / .data$neutral_pred
+      sampling_rate = .data$neutral_resid / .data$neutral_pred,
+      model_resid = .data$neutral_resid,
     ) |>
-    select("sample_id", "VAF", "SFS", everything())
+    select(-("nbins":"alpha"))
 
   residuals
-}
-
-
-calc_powerlaw_curve <- function(lm_models, binwidth) {
-  n_bins <- 1 / binwidth
-  lm_models |>
-    expand_grid(f = seq(0.01, 1, by = binwidth)) |>
-    mutate(
-      neutr = (.data$f >= .data$from & .data$f <= .data$to),
-      neutral_pred = (.data$A / n_bins) / .data$f^2
-    )
-}
-
-
-get_average_interval <- function(vec) {
-  vec |>
-    unique() |>
-    sort() |>
-    diff() |>
-    mean()
 }
 
 

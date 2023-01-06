@@ -25,7 +25,8 @@ plot_sampling_rate <- function(object, ...) {
 #' @export
 plot_sampling_rate.cevodata <- function(object, mapping = NULL, geom = geom_point, ...) {
   residuals <- get_residuals(object) |>
-    left_join(object$metadata, by = "sample_id")
+    left_join(object$metadata, by = "sample_id") |>
+    filter(.data$VAF >= 0)
   default_mapping <- aes(.data$VAF, .data$sampling_rate, color = .data$sample_id)
   final_mapping <- join_aes(default_mapping, mapping)
   ggplot(residuals) +
