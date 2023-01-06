@@ -10,7 +10,7 @@
 \usage{
 calc_Mf_1f(object, ...)
 
-\method{calc_Mf_1f}{cevodata}(object, bins = NULL, ...)
+\method{calc_Mf_1f}{cevodata}(object, bins = 100, ...)
 
 \method{calc_Mf_1f}{cevo_snvs}(object, bins = NULL, ...)
 
