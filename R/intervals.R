@@ -41,8 +41,10 @@ get_interval_breaks <- function(object, bins = NULL) {
     bins_by_sample <- get_sample_sequencing_depths(object) |>
       transmute(.data$sample_id, bins = round(.data$median_DP))
   } else {
-    bins_by_sample <- object$metadata |>
-      transmute(.data$sample_id, bins = bins)
+    bins_by_sample <- tibble(
+      sample_id = unique(object$sample_id),
+      bins = bins
+    )
   }
   breaks <- bins_by_sample |>
     deframe() |>
