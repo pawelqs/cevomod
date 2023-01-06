@@ -53,7 +53,10 @@ calc_cumulative_tails.cevo_snvs <- function(object, bins = 100, ...) {
 .calc_cumulative_tails <- function(dt, bins = 100) {
   breaks <- c(-1/bins, seq(0, 1, length.out = bins + 1))
   dt %>%
-    mutate(x_interval = cut(.data$x, breaks = breaks)) %>%
+    mutate(
+      x_interval = cut(.data$x, breaks = breaks),
+      x_interval = as.character(x_interval)
+    ) %>%
     group_by(.data$x_interval, .add = TRUE) %>%
     summarise(n = n()) %>%
     mutate(x = get_interval_centers(.data$x_interval), .after = "x_interval") |>
