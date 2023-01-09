@@ -13,24 +13,37 @@ fit_subclones <- function(object, ...) {
 #' @param N vector of numbers of clones to test
 #' @export
 fit_subclones.cevodata <- function(object, N = 1:3, ...) {
-  residuals <- get_residuals(object, model = "neutral_models")
+  residuals <- get_residuals(object, model = "neutral_models") |>
+    filter(VAF >= 0 )
+
+  sequencing_depths <- SNVs(object) |>
+    get_local_sequencing_depths() |>
+    transmute(.data$sample_id, .data$VAF, sequencing_DP = .data$median_DP)
 
   models <- residuals |>
+    select("sample_id", "VAF", "neutral_resid_clones") |>
     nest_by(.data$sample_id) |>
     summarise(fit_binomial_models(.data$data, N = N), .groups = "drop") |>
     mutate(model = "binomial_clones", .after = "sample_id") |>
     mutate(VAF = round(.data$cellularity, digits = 2)) |>
-    left_join(get_local_sequencing_depths(object), by = c("sample_id", "VAF")) |>
+    left_join(sequencing_depths, by = c("sample_id", "VAF")) |>
     select(-"VAF") |>
     evaluate_binomial_models()
 
-  clonal_predictions <- models |>
+  best_models <- models |>
     filter(.data$best) |>
-    nest_by(.data$sample_id) |>
-    summarise(get_binomial_predictions(.data$data), .groups = "drop")
+    nest_by(.data$sample_id, .key = "clones")
+
+  clonal_predictions <- residuals |>
+    select(sample_id, VAF_interval, VAF) |>
+    nest_by(sample_id, .key = "VAFs") |>
+    left_join(best_models, by = "sample_id") |>
+    summarise(get_binomial_predictions(.data$VAFs, .data$clones), .groups = "drop") |>
+    select(-"VAF")
 
   residuals <- residuals |>
-    left_join(clonal_predictions, by = c("sample_id", "VAF")) |>
+    select(-"model_resid") |>
+    left_join(clonal_predictions, by = c("sample_id", "VAF_interval")) |>
     mutate(
       model_pred = .data$neutral_pred + .data$binom_pred,
       model_resid = .data$SFS - .data$model_pred
@@ -121,7 +134,6 @@ any_binomial_distibutions_correlate <- function(clones) {
     return(FALSE)
   }
   x <- clones |>
-    rename(sequencing_DP = "median_DP") |>
     pmap(get_binomial_distribution) |>
     map(rebinarize_distribution, n_bins = 100) |>
     map("pred")
@@ -134,18 +146,18 @@ any_binomial_distibutions_correlate <- function(clones) {
 }
 
 
-get_binomial_predictions <- function(clones) {
+get_binomial_predictions <- function(VAFs, clones) {
   clones_predictions <- clones |>
-    rename(sequencing_DP = "median_DP") |>
     pmap(get_binomial_distribution) |>
-    map(rebinarize_distribution, n_bins = 100) |>
+    map(rebinarize_distribution, VAFs = VAFs$VAF) |>
+    map("pred") |>
     set_names(clones$component) |>
-    bind_rows(.id = "component") |>
-    pivot_wider(names_from = "component", values_from = "pred")
-  clones_predictions$binom_pred <- clones_predictions |>
-    select(-"VAF") |>
-    rowSums()
-  clones_predictions
+    bind_cols()
+  res <- bind_cols(
+    VAFs,
+    clones_predictions,
+    binom_pred = rowSums(clones_predictions)
+  )
 }
 
 
