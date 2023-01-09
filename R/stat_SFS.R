@@ -45,7 +45,7 @@ calc_SFS.cevodata <- function(object, bins = NULL, ...) {
 
 #' @export
 calc_SFS.cevo_snvs <- function(object, bins = NULL, ...) {
-  snvs <- cut_VAF_intervals(object)
+  snvs <- cut_VAF_intervals(object, bins = bins)
   intervals <- attributes(snvs)$intervals
   res <- snvs |>
     group_by(.data$sample_id, .data$VAF_interval) |>
