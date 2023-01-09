@@ -27,7 +27,7 @@ snvs_tcga_brca <- mutations %>%
     ref_counts_normal = n_ref_count,
     alt_counts_normal = n_alt_count,
     variant_class = VARIANT_CLASS,
-    variant_type =  Variant_Type,
+    variant_type = Variant_Type,
     Variant_Classification,
     variant_classification,
     impact = IMPACT,
