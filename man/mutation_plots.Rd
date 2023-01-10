@@ -33,6 +33,7 @@ plot_mutations(object, ...)
 )
 
 layer_mutations(
+  object,
   genes = NULL,
   drivers = NULL,
   show_labels = TRUE,
