@@ -126,10 +126,5 @@ plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,
 #' @inherit plot.cevo_Mf_1f_tbl
 #' @export
 plot_Mf_1f <- function(object, bins = NULL, from = 0.1, to = 0.25, scale = TRUE, geom = "point", ...) {
-  Mf_1f <- SNVs(object) |>
-    calc_Mf_1f(bins = bins) |>
-    left_join(object$metadata, by = "sample_id") |>
-    group_by(.data$patient_id, .data$sample_id, .data$sample)
-  class(Mf_1f) <- c("cevo_Mf_1f_tbl", class(Mf_1f))
-  plot(Mf_1f, geom = geom, from = from, to = to, scale = scale, ...)
+  plot(object$models$Mf_1f, geom = geom, from = from, to = to, scale = scale, ...)
 }
