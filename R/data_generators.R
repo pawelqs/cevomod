@@ -9,7 +9,7 @@
 #'
 #' @examples
 #' generate_neutral_snvs()
-generate_neutral_snvs <- function(mut_rate = 2, sample_below = 0.15, resolution = 0.01) {
+generate_neutral_snvs <- function(mut_rate = 2, sample_below = 0.15, resolution = 0.01, DP = 100) {
   tibble(
     patient_id = "S1",
     sample_id = "S1",
@@ -23,6 +23,7 @@ generate_neutral_snvs <- function(mut_rate = 2, sample_below = 0.15, resolution 
     alt_reads = NA_integer_,
     impact = NA_character_,
     VAF = seq(.01, 1, by = resolution),
+    DP = DP,
     n = floor(mut_rate / .data$VAF^2)
   ) |>
     mutate(

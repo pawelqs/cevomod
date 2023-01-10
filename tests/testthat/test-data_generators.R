@@ -4,7 +4,7 @@ test_that("Data generator generates correct data", {
   expect_equal(nrow(snvs), 1532)
   expected_columns <- c(
     "patient_id", "sample_id", "sample", "chrom", "pos", "gene_symbol", "ref",
-    "alt", "ref_reads", "alt_reads", "impact", "VAF", "n", "mut_id"
+    "alt", "ref_reads", "alt_reads", "impact", "VAF", "DP", "n", "mut_id"
   )
   expect_named(snvs, expected_columns)
 })
