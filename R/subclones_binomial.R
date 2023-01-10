@@ -38,7 +38,7 @@ fit_subclones.cevodata <- function(object, N = 1:3, ...) {
     select(sample_id, VAF_interval, VAF) |>
     nest_by(sample_id, .key = "VAFs") |>
     left_join(best_models, by = "sample_id") |>
-    summarise(get_binomial_predictions(.data$VAFs, .data$clones), .groups = "drop") |>
+    summarise(get_binomial_predictions(.data$clones, .data$VAFs), .groups = "drop") |>
     select(-"VAF")
 
   residuals <- residuals |>
@@ -146,7 +146,7 @@ any_binomial_distibutions_correlate <- function(clones) {
 }
 
 
-get_binomial_predictions <- function(VAFs, clones) {
+get_binomial_predictions <- function(clones, VAFs) {
   clones_predictions <- clones |>
     pmap(get_binomial_distribution) |>
     map(rebinarize_distribution, VAFs = VAFs$VAF) |>
