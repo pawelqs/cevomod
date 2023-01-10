@@ -3,11 +3,17 @@
 \name{sfs}
 \alias{sfs}
 \alias{calc_SFS}
+\alias{calc_SFS.cevodata}
+\alias{calc_SFS.cevo_snvs}
 \alias{plot_SFS}
 \alias{plot_SFS.cevodata}
 \title{Site Frequency Spectra}
 \usage{
 calc_SFS(object, ...)
+
+\method{calc_SFS}{cevodata}(object, bins = NULL, ...)
+
+\method{calc_SFS}{cevo_snvs}(object, bins = NULL, ...)
 
 plot_SFS(object, ...)
 
@@ -18,11 +24,9 @@ plot_SFS(object, ...)
 
 \item{...}{other arguments}
 
+\item{bins}{resolution of the cumulative tails calculation}
+
 \item{geom}{geom}
-
-\item{digits}{resolution of the cumulative tails calculation}
-
-\item{alpha}{alpha}
 }
 \description{
 Creates  cevodata$models$SFS with the groupping variables and:
@@ -36,6 +40,10 @@ Creates  cevodata$models$SFS with the groupping variables and:
 \itemize{
 \item \code{calc_SFS()}: Calculate SFS
 
+\item \code{calc_SFS(cevodata)}: Calculate SFS
+
+\item \code{calc_SFS(cevo_snvs)}: Calculate SFS
+
 \item \code{plot_SFS()}: Plot SFS
 
 \item \code{plot_SFS(cevodata)}: Plot SFS
@@ -43,15 +51,10 @@ Creates  cevodata$models$SFS with the groupping variables and:
 }}
 \examples{
 data("tcga_brca_test")
-tcga_brca_test |>
-  calc_SFS()
+tcga_brca_test
 
 tcga_brca_test |>
-  plot_SFS() +
-  layer_mutations(drivers = "BRCA")
-
-SNVs(tcga_brca_test) |>
-  dplyr::group_by(sample_id) |>
   calc_SFS() |>
-  plot()
+  plot_SFS() +
+  layer_mutations(tcga_brca_test, drivers = "BRCA")
 }

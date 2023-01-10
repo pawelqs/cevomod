@@ -7,7 +7,7 @@
 #'   - y_scaled with y values scaled to the range 0-1
 #'
 #' @param object SNVs tibble object
-#' @param digits resolution of the cumulative tails calculation
+#' @param bins resolution of the cumulative tails calculation
 #' @param ... other arguments
 #' @examples
 #' data("tcga_brca_test")
@@ -85,10 +85,9 @@ plot_cumulative_tails <- function(object, ...) {
 #'
 #' @examples
 #' data("tcga_brca_test")
-#' SNVs(tcga_brca_test) |>
-#'   dplyr::group_by(sample_id) |>
+#' tcga_brca_test |>
 #'   calc_cumulative_tails() |>
-#'   plot()
+#'   plot_cumulative_tails()
 plot.cevo_cumulative_tails_tbl <- function(x, scale_y = TRUE, scales = "loglog", ...) {
 
   y <- if (scale_y) "y_scaled" else "y"
@@ -112,6 +111,7 @@ plot.cevo_cumulative_tails_tbl <- function(x, scale_y = TRUE, scales = "loglog",
 #' @describeIn cumulative_tails Shortcut to plot cum tails from SNVs dataframe
 #'
 #' @param scale_y scale y vaules to 1?
+#' @param scales loglog/semilog
 #' @param ... passed to stat_cumulative_tail
 #' @return ggplot obj
 #' @export
@@ -123,7 +123,7 @@ plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, scales = "log
 #' Plot Cumulative Tail
 #'
 #' @inherit ggplot2::geom_histogram
-#' @param digits cumulative tail calculation avurracy
+#' @param bins number of bins
 #' @param geom geom
 #'
 #' @examples

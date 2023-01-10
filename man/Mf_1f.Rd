@@ -39,6 +39,8 @@ plot_Mf_1f(
 
 \item{...}{other arguments}
 
+\item{bins}{resolution of the cumulative tails calculation}
+
 \item{from}{min VAF to plot}
 
 \item{to}{max VAF to plot}
@@ -46,8 +48,6 @@ plot_Mf_1f(
 \item{scale}{scale data?}
 
 \item{geom}{ggplot geom to use, eg. geom_line()}
-
-\item{digits}{resolution of the cumulative tails calculation}
 }
 \value{
 ggplot obj

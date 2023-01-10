@@ -38,10 +38,7 @@ Plot M(f) ~ 1/f
 \examples{
 data("tcga_brca_test")
 
-SNVs(tcga_brca_test) |>
-  dplyr::group_by(sample_id) |>
+tcga_brca_test |>
   calc_Mf_1f() |>
-  plot()
-
-plot_Mf_1f(tcga_brca_test)
+  plot_Mf_1f()
 }

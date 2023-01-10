@@ -10,6 +10,8 @@
 \item{x}{tibble with calc_SFS() results}
 
 \item{...}{futher passed to geom_()}
+
+\item{geom}{geom}
 }
 \value{
 ggplot obj

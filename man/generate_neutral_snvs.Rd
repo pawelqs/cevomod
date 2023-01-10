@@ -17,6 +17,8 @@ generate_neutral_snvs(
 \item{sample_below}{mutations below this value will be sampled}
 
 \item{resolution}{resolution}
+
+\item{DP}{sequncing depth}
 }
 \value{
 SNVs tibble

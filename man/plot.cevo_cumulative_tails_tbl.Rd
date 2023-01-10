@@ -23,8 +23,7 @@ Plot the cumulative tails
 }
 \examples{
 data("tcga_brca_test")
-SNVs(tcga_brca_test) |>
-  dplyr::group_by(sample_id) |>
+tcga_brca_test |>
   calc_cumulative_tails() |>
-  plot()
+  plot_cumulative_tails()
 }

@@ -7,23 +7,17 @@
 #'   - y_scaled with y values scaled to the range 0-1
 #'
 #' @param object SNVs tibble object
-#' @param digits resolution of the cumulative tails calculation
+#' @param bins resolution of the cumulative tails calculation
 #' @param geom geom
-#' @param alpha alpha
 #' @param ... other arguments
 #' @examples
 #' data("tcga_brca_test")
-#' tcga_brca_test |>
-#'   calc_SFS()
+#' tcga_brca_test
 #'
 #' tcga_brca_test |>
-#'   plot_SFS() +
-#'   layer_mutations(drivers = "BRCA")
-#'
-#' SNVs(tcga_brca_test) |>
-#'   dplyr::group_by(sample_id) |>
 #'   calc_SFS() |>
-#'   plot()
+#'   plot_SFS() +
+#'   layer_mutations(tcga_brca_test, drivers = "BRCA")
 #' @name sfs
 NULL
 
@@ -35,6 +29,7 @@ calc_SFS <- function(object, ...) {
 }
 
 
+#' @describeIn sfs Calculate SFS
 #' @export
 calc_SFS.cevodata <- function(object, bins = NULL, ...) {
   object$models[["SFS"]] <- SNVs(object) |>
@@ -43,6 +38,7 @@ calc_SFS.cevodata <- function(object, bins = NULL, ...) {
 }
 
 
+#' @describeIn sfs Calculate SFS
 #' @export
 calc_SFS.cevo_snvs <- function(object, bins = NULL, ...) {
   snvs <- cut_VAF_intervals(object, bins = bins)
@@ -71,6 +67,7 @@ plot_SFS <- function(object, ...) {
 #'
 #' @param x tibble with calc_SFS() results
 #' @param ... futher passed to geom_()
+#' @param geom geom
 #' @return ggplot obj
 #' @export
 plot.cevo_SFS_tbl <- function(x, ..., geom = "bar") {

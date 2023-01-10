@@ -437,13 +437,17 @@ plot_predictions_vs_fits <- function(predictions, fits) {
   }
 }
 
-
+#' Plot heatmap of non neutral mutations
+#' @param object object
+#' @param ... other arguments
 #' @export
 plot_non_neutral_mutations_2D <- function(object, ...) {
   UseMethod("plot_non_neutral_mutations_2D")
 }
 
 
+#' @rdname plot_non_neutral_mutations_2D
+#' @param colors vector of three colors to use
 #' @export
 plot_non_neutral_mutations_2D.cevodata <- function(object,
                                                    colors = c("black", "white", "red"),

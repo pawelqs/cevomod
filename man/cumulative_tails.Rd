@@ -24,9 +24,11 @@ plot_cumulative_tails(object, ...)
 
 \item{...}{passed to stat_cumulative_tail}
 
+\item{bins}{resolution of the cumulative tails calculation}
+
 \item{scale_y}{scale y vaules to 1?}
 
-\item{digits}{resolution of the cumulative tails calculation}
+\item{scales}{loglog/semilog}
 }
 \value{
 ggplot obj

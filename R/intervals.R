@@ -1,12 +1,17 @@
 
+#' Cut VAF into intervals
+#' @param object object
+#' @param ... other params
 #' @export
 cut_VAF_intervals <- function(object, ...) {
   UseMethod("cut_VAF_intervals")
 }
 
 
+#' @rdname cut_VAF_intervals
+#' @param bins number of bins
 #' @export
-cut_VAF_intervals.cevo_snvs <- function(object, bins = NULL) {
+cut_VAF_intervals.cevo_snvs <- function(object, bins = NULL, ...) {
   breaks <- get_interval_breaks(object, bins = bins) |>
     enframe(name = "sample_id", value = "breaks")
   res <- object |>

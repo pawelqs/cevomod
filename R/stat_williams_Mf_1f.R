@@ -7,7 +7,7 @@
 #'   - `M(f)` and `1/f` columns to plot William's statistics
 #'
 #' @param object SNVs tibble object
-#' @param digits resolution of the cumulative tails calculation
+#' @param bins resolution of the cumulative tails calculation
 #' @param ... other arguments
 #' @examples
 #' data("tcga_brca_test")
@@ -82,12 +82,9 @@ plot_Mf_1f <- function(object, ...) {
 #' @examples
 #' data("tcga_brca_test")
 #'
-#' SNVs(tcga_brca_test) |>
-#'   dplyr::group_by(sample_id) |>
+#' tcga_brca_test |>
 #'   calc_Mf_1f() |>
-#'   plot()
-#'
-#' plot_Mf_1f(tcga_brca_test)
+#'   plot_Mf_1f()
 plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,
                                 geom = "point", mapping = NULL, ...) {
 

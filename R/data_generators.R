@@ -4,6 +4,7 @@
 #' @param mut_rate a in f(x) = a/x^2 formula
 #' @param sample_below mutations below this value will be sampled
 #' @param resolution resolution
+#' @param DP sequncing depth
 #' @return SNVs tibble
 #' @export
 #'
