@@ -63,7 +63,7 @@ plot_residuals_neutral_model.cevodata <- function(object,
     geom_line(final_fit_mapping, color = "black")
   }
   ggplot(residuals) +
-    geom(...) +
+    geom() +
     clones_fit +
     final_mapping +
     labs(y = "Residuals") +
