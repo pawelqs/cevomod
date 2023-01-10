@@ -11,7 +11,7 @@
 \usage{
 calc_cumulative_tails(object, ...)
 
-\method{calc_cumulative_tails}{cevodata}(object, bins = 100, ...)
+\method{calc_cumulative_tails}{cevodata}(object, bins = 101, ...)
 
 \method{calc_cumulative_tails}{cevo_snvs}(object, bins = 100, ...)
 
