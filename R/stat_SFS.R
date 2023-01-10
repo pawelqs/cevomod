@@ -74,8 +74,11 @@ plot_SFS <- function(object, ...) {
 #' @return ggplot obj
 #' @export
 plot.cevo_SFS_tbl <- function(x, ..., geom = "bar") {
-  geom <- if (geom == "bar") {
-    list(
+  if (geom == "bar") {
+    x <- x |>
+      group_by(.data$sample_id) |>
+      mutate(width = 0.9 / n())
+    geom <- list(
       geom_bar(
         aes(fill = .data$sample_id, width = .data$width),
         stat = "identity", alpha = 0.8, ...
@@ -83,12 +86,13 @@ plot.cevo_SFS_tbl <- function(x, ..., geom = "bar") {
       facet_wrap(~.data$sample_id, scales = "free")
     )
   } else if (geom == "line") {
-    list(
+    geom <- list(
       geom_line(...)
     )
   }
 
   x |>
+    filter(.data$VAF >= 0) |>
     ggplot(aes(.data$VAF, .data$y, color = .data$sample_id)) +
     geom +
     theme_ellie(n = n_distinct(x$sample_id)) +
@@ -103,12 +107,7 @@ plot.cevo_SFS_tbl <- function(x, ..., geom = "bar") {
 #' @describeIn sfs Plot SFS
 #' @export
 plot_SFS.cevodata <- function(object, ..., geom = "bar") {
-  bin_widths <- object$models$SFS |>
-    group_by(.data$sample_id) |>
-    summarise(width = 0.9 / n())
-  object$models$SFS |>
-    left_join(bin_widths, by = "sample_id") |>
-    plot(geom = geom)
+  plot(object$models$SFS, geom = geom)
 }
 
 

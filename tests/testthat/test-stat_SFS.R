@@ -11,17 +11,21 @@ test_that("Calculation of SFS works", {
 
 test_that("plot(calc_SFS()) works", {
   dt <- SNVs(tcga_brca_test)
-  p <- dt %>%
-    calc_SFS() %>%
-    plot()
+  expect_warning({
+    p <- dt %>%
+      calc_SFS() %>%
+      plot()
+  })
   expect_s3_class(p, c("gg", "ggplot"))
   vdiffr::expect_doppelganger("plot(calc_SFS())", p)
 })
 
 
 test_that("plot_SFS() works", {
-  p <- tcga_brca_test |>
+  expect_warning({
+      p <- tcga_brca_test |>
     calc_SFS() |>
     plot_SFS()
+  })
   vdiffr::expect_doppelganger("tcga_brca_test_SFS", p)
 })
