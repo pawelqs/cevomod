@@ -29,7 +29,7 @@ calc_Mf_1f <- function(object, ...) {
 
 #' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
 #' @export
-calc_Mf_1f.cevodata <- function(object, bins = 101, ...) {
+calc_Mf_1f.cevodata <- function(object, bins = 100, ...) {
   Mf_1f <- SNVs(object) |>
     calc_Mf_1f(bins = bins)
   # class(Mf_1f) <- c("cevo_Mf_1f_tbl", class(Mf_1f))
@@ -91,7 +91,9 @@ plot_Mf_1f <- function(object, ...) {
 plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,
                                 geom = "point", mapping = NULL, ...) {
 
-  x <- filter(x, .data$VAF >= from, .data$VAF <= to)
+  x <- x |>
+    filter(.data$VAF >= from, .data$VAF <= to) |>
+    group_by(.data$sample_id)
   if (scale) {
     x <- x %>%
       mutate(

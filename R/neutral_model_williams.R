@@ -113,7 +113,7 @@ calc_residuals <- function(object, ...) {
     left_join(neutral_params, by = "sample_id") |>
     mutate(
       neutr = (.data$VAF >= .data$from & .data$VAF <= .data$to),
-      neutral_pred = if_else(.data$VAF < 0, 0, (.data$A / .data$nbins) / .data$VAF^2),
+      neutral_pred = calc_powerlaw_curve(.data$VAF, .data$A, .data$nbins),
       neutral_resid = .data$neutral_pred - .data$SFS,
       neutral_resid_clones = if_else(.data$neutral_resid > 0, 0, -.data$neutral_resid),
       sampling_rate = .data$neutral_resid / .data$neutral_pred,
@@ -124,6 +124,10 @@ calc_residuals <- function(object, ...) {
   residuals
 }
 
+
+calc_powerlaw_curve <- function(VAF, A, nbins) {
+  if_else(VAF < 0, 0, (A / nbins) / VAF^2)
+}
 
 #' @rdname neutral_model
 #' @export
