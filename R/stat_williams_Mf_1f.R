@@ -48,7 +48,7 @@ calc_Mf_1f.cevo_snvs <- function(object, bins = NULL, ...) {
     summarise(n = n(), .groups = "drop_last") |>
     complete_missing_VAF_intervals(intervals) |>
     replace_na(list(n = 0)) |>
-    mutate(VAF = get_interval_centers(VAF_interval), .after = "VAF_interval") |>
+    mutate(VAF = get_interval_centers(.data$VAF_interval), .after = "VAF_interval") |>
     arrange(desc(.data$VAF), .by_group = TRUE) %>%
     mutate(
       `M(f)` = cumsum(n),

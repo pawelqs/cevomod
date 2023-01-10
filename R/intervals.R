@@ -15,7 +15,7 @@ cut_VAF_intervals.cevo_snvs <- function(object, bins = NULL, ...) {
   breaks <- get_interval_breaks(object, bins = bins) |>
     enframe(name = "sample_id", value = "breaks")
   res <- object |>
-    nest_by(sample_id) |>
+    nest_by(.data$sample_id) |>
     left_join(breaks, by = "sample_id") |>
     mutate(data = list(cut_VAF(.data$data, .data$breaks))) |>
     ungroup()

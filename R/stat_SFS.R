@@ -48,7 +48,7 @@ calc_SFS.cevo_snvs <- function(object, bins = NULL, ...) {
     summarise(y = n(), .groups = "drop_last") |>
     complete_missing_VAF_intervals(intervals) |>
     replace_na(list(y = 0)) |>
-    mutate(VAF = get_interval_centers(VAF_interval), .after = "VAF_interval") |>
+    mutate(VAF = get_interval_centers(.data$VAF_interval), .after = "VAF_interval") |>
     mutate(y_scaled = round(.data$y / sum(.data$y), digits = 4)) |>
     ungroup()
   class(res) <- c("cevo_SFS_tbl", class(res))

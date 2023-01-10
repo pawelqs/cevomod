@@ -45,8 +45,8 @@ filter_joined_models <- function(joined_models, ...) {
 
   kept_patients <- samples |>
     left_join(samples_kept, by = c("patient_id", "sample")) |>
-    group_by(patient_id) |>
-    filter(all(sample_kept)) |>
+    group_by(.data$patient_id) |>
+    filter(all(.data$sample_kept)) |>
     pull(patient_id) |>
     unique()
 
