@@ -3,21 +3,23 @@
 #' @param object object
 #' @param ... other arguments
 #' @export
-get_selected_mutations <- function(object, ...) {
-  UseMethod("get_selected_mutations")
+identify_non_neutral_tail_mutations <- function(object, ...) {
+  UseMethod("identify_non_neutral_tail_mutations")
 }
 
 
-#' @rdname get_selected_mutations
+
+#' @rdname identify_non_neutral_tail_mutations
 #' @param sample1 sample1
 #' @param sample2 sample2
 #' @param method method
 #' @param verbose lgl
 #' @export
-get_selected_mutations.cevodata <- function(object,
-                                            sample1 = NULL, sample2 = NULL,
-                                            method = "basic",
-                                            verbose = TRUE, ...) {
+identify_non_neutral_tail_mutations.cevodata <- function(
+        object,
+        sample1 = NULL, sample2 = NULL,
+        method = "basic",
+        verbose = TRUE, ...) {
   if (!were_subclonal_models_fitted(object)) {
     stop("Fit subclonal models first!")
   }
@@ -27,7 +29,7 @@ get_selected_mutations.cevodata <- function(object,
     split_by("patient_id")
   splits <- splits |>
     map(
-      get_selected_mutations,
+      identify_non_neutral_tail_mutations,
       sample1 = sample1, sample2 = sample2,
       method = method, verbose = verbose
     )
@@ -39,13 +41,13 @@ get_selected_mutations.cevodata <- function(object,
 }
 
 
-#' @rdname get_selected_mutations
+#' @rdname identify_non_neutral_tail_mutations
 #' @export
-get_selected_mutations.singlepatient_cevodata <- function(object,
-                                                          sample1 = NULL,
-                                                          sample2 = NULL,
-                                                          method = "basic",
-                                                          verbose = TRUE, ...) {
+identify_non_neutral_tail_mutations.singlepatient_cevodata <- function(
+        object,
+        sample1 = NULL, sample2 = NULL,
+        method = "basic",
+        verbose = TRUE, ...) {
   patient_id <- unique(object$metadata$patient_id)
   msg("Processing patient ", patient_id, "\t", new_line = FALSE, verbose = verbose)
 
@@ -125,7 +127,11 @@ init_MC_simulation_limits <- function(mutations_mat, row_predictions, col_predic
       } else if (col == zero_interval) {
         upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1)
       } else {
-        upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1, col_predictions[col] * 1.1)
+        upper_limits[row, col] <- min(
+          mutations_mat[row, col],
+          row_predictions[row] * 1.1,
+          col_predictions[col] * 1.1
+        )
       }
     }
   }
