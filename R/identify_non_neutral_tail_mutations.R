@@ -212,18 +212,39 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions,
         print(metrics$MSE)
       }
 
-      # TODO: randomize order of row and col fitting
-      scaling_factors <- calc_scaling_factors(rowSums(mc_mat), row_predictions)
-      for (row in rownames(mc_mat)[-1]) {
-        mc_mat[row, ] <- mc_mat[row, ] * scaling_factors[row]
-      }
-      mc_mat[mc_mat > limits$upper] <- limits$upper[mc_mat > limits$upper]
+      ## New solution, randomize order of row and col fitting
+      scaling_factors <- list(
+          rows = calc_scaling_factors(rowSums(mc_mat), row_predictions)[-1],
+          cols = calc_scaling_factors(colSums(mc_mat), col_predictions)[-1]
+        ) |>
+        map(enframe, name = "VAF_interval", value = "factor") |>
+        bind_rows(.id = "dim") |>
+        shuffle()
 
-      scaling_factors <- calc_scaling_factors(colSums(mc_mat), col_predictions)
-      for (col in colnames(mc_mat)[-1]) {
-        mc_mat[, col] <- mc_mat[, col] * scaling_factors[col]
+      for (k in seq_along(scaling_factors$dim)) {
+        if (scaling_factors$dim[k] == "rows") {
+          row <- scaling_factors$VAF_interval[k]
+          new_values <- mc_mat[row, ] * scaling_factors$factor[k]
+          mc_mat[row, ] <- pmin(new_values, limits$upper[row, ])
+        } else if (scaling_factors$dim[k] == "cols") {
+          col <- scaling_factors$VAF_interval[k]
+          new_values <- mc_mat[, col] * scaling_factors$factor[k]
+          mc_mat[, col] <- pmin(new_values, limits$upper[, col])
+        }
       }
-      mc_mat[mc_mat > limits$upper] <- limits$upper[mc_mat > limits$upper]
+
+      ## Old solution
+      # scaling_factors <- calc_scaling_factors(rowSums(mc_mat), row_predictions)
+      # for (row in rownames(mc_mat)[-1]) {
+      #   mc_mat[row, ] <- mc_mat[row, ] * scaling_factors[row]
+      # }
+      # mc_mat[mc_mat > limits$upper] <- limits$upper[mc_mat > limits$upper]
+      #
+      # scaling_factors <- calc_scaling_factors(colSums(mc_mat), col_predictions)
+      # for (col in colnames(mc_mat)[-1]) {
+      #   mc_mat[, col] <- mc_mat[, col] * scaling_factors[col]
+      # }
+      # mc_mat[mc_mat > limits$upper] <- limits$upper[mc_mat > limits$upper]
 
       mew_metrics <- evaluate_MC_runs(mc_mat, row_predictions, col_predictions)
       MSE_diff <- metrics$MSE - mew_metrics$MSE
