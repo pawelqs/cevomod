@@ -12,7 +12,6 @@
 #' @param ... other arguments
 #' @examples
 #' data("tcga_brca_test")
-#' tcga_brca_test
 #'
 #' tcga_brca_test |>
 #'   calc_SFS() |>

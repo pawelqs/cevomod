@@ -51,7 +51,6 @@ Creates  cevodata$models$SFS with the groupping variables and:
 }}
 \examples{
 data("tcga_brca_test")
-tcga_brca_test
 
 tcga_brca_test |>
   calc_SFS() |>
