@@ -11,8 +11,11 @@ fit_subclones <- function(object, ...) {
 
 #' @rdname fit_subclones
 #' @param N vector of numbers of clones to test
+#' @param verbose verbose?
 #' @export
-fit_subclones.cevodata <- function(object, N = 1:3, ...) {
+fit_subclones.cevodata <- function(object, N = 1:3, verbose = TRUE, ...) {
+  msg("Fitting binomial models", verbose = verbose)
+
   residuals <- get_residuals(object, model = "neutral_models") |>
     filter(.data$VAF >= 0 )
 

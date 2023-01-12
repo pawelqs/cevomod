@@ -7,7 +7,7 @@
 \usage{
 fit_subclones(object, ...)
 
-\method{fit_subclones}{cevodata}(object, N = 1:3, ...)
+\method{fit_subclones}{cevodata}(object, N = 1:3, verbose = TRUE, ...)
 }
 \arguments{
 \item{object}{object}
@@ -15,6 +15,8 @@ fit_subclones(object, ...)
 \item{...}{other arguments}
 
 \item{N}{vector of numbers of clones to test}
+
+\item{verbose}{verbose?}
 }
 \description{
 Fit subclonal distributions to neutral model residuals

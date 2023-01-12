@@ -5,6 +5,7 @@
 #'
 #' @param object SNVs tibble object
 #' @param rsq_treshold R-squared tresholds to keep model as neutral
+#' @param verbose verbose?
 #' @param ... other arguments
 #' @examples
 #' data("tcga_brca_test")
@@ -31,11 +32,12 @@ fit_neutral_models <- function(object, ...) {
 
 #' @describeIn neutral_model Fit Williams neutral models to the data
 #' @export
-fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, ...) {
+fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, verbose = TRUE, ...) {
   Mf_1f <- object$models$Mf_1f
   if (is.null(Mf_1f)) {
     stop("Run calc_Mf_1f() first!")
   }
+  msg("Fitting neutral models...", verbose = verbose)
 
   bounds <- get_VAF_range(SNVs(object))
   dt <- Mf_1f |>
