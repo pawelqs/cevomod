@@ -30,10 +30,10 @@ get_SNVs_2d_matrix <- function(object,
     message("Using '", rows_sample, "' as rows and '", cols_sample, "' as cols")
   }
   if (rows_sample %not in% patients_to_samples$sample) {
-    stop("Sample requested for rows is not present for this sample")
+    stop("Sample requested for rows is not present for this patient")
   }
   if (cols_sample %not in% patients_to_samples$sample) {
-    stop("Sample requested for cols is not present for this sample")
+    stop("Sample requested for cols is not present for this patient")
   }
 
   breaks <- c(-0.1, seq(0, 1, length.out = bins + 1))
