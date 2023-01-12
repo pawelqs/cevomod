@@ -36,15 +36,16 @@ devtools::install_github("pawelqs/cevomod")
 
 This is a basic example which shows you how to solve a common problem:
 
-```{r example}
+```{r}
 library(cevomod)
 library(tidyverse)
 data("tcga_brca_test")
 
-SNVs(tcga_brca_test) |> 
-  ggplot(aes(VAF, fill = sample_id, color = sample_id)) +
-  stat_SFS(geom = "bar") +
-  layer_mutations(drivers = "BRCA", color = "black", shape = "impact") +
-  facet_wrap(~sample_id, scales = "free_y") +
-  theme_ellie(n = n_distinct(SNVs(tcga_brca_test)$sample_id))
+cd <- run_cevomod(tcga_brca_test)
+```
+
+
+```{r fig.width=8, fig.height=6}
+plot_models(cd) +
+  layer_mutations(cd, drivers = "BRCA")
 ```
