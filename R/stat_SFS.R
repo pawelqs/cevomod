@@ -63,6 +63,13 @@ plot_SFS <- function(object, ...) {
 }
 
 
+#' @describeIn sfs Plot SFS
+#' @export
+plot_SFS.cevodata <- function(object, ..., geom = "bar") {
+  plot(object$models$SFS, geom = geom)
+}
+
+
 #' Plot SFS
 #'
 #' @param x tibble with calc_SFS() results
@@ -98,13 +105,6 @@ plot.cevo_SFS_tbl <- function(x, ..., geom = "bar") {
       title = "SFS",
       y = "count"
     )
-}
-
-
-#' @describeIn sfs Plot SFS
-#' @export
-plot_SFS.cevodata <- function(object, ..., geom = "bar") {
-  plot(object$models$SFS, geom = geom)
 }
 
 

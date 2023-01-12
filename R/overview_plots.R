@@ -17,7 +17,8 @@ plot_sequencing_depth.cevodata <- function(object,
                                            mapping = NULL,
                                            geom = geom_boxplot,
                                            ...) {
-  snvs <- SNVs(object)
+  snvs <- SNVs(object) |>
+    left_join(object$metadata)
   default_mapping <- aes(.data$sample_id, .data$DP, fill = .data$sample_id)
   ggplot(snvs, join_aes(default_mapping, mapping)) +
     geom(...) +
