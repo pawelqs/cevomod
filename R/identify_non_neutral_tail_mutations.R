@@ -8,7 +8,6 @@ identify_non_neutral_tail_mutations <- function(object, ...) {
 }
 
 
-
 #' @rdname identify_non_neutral_tail_mutations
 #' @param sample1 sample1
 #' @param sample2 sample2
@@ -48,46 +47,35 @@ identify_non_neutral_tail_mutations.singlepatient_cevodata <- function(
         sample1 = NULL, sample2 = NULL,
         method = "basic",
         verbose = TRUE, ...) {
+  samples_data <- object$metadata |>
+    select("sample", "sample_id")
   patient_id <- unique(object$metadata$patient_id)
   msg("Processing patient ", patient_id, "\t", new_line = FALSE, verbose = verbose)
 
-  samples_data <- object$metadata |>
-    select("sample_id", "sample")
-  rowsample <- if (is.null(sample1)) samples_data$sample[[1]]
-  colsample <- if (is.null(sample2)) samples_data$sample[[2]]
+  rowsample <- if (is.null(sample1)) samples_data$sample[[1]] else sample1
+  colsample <- if (is.null(sample2)) samples_data$sample[[2]] else sample2
+  sample_ids <- deframe(samples_data)[c(rowsample, colsample)]
+  names(sample_ids) <- c("rows", "cols")
 
   mutations_mat <- object |>
-    get_SNVs_2d_matrix(rows_sample = rowsample, cols_sample = colsample, bins = 100)
+    get_SNVs_2d_matrix(
+      rows_sample = rowsample, cols_sample = colsample,
+      verbose = verbose
+    )
+  zero_intervals <- c(rows = rownames(mutations_mat)[1], cols = colnames(mutations_mat)[1])
+  row_predictions <- object |>
+    get_binomial_model_predictions(
+      sample_id = sample_ids["rows"], zero_interval = zero_intervals["rows"]
+    )
+  col_predictions <- object |>
+    get_binomial_model_predictions(
+      sample_id = sample_ids["cols"], zero_interval = zero_intervals["cols"]
+    )
 
-  intervals <- tibble(
-    interval = rownames(mutations_mat),
-    centers = get_interval_centers(.data$interval)
-  )
-
-  VAF_zero_pred <- tibble(
-    VAF = 0, binom_pred = 0,
-    sample = samples_data$sample
-  )
-  binom_predictions <- get_residuals(object) |>
-    select("sample_id", "VAF", "binom_pred") |>
-    left_join(samples_data, by = "sample_id") |>
-    select(-"sample_id")
-  binom_predictions <- VAF_zero_pred |>
-    bind_rows(binom_predictions) |>
-    pivot_wider(names_from = "sample", values_from = "binom_pred") |>
-    select(all_of(c("VAF", rowsample, colsample))) |>
-    set_names(c("VAF", "rowsample", "colsample"))
-
-  predictions_by_interval <- binom_predictions |>
-    rebinarize_distribution(VAFs = intervals$centers) |>
-    bind_cols(intervals)
-  row_predictions <- deframe(predictions_by_interval[, c("interval", "rowsample")])
-  col_predictions <- deframe(predictions_by_interval[, c("interval", "colsample")])
-
-  join_models <- if (method == "basic") {
-    solve_basic
+  if (method == "basic") {
+    join_models <- solve_basic
   } else if (method == "MC") {
-    solve_MC
+    join_models <- solve_MC
   }
   joined_models <- join_models(
     mutations_mat,
@@ -108,10 +96,20 @@ identify_non_neutral_tail_mutations.singlepatient_cevodata <- function(
     fit_metrics = top_model_ev,
     mc_arr = joined_models$mc_arr,
     metrics = joined_models$metrics,
-    neu_mutations_mat = mutations_mat - joined_models$solution,
-    sel_probability_mat = joined_models$solution / mutations_mat
+    neutral_tail_mutations_mat = mutations_mat - joined_models$solution,
+    selection_probability_mat = joined_models$solution / mutations_mat
   )
   object
+}
+
+
+get_binomial_model_predictions <- function(object, sample_id, zero_interval = NULL) {
+  binom_predictions <- get_residuals(object) |>
+    filter(.data$sample_id == .env$sample_id) |>
+    select("VAF_interval", "binom_pred") |>
+    deframe()
+  zero_pred <- if (!is.null(zero_interval)) set_names(0, zero_interval) else NULL
+  c(zero_pred, binom_predictions)
 }
 
 
