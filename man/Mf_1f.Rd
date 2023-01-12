@@ -6,6 +6,7 @@
 \alias{calc_Mf_1f.cevodata}
 \alias{calc_Mf_1f.cevo_snvs}
 \alias{plot_Mf_1f}
+\alias{plot_Mf_1f.cevodata}
 \title{William's M(f) ~ 1/f statistics}
 \usage{
 calc_Mf_1f(object, ...)
@@ -14,17 +15,9 @@ calc_Mf_1f(object, ...)
 
 \method{calc_Mf_1f}{cevo_snvs}(object, bins = NULL, ...)
 
-plot_Mf_1f(
-  object,
-  bins = NULL,
-  from = 0.1,
-  to = 0.25,
-  scale = TRUE,
-  geom = "point",
-  ...
-)
+plot_Mf_1f(object, ...)
 
-plot_Mf_1f(
+\method{plot_Mf_1f}{cevodata}(
   object,
   bins = NULL,
   from = 0.1,
@@ -68,7 +61,7 @@ Creates  cevodata$models$Mf_1f tbl with the groupping variables and:
 
 \item \code{calc_Mf_1f(cevo_snvs)}: Calculate Williams M(f) ~ 1/f
 
-\item \code{plot_Mf_1f()}: Plot M(f) ~ 1/f
+\item \code{plot_Mf_1f(cevodata)}: Plot M(f) ~ 1/f
 
 }}
 \examples{
