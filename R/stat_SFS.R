@@ -65,6 +65,7 @@ plot_SFS <- function(object, ...) {
 #' @describeIn sfs Plot SFS
 #' @export
 plot_SFS.cevodata <- function(object, ..., geom = "bar") {
+  # TODO: Fix 'width' warning
   plot(object$models$SFS, geom = geom)
 }
 
