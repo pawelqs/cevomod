@@ -87,3 +87,22 @@ print.cevo_snvs <- function(x, ...) {
   msg("<cevo_snvs> tibble")
   NextMethod()
 }
+
+
+#' Shuffle order of elements in object
+#' @param object object to shuffle
+#' @param ... other arguments
+#' @export
+shuffle <- function(object, ...) {
+  UseMethod("shuffle")
+}
+
+
+#' @describeIn shuffle Shuffle order of rows in tibble
+#' @export
+#' @examples
+#' tibble::tibble(i = 1:10) |>
+#'   shuffle()
+shuffle.tbl_df <- function(object, ...)  {
+  object[sample(1:nrow(object)), ]
+}
