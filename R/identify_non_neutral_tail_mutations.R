@@ -213,19 +213,13 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions,
       }
 
       # TODO: randomize order of row and col fitting
-      rsums <- rowSums(mc_mat)
-      scaling_factors <- row_predictions / rsums
-      scaling_factors[is.infinite(scaling_factors)] <- 1
-      scaling_factors[is.na(scaling_factors)] <- 1
+      scaling_factors <- calc_scaling_factors(rowSums(mc_mat), row_predictions)
       for (row in rownames(mc_mat)[-1]) {
         mc_mat[row, ] <- mc_mat[row, ] * scaling_factors[row]
       }
       mc_mat[mc_mat > limits$upper] <- limits$upper[mc_mat > limits$upper]
 
-      csums <- colSums(mc_mat)
-      scaling_factors <- col_predictions / csums
-      scaling_factors[is.infinite(scaling_factors)] <- 1
-      scaling_factors[is.na(scaling_factors)] <- 1
+      scaling_factors <- calc_scaling_factors(colSums(mc_mat), col_predictions)
       for (col in colnames(mc_mat)[-1]) {
         mc_mat[, col] <- mc_mat[, col] * scaling_factors[col]
       }
@@ -251,6 +245,14 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions,
     mc_arr = mc_arr,
     metrics = metrics
   )
+}
+
+
+calc_scaling_factors <- function(actual, predicted) {
+  scaling_factors <- predicted / actual
+  scaling_factors[is.infinite(scaling_factors)] <- 1
+  scaling_factors[is.na(scaling_factors)] <- 1
+  scaling_factors
 }
 
 
