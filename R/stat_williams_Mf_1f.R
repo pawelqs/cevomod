@@ -70,7 +70,9 @@ plot_Mf_1f <- function(object, ...) {
 #' @describeIn Mf_1f Plot M(f) ~ 1/f
 #' @inherit plot.cevo_Mf_1f_tbl
 #' @export
-plot_Mf_1f <- function(object, bins = NULL, from = 0.1, to = 0.25, scale = TRUE, geom = "point", ...) {
+plot_Mf_1f.cevodata <- function(object,
+                                bins = NULL, from = 0.1, to = 0.25,
+                                scale = TRUE, geom = "point", ...) {
   object$models$Mf_1f |>
     left_join(object$metadata) |>
     plot(geom = geom, from = from, to = to, scale = scale, ...)
