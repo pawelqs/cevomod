@@ -36,6 +36,7 @@ Imports:
     dplyr,
     forcats,
     ggplot2,
+    graphics,
     mclust,
     paletteer,
     plyranges,

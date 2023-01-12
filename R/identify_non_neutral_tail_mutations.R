@@ -3,21 +3,22 @@
 #' @param object object
 #' @param ... other arguments
 #' @export
-get_selected_mutations <- function(object, ...) {
-  UseMethod("get_selected_mutations")
+identify_non_neutral_tail_mutations <- function(object, ...) {
+  UseMethod("identify_non_neutral_tail_mutations")
 }
 
 
-#' @rdname get_selected_mutations
+#' @rdname identify_non_neutral_tail_mutations
 #' @param sample1 sample1
 #' @param sample2 sample2
 #' @param method method
 #' @param verbose lgl
 #' @export
-get_selected_mutations.cevodata <- function(object,
-                                            sample1 = NULL, sample2 = NULL,
-                                            method = "basic",
-                                            verbose = TRUE, ...) {
+identify_non_neutral_tail_mutations.cevodata <- function(
+        object,
+        sample1 = NULL, sample2 = NULL,
+        method = "basic",
+        verbose = TRUE, ...) {
   if (!were_subclonal_models_fitted(object)) {
     stop("Fit subclonal models first!")
   }
@@ -27,7 +28,7 @@ get_selected_mutations.cevodata <- function(object,
     split_by("patient_id")
   splits <- splits |>
     map(
-      get_selected_mutations,
+      identify_non_neutral_tail_mutations,
       sample1 = sample1, sample2 = sample2,
       method = method, verbose = verbose
     )
@@ -39,53 +40,42 @@ get_selected_mutations.cevodata <- function(object,
 }
 
 
-#' @rdname get_selected_mutations
+#' @rdname identify_non_neutral_tail_mutations
 #' @export
-get_selected_mutations.singlepatient_cevodata <- function(object,
-                                                          sample1 = NULL,
-                                                          sample2 = NULL,
-                                                          method = "basic",
-                                                          verbose = TRUE, ...) {
+identify_non_neutral_tail_mutations.singlepatient_cevodata <- function(
+        object,
+        sample1 = NULL, sample2 = NULL,
+        method = "basic",
+        verbose = TRUE, ...) {
+  samples_data <- object$metadata |>
+    select("sample", "sample_id")
   patient_id <- unique(object$metadata$patient_id)
   msg("Processing patient ", patient_id, "\t", new_line = FALSE, verbose = verbose)
 
-  samples_data <- object$metadata |>
-    select(sample_id:sample)
-  rowsample <- if (is.null(sample1)) samples_data$sample[[1]]
-  colsample <- if (is.null(sample2)) samples_data$sample[[2]]
+  rowsample <- if (is.null(sample1)) samples_data$sample[[1]] else sample1
+  colsample <- if (is.null(sample2)) samples_data$sample[[2]] else sample2
+  sample_ids <- deframe(samples_data)[c(rowsample, colsample)]
+  names(sample_ids) <- c("rows", "cols")
 
   mutations_mat <- object |>
-    get_SNVs_2d_matrix(rows_sample = rowsample, cols_sample = colsample, bins = 100)
+    get_SNVs_2d_matrix(
+      rows_sample = rowsample, cols_sample = colsample,
+      verbose = verbose
+    )
+  zero_intervals <- c(rows = rownames(mutations_mat)[1], cols = colnames(mutations_mat)[1])
+  row_predictions <- object |>
+    get_binomial_model_predictions(
+      sample_id = sample_ids["rows"], zero_interval = zero_intervals["rows"]
+    )
+  col_predictions <- object |>
+    get_binomial_model_predictions(
+      sample_id = sample_ids["cols"], zero_interval = zero_intervals["cols"]
+    )
 
-  intervals <- tibble(
-    interval = rownames(mutations_mat),
-    centers = get_interval_centers(interval)
-  )
-
-  VAF_zero_pred <- tibble(
-    VAF = 0, binom_pred = 0,
-    sample = samples_data$sample
-  )
-  binom_predictions <- get_residuals(object) |>
-    select(sample_id, VAF, binom_pred) |>
-    left_join(samples_data, by = "sample_id") |>
-    select(-sample_id)
-  binom_predictions <- VAF_zero_pred |>
-    bind_rows(binom_predictions) |>
-    pivot_wider(names_from = "sample", values_from = "binom_pred") |>
-    select(all_of(c("VAF", rowsample, colsample))) |>
-    set_names(c("VAF", "rowsample", "colsample"))
-
-  predictions_by_interval <- binom_predictions |>
-    rebinarize_distribution(VAFs = intervals$centers) |>
-    bind_cols(intervals)
-  row_predictions <- deframe(predictions_by_interval[, c("interval", "rowsample")])
-  col_predictions <- deframe(predictions_by_interval[, c("interval", "colsample")])
-
-  join_models <- if (method == "basic") {
-    solve_basic
+  if (method == "basic") {
+    join_models <- solve_basic
   } else if (method == "MC") {
-    solve_MC
+    join_models <- solve_MC
   }
   joined_models <- join_models(
     mutations_mat,
@@ -106,10 +96,20 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
     fit_metrics = top_model_ev,
     mc_arr = joined_models$mc_arr,
     metrics = joined_models$metrics,
-    neu_mutations_mat = mutations_mat - joined_models$solution,
-    sel_probability_mat = joined_models$solution / mutations_mat
+    neutral_tail_mutations_mat = mutations_mat - joined_models$solution,
+    selection_probability_mat = joined_models$solution / mutations_mat
   )
   object
+}
+
+
+get_binomial_model_predictions <- function(object, sample_id, zero_interval = NULL) {
+  binom_predictions <- get_residuals(object) |>
+    filter(.data$sample_id == .env$sample_id) |>
+    select("VAF_interval", "binom_pred") |>
+    deframe()
+  zero_pred <- if (!is.null(zero_interval)) set_names(0, zero_interval) else NULL
+  c(zero_pred, binom_predictions)
 }
 
 
@@ -125,7 +125,11 @@ init_MC_simulation_limits <- function(mutations_mat, row_predictions, col_predic
       } else if (col == zero_interval) {
         upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1)
       } else {
-        upper_limits[row, col] <- min(mutations_mat[row, col], row_predictions[row] * 1.1, col_predictions[col] * 1.1)
+        upper_limits[row, col] <- min(
+          mutations_mat[row, col],
+          row_predictions[row] * 1.1,
+          col_predictions[col] * 1.1
+        )
       }
     }
   }
@@ -148,11 +152,11 @@ run_MC_simulation <- function(upper_limits, lower_limits = NULL, iters = 2000) {
       mc_arr[row, col, ] <- if (upper_limits[row, col] == 0) {
         0
       } else {
-        runif(
-        n = iters,
-        min = if (is.null(lower_limits)) 0 else lower_limits[row, col],
-        max = upper_limits[row, col]
-      )
+        stats::runif(
+          n = iters,
+          min = if (is.null(lower_limits)) 0 else lower_limits[row, col],
+          max = upper_limits[row, col]
+        )
       }
     }
   }
@@ -262,8 +266,8 @@ solve_MC <- function(mutations_mat, row_predictions, col_predictions, N = 5, ver
     # plot(metrics)
 
     top_models <- metrics |>
-      filter(percent_rank(MSE) < 0.01) |>
-      arrange(percent_rank(MSE))
+      filter(percent_rank(.data$MSE) < 0.01) |>
+      arrange(percent_rank(.data$MSE))
     # plot_predictions_vs_fits(row_predictions, ev_res$rsums[top_models$i, ])
     # plot_predictions_vs_fits(col_predictions, ev_res$csums[top_models$i, ])
 
@@ -302,10 +306,10 @@ tune_limits <- function(limits, mc_arr, metrics, row_predictions, col_prediction
         i = metrics$i,
         row_dist = (metrics$rsums[, row] - row_predictions[row])^2,
         col_dist = (metrics$csums[, col] - col_predictions[col])^2,
-        dist = row_dist + col_dist
+        dist = .data$row_dist + .data$col_dist
       )
       top_fits <- metrics2 |>
-        mutate(rank = percent_rank(dist)) |>
+        mutate(rank = percent_rank(.data$dist)) |>
         filter(rank < 0.01)
       top_fits_arr <- mc_arr[, , top_fits$i]
       max_val <- max(top_fits_arr[row, col, ])
@@ -420,7 +424,7 @@ print.non_neutral_2d_fit_eval <- function(x, ...) {
 
 #' @export
 plot.cevo_MC_solutions_eval <- function(x, ...) {
-  hist(x$MSE)
+  graphics::hist(x$MSE)
 }
 
 
@@ -429,21 +433,25 @@ plot.cevo_MC_solutions_eval <- function(x, ...) {
 plot_predictions_vs_fits <- function(predictions, fits) {
   plot(predictions)
   if (is.null(dim(fits))) {
-    points(fits[-1], col = "red")
+    graphics::points(fits[-1], col = "red")
   } else {
     for (i in 1:nrow(fits)) {
-      points(fits[i, -1], col = "red")
+      graphics::points(fits[i, -1], col = "red")
     }
   }
 }
 
-
+#' Plot heatmap of non neutral mutations
+#' @param object object
+#' @param ... other arguments
 #' @export
 plot_non_neutral_mutations_2D <- function(object, ...) {
   UseMethod("plot_non_neutral_mutations_2D")
 }
 
 
+#' @rdname plot_non_neutral_mutations_2D
+#' @param colors vector of three colors to use
 #' @export
 plot_non_neutral_mutations_2D.cevodata <- function(object,
                                                    colors = c("black", "white", "red"),
@@ -451,8 +459,9 @@ plot_non_neutral_mutations_2D.cevodata <- function(object,
   joined_models <- object[["joined_models"]]
   joined_models |>
     map(function(x) {
+      mat <- x$sel_mutations_mat
       plot_2d(
-        x$sel_mutations_mat,
+        mat,
         name = "N mutations",
         row_title = x$rowsample, column_title = x$colsample,
         col = circlize::colorRamp2(breaks = c(0, max(mat)/2, max(mat)), colors),

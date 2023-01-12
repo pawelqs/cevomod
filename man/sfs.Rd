@@ -4,31 +4,29 @@
 \alias{sfs}
 \alias{calc_SFS}
 \alias{calc_SFS.cevodata}
-\alias{calc_SFS.tbl_df}
+\alias{calc_SFS.cevo_snvs}
 \alias{plot_SFS}
 \alias{plot_SFS.cevodata}
 \title{Site Frequency Spectra}
 \usage{
 calc_SFS(object, ...)
 
-\method{calc_SFS}{cevodata}(object, digits = 2, ...)
+\method{calc_SFS}{cevodata}(object, bins = NULL, ...)
 
-\method{calc_SFS}{tbl_df}(object, digits = 2, ...)
+\method{calc_SFS}{cevo_snvs}(object, bins = NULL, ...)
 
 plot_SFS(object, ...)
 
-\method{plot_SFS}{cevodata}(object, ..., geom = "line", alpha = if (geom == "bar") 0.8 else 1)
+\method{plot_SFS}{cevodata}(object, ..., geom = "bar")
 }
 \arguments{
 \item{object}{SNVs tibble object}
 
 \item{...}{other arguments}
 
-\item{digits}{resolution of the cumulative tails calculation}
+\item{bins}{resolution of the cumulative tails calculation}
 
 \item{geom}{geom}
-
-\item{alpha}{alpha}
 }
 \description{
 Creates  cevodata$models$SFS with the groupping variables and:
@@ -40,24 +38,22 @@ Creates  cevodata$models$SFS with the groupping variables and:
 }
 \section{Functions}{
 \itemize{
+\item \code{calc_SFS()}: Calculate SFS
+
 \item \code{calc_SFS(cevodata)}: Calculate SFS
 
-\item \code{calc_SFS(tbl_df)}: Calculate SFS
+\item \code{calc_SFS(cevo_snvs)}: Calculate SFS
+
+\item \code{plot_SFS()}: Plot SFS
 
 \item \code{plot_SFS(cevodata)}: Plot SFS
 
 }}
 \examples{
 data("tcga_brca_test")
-tcga_brca_test |>
-  calc_SFS()
 
 tcga_brca_test |>
-  plot_SFS() +
-  layer_mutations(drivers = "BRCA")
-
-SNVs(tcga_brca_test) |>
-  dplyr::group_by(sample_id) |>
   calc_SFS() |>
-  plot()
+  plot_SFS() +
+  layer_mutations(tcga_brca_test, drivers = "BRCA")
 }

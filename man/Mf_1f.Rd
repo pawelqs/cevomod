@@ -4,29 +4,22 @@
 \alias{Mf_1f}
 \alias{calc_Mf_1f}
 \alias{calc_Mf_1f.cevodata}
-\alias{calc_Mf_1f.tbl_df}
+\alias{calc_Mf_1f.cevo_snvs}
 \alias{plot_Mf_1f}
+\alias{plot_Mf_1f.cevodata}
 \title{William's M(f) ~ 1/f statistics}
 \usage{
 calc_Mf_1f(object, ...)
 
-\method{calc_Mf_1f}{cevodata}(object, digits = 2, ...)
+\method{calc_Mf_1f}{cevodata}(object, bins = 100, ...)
 
-\method{calc_Mf_1f}{tbl_df}(object, digits = 2, ...)
+\method{calc_Mf_1f}{cevo_snvs}(object, bins = NULL, ...)
 
-plot_Mf_1f(
+plot_Mf_1f(object, ...)
+
+\method{plot_Mf_1f}{cevodata}(
   object,
-  digits = 2,
-  from = 0.1,
-  to = 0.25,
-  scale = TRUE,
-  geom = "point",
-  ...
-)
-
-plot_Mf_1f(
-  object,
-  digits = 2,
+  bins = NULL,
   from = 0.1,
   to = 0.25,
   scale = TRUE,
@@ -39,7 +32,7 @@ plot_Mf_1f(
 
 \item{...}{other arguments}
 
-\item{digits}{resolution of the cumulative tails calculation}
+\item{bins}{resolution of the cumulative tails calculation}
 
 \item{from}{min VAF to plot}
 
@@ -62,11 +55,13 @@ Creates  cevodata$models$Mf_1f tbl with the groupping variables and:
 }
 \section{Functions}{
 \itemize{
+\item \code{calc_Mf_1f()}: Calculate Williams M(f) ~ 1/f
+
 \item \code{calc_Mf_1f(cevodata)}: Calculate Williams M(f) ~ 1/f
 
-\item \code{calc_Mf_1f(tbl_df)}: Calculate Williams M(f) ~ 1/f
+\item \code{calc_Mf_1f(cevo_snvs)}: Calculate Williams M(f) ~ 1/f
 
-\item \code{plot_Mf_1f()}: Plot M(f) ~ 1/f
+\item \code{plot_Mf_1f(cevodata)}: Plot M(f) ~ 1/f
 
 }}
 \examples{

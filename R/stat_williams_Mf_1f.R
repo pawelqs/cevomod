@@ -7,7 +7,7 @@
 #'   - `M(f)` and `1/f` columns to plot William's statistics
 #'
 #' @param object SNVs tibble object
-#' @param digits resolution of the cumulative tails calculation
+#' @param bins resolution of the cumulative tails calculation
 #' @param ... other arguments
 #' @examples
 #' data("tcga_brca_test")
@@ -17,22 +17,21 @@
 #' tcga_brca_test |>
 #'   plot_Mf_1f()
 #' @name Mf_1f
+NULL
 
 
-#' @rdname Mf_1f
+#' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
 #' @export
 calc_Mf_1f <- function(object, ...) {
   UseMethod("calc_Mf_1f")
 }
 
+
 #' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
 #' @export
-calc_Mf_1f.cevodata <- function(object, digits = 2, ...) {
+calc_Mf_1f.cevodata <- function(object, bins = 100, ...) {
   Mf_1f <- SNVs(object) |>
-    group_by(.data$sample_id) |>
-    calc_Mf_1f() |>
-    ungroup()
-  class(Mf_1f) <- c("cevo_Mf_1f_tbl", class(Mf_1f))
+    calc_Mf_1f(bins = bins)
   object$models[["Mf_1f"]] <- Mf_1f
   object
 }
@@ -40,17 +39,21 @@ calc_Mf_1f.cevodata <- function(object, digits = 2, ...) {
 
 #' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
 #' @export
-calc_Mf_1f.tbl_df <- function(object, digits = 2, ...) {
-  res <- object %>%
-    mutate(VAF = round(.data$VAF, digits = digits)) %>%
-    group_by(.data$VAF, .add = TRUE) %>%
-    summarise(n = n(), .groups = "drop_last") %>%
-    complete_missing_VAF_levels(fill = list(n = 0)) %>%
+calc_Mf_1f.cevo_snvs <- function(object, bins = 100, ...) {
+  snvs <- cut_VAF_intervals(object, bins = bins)
+  intervals <- attributes(snvs)$intervals
+  res <- snvs |>
+    group_by(.data$sample_id, .data$VAF_interval) %>%
+    summarise(n = n(), .groups = "drop_last") |>
+    complete_missing_VAF_intervals(intervals) |>
+    replace_na(list(n = 0)) |>
+    mutate(VAF = get_interval_centers(.data$VAF_interval), .after = "VAF_interval") |>
     arrange(desc(.data$VAF), .by_group = TRUE) %>%
     mutate(
       `M(f)` = cumsum(n),
       `1/f` = round(1/.data$VAF, digits = 4)
-    )
+    ) |>
+    ungroup()
   class(res) <- c("cevo_Mf_1f_tbl", class(res))
   res
 }
@@ -61,6 +64,19 @@ calc_Mf_1f.tbl_df <- function(object, digits = 2, ...) {
 plot_Mf_1f <- function(object, ...) {
   UseMethod("plot_Mf_1f")
 }
+
+
+#' @describeIn Mf_1f Plot M(f) ~ 1/f
+#' @inherit plot.cevo_Mf_1f_tbl
+#' @export
+plot_Mf_1f.cevodata <- function(object,
+                                bins = NULL, from = 0.1, to = 0.25,
+                                scale = TRUE, geom = "point", ...) {
+  object$models$Mf_1f |>
+    left_join(object$metadata, by = "sample_id") |>
+    plot(geom = geom, from = from, to = to, scale = scale, ...)
+}
+
 
 #' Plot M(f) ~ 1/f
 #'
@@ -78,16 +94,15 @@ plot_Mf_1f <- function(object, ...) {
 #' @examples
 #' data("tcga_brca_test")
 #'
-#' SNVs(tcga_brca_test) |>
-#'   dplyr::group_by(sample_id) |>
+#' tcga_brca_test |>
 #'   calc_Mf_1f() |>
-#'   plot()
-#'
-#' plot_Mf_1f(tcga_brca_test)
+#'   plot_Mf_1f()
 plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,
                                 geom = "point", mapping = NULL, ...) {
 
-  x <- filter(x, .data$VAF >= from, .data$VAF <= to)
+  x <- x |>
+    filter(.data$VAF >= from, .data$VAF <= to) |>
+    group_by(.data$sample_id)
   if (scale) {
     x <- x %>%
       mutate(
@@ -117,16 +132,3 @@ plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,
     labs(title = "M(f) ~ 1/f")
 }
 
-
-#' @describeIn Mf_1f Plot M(f) ~ 1/f
-#' @inherit plot.cevo_Mf_1f_tbl
-#' @export
-plot_Mf_1f <- function(object, digits = 2, from = 0.1, to = 0.25, scale = TRUE, geom = "point", ...) {
-  Mf_1f <- SNVs(object) |>
-    group_by(.data$sample_id) |>
-    calc_Mf_1f(digits) |>
-    left_join(object$metadata, by = "sample_id") |>
-    group_by(.data$patient_id, .data$sample_id, .data$sample)
-  class(Mf_1f) <- c("cevo_Mf_1f_tbl", class(Mf_1f))
-  plot(Mf_1f, geom = geom, from = from, to = to, scale = scale, ...)
-}

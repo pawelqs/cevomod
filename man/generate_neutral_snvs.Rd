@@ -4,7 +4,12 @@
 \alias{generate_neutral_snvs}
 \title{Generate neutral SNVs}
 \usage{
-generate_neutral_snvs(mut_rate = 2, sample_below = 0.15, resolution = 0.01)
+generate_neutral_snvs(
+  mut_rate = 2,
+  sample_below = 0.15,
+  resolution = 0.01,
+  DP = 100
+)
 }
 \arguments{
 \item{mut_rate}{a in f(x) = a/x^2 formula}
@@ -12,6 +17,8 @@ generate_neutral_snvs(mut_rate = 2, sample_below = 0.15, resolution = 0.01)
 \item{sample_below}{mutations below this value will be sampled}
 
 \item{resolution}{resolution}
+
+\item{DP}{sequncing depth}
 }
 \value{
 SNVs tibble

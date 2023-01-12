@@ -35,20 +35,11 @@ tcga_brca_test %>%
 # SFS with mut annotation
 
 ```{r, fig.width=7, fig.height=4}
-tcga_brca_test %>%
-  plot_SFS() +
-  layer_mutations(drivers = "BRCA", shape = "variant_classification")
+plot_SFS(tcga_brca_test, geom = "line") +
+  layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "variant_classification")
 
-tcga_brca_test %>%
-  plot_SFS() +
-  layer_mutations(drivers = "BRCA", shape = "impact")
-  
-SNVs(tcga_brca_test) %>%
-  ggplot(aes(VAF, fill = sample_id, color = sample_id)) +
-  stat_SFS(geom = "bar") +
-  layer_mutations(drivers = "BRCA", color = "black", shape = "impact") +
-  facet_wrap(~sample_id, scales = "free_y") +
-  theme_ellie(n = n_distinct(SNVs(tcga_brca_test)$sample_id))
+plot_SFS(tcga_brca_test) +
+  layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "impact")
 ```
 
 # SNVs plots
@@ -114,7 +105,7 @@ cd <- tcga_brca_test |>
 
 
 ```{r}
-plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
+plot(cd$models$Mf_1f, from = 0.05, to = 0.3, scale = FALSE) +
   layer_lm_fits(cd) +
   scale_color_pnw()
 ```

@@ -45,10 +45,11 @@ plot_models.cevodata <- function(object,
     if (neutral_tail && neutral_lm_fitted) {
       geom_area(
         aes(.data$VAF, .data$neutral_pred),
-        data = resid, # |> filter(.data$neutral_pred < .data$ylim),
+        data = resid, # |> filter(.data$VAF >= 0),
         fill = "white", color = "gray90",
         alpha = 0.3,
-        size = 0.5, show.legend = FALSE
+        size = 0.5, show.legend = FALSE,
+        stat = "identity"
       )
     },
     # if (neutral_tail && neutral_lm_fitted) {

@@ -1,7 +1,18 @@
 
-get_sequencing_depths <- function(object, ...) {
-  snvs <- SNVs(object)
+get_sample_sequencing_depths <- function(snvs, ...) {
+  sequencing_depths <- snvs |>
+    group_by(.data$sample_id) |>
+    summarise(
+      mean_DP = mean(.data$DP, na.rm = TRUE),
+      median_DP = stats::median(.data$DP, na.rm = TRUE),
+      sd_DP = sd(.data$DP, na.rm = TRUE),
+      .groups = "drop"
+    )
+  sequencing_depths
+}
 
+
+get_local_sequencing_depths <- function(snvs, ...) {
   sequencing_depths <- snvs |>
     mutate(VAF = round(.data$VAF, digits = 2)) |>
     group_by(.data$sample_id, .data$VAF) |>

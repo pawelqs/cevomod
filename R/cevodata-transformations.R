@@ -24,7 +24,7 @@ filter.cevodata <- function(.data, ..., .preserve = FALSE) {
   new_object$residuals <- map(new_object$residuals, ~filter(.x, sample_id %in% ids))
   new_object$joined_models <- filter_joined_models(new_object$joined_models, ...)
 
-  if (count_patients(new_object) == 1) {
+  if (is_cevodata_singlepatient(new_object)) {
     class(new_object) <- c("singlepatient_cevodata", class(new_object))
   }
   new_object
@@ -45,9 +45,9 @@ filter_joined_models <- function(joined_models, ...) {
 
   kept_patients <- samples |>
     left_join(samples_kept, by = c("patient_id", "sample")) |>
-    group_by(patient_id) |>
-    filter(all(sample_kept)) |>
-    pull(patient_id) |>
+    group_by(.data$patient_id) |>
+    filter(all(.data$sample_kept)) |>
+    pull("patient_id") |>
     unique()
 
   joined_models[kept_patients]

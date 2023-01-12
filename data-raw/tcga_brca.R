@@ -27,14 +27,14 @@ snvs_tcga_brca <- mutations %>%
     ref_counts_normal = n_ref_count,
     alt_counts_normal = n_alt_count,
     variant_class = VARIANT_CLASS,
-    variant_type =  Variant_Type,
+    variant_type = Variant_Type,
     Variant_Classification,
     variant_classification,
     impact = IMPACT,
     consequence = Consequence,
     NCBI_Build
   )
-class(snvs_tcga_brca) <- c("cevo_SNVs_tbl", class(snvs_tcga_brca))
+class(snvs_tcga_brca) <- c("cevo_snvs", class(snvs_tcga_brca))
 
 # usethis::use_data(snvs_tcga_brca, overwrite = TRUE)
 
@@ -47,7 +47,7 @@ top_mutated_patients <- snvs_tcga_brca %>%
 
 snvs_test <- snvs_tcga_brca %>%
   filter(sample_id %in% top_mutated_patients)
-class(snvs_tcga_brca) <- c("cevo_SNVs_tbl", class(snvs_test))
+class(snvs_tcga_brca) <- c("cevo_snvs", class(snvs_test))
 
 
 cna_hg19 <- read_tsv("/mnt/dane/data/brca_tcga_pan_can_atlas_2018/data_cna_hg19.seg")
