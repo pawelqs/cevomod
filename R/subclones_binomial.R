@@ -14,7 +14,7 @@ fit_subclones <- function(object, ...) {
 #' @export
 fit_subclones.cevodata <- function(object, N = 1:3, ...) {
   residuals <- get_residuals(object, model = "neutral_models") |>
-    filter(VAF >= 0 )
+    filter(.data$VAF >= 0 )
 
   sequencing_depths <- SNVs(object) |>
     get_local_sequencing_depths() |>
@@ -35,8 +35,8 @@ fit_subclones.cevodata <- function(object, N = 1:3, ...) {
     nest_by(.data$sample_id, .key = "clones")
 
   clonal_predictions <- residuals |>
-    select(sample_id, VAF_interval, VAF) |>
-    nest_by(sample_id, .key = "VAFs") |>
+    select("sample_id", "VAF_interval", "VAF") |>
+    nest_by(.data$sample_id, .key = "VAFs") |>
     left_join(best_models, by = "sample_id") |>
     summarise(get_binomial_predictions(.data$clones, .data$VAFs), .groups = "drop") |>
     select(-"VAF")

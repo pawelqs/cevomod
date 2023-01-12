@@ -50,7 +50,7 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
   msg("Processing patient ", patient_id, "\t", new_line = FALSE, verbose = verbose)
 
   samples_data <- object$metadata |>
-    select(sample_id:sample)
+    select("sample_id", "sample")
   rowsample <- if (is.null(sample1)) samples_data$sample[[1]]
   colsample <- if (is.null(sample2)) samples_data$sample[[2]]
 
@@ -59,7 +59,7 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
 
   intervals <- tibble(
     interval = rownames(mutations_mat),
-    centers = get_interval_centers(interval)
+    centers = get_interval_centers(.data$interval)
   )
 
   VAF_zero_pred <- tibble(
@@ -67,9 +67,9 @@ get_selected_mutations.singlepatient_cevodata <- function(object,
     sample = samples_data$sample
   )
   binom_predictions <- get_residuals(object) |>
-    select(sample_id, VAF, binom_pred) |>
+    select("sample_id", "VAF", "binom_pred") |>
     left_join(samples_data, by = "sample_id") |>
-    select(-sample_id)
+    select(-"sample_id")
   binom_predictions <- VAF_zero_pred |>
     bind_rows(binom_predictions) |>
     pivot_wider(names_from = "sample", values_from = "binom_pred") |>
@@ -148,11 +148,11 @@ run_MC_simulation <- function(upper_limits, lower_limits = NULL, iters = 2000) {
       mc_arr[row, col, ] <- if (upper_limits[row, col] == 0) {
         0
       } else {
-        runif(
-        n = iters,
-        min = if (is.null(lower_limits)) 0 else lower_limits[row, col],
-        max = upper_limits[row, col]
-      )
+        stats::runif(
+          n = iters,
+          min = if (is.null(lower_limits)) 0 else lower_limits[row, col],
+          max = upper_limits[row, col]
+        )
       }
     }
   }
@@ -262,8 +262,8 @@ solve_MC <- function(mutations_mat, row_predictions, col_predictions, N = 5, ver
     # plot(metrics)
 
     top_models <- metrics |>
-      filter(percent_rank(MSE) < 0.01) |>
-      arrange(percent_rank(MSE))
+      filter(percent_rank(.data$MSE) < 0.01) |>
+      arrange(percent_rank(.data$MSE))
     # plot_predictions_vs_fits(row_predictions, ev_res$rsums[top_models$i, ])
     # plot_predictions_vs_fits(col_predictions, ev_res$csums[top_models$i, ])
 
@@ -302,10 +302,10 @@ tune_limits <- function(limits, mc_arr, metrics, row_predictions, col_prediction
         i = metrics$i,
         row_dist = (metrics$rsums[, row] - row_predictions[row])^2,
         col_dist = (metrics$csums[, col] - col_predictions[col])^2,
-        dist = row_dist + col_dist
+        dist = .data$row_dist + .data$col_dist
       )
       top_fits <- metrics2 |>
-        mutate(rank = percent_rank(dist)) |>
+        mutate(rank = percent_rank(.data$dist)) |>
         filter(rank < 0.01)
       top_fits_arr <- mc_arr[, , top_fits$i]
       max_val <- max(top_fits_arr[row, col, ])
@@ -420,7 +420,7 @@ print.non_neutral_2d_fit_eval <- function(x, ...) {
 
 #' @export
 plot.cevo_MC_solutions_eval <- function(x, ...) {
-  hist(x$MSE)
+  graphics::hist(x$MSE)
 }
 
 
@@ -429,10 +429,10 @@ plot.cevo_MC_solutions_eval <- function(x, ...) {
 plot_predictions_vs_fits <- function(predictions, fits) {
   plot(predictions)
   if (is.null(dim(fits))) {
-    points(fits[-1], col = "red")
+    graphics::points(fits[-1], col = "red")
   } else {
     for (i in 1:nrow(fits)) {
-      points(fits[i, -1], col = "red")
+      graphics::points(fits[i, -1], col = "red")
     }
   }
 }
@@ -455,8 +455,9 @@ plot_non_neutral_mutations_2D.cevodata <- function(object,
   joined_models <- object[["joined_models"]]
   joined_models |>
     map(function(x) {
+      mat <- x$sel_mutations_mat
       plot_2d(
-        x$sel_mutations_mat,
+        mat,
         name = "N mutations",
         row_title = x$rowsample, column_title = x$colsample,
         col = circlize::colorRamp2(breaks = c(0, max(mat)/2, max(mat)), colors),
