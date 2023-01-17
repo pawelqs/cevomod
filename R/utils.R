@@ -106,3 +106,9 @@ shuffle <- function(object, ...) {
 shuffle.tbl_df <- function(object, ...)  {
   object[sample(1:nrow(object)), ]
 }
+
+
+fill_na <- function(object, val) {
+  object[is.na(object)] <- val
+  object
+}
