@@ -6,6 +6,7 @@
 # Fix the path below
 
 library(tidyverse)
+set.seed(1234)
 
 mutations <- read_tsv("/mnt/dane/data/brca_tcga_pan_can_atlas_2018/data_mutations.txt")
 glimpse(mutations)

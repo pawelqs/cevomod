@@ -22,7 +22,7 @@ identify_non_neutral_tail_mutations.cevodata <- function(
   if (!were_subclonal_models_fitted(object)) {
     stop("Fit subclonal models first!")
   }
-  object[["joined_models"]] <- NULL
+  object$misc_by_patient[["joined_models"]] <- NULL
 
   splits <- object |>
     split_by("patient_id")
@@ -32,9 +32,14 @@ identify_non_neutral_tail_mutations.cevodata <- function(
       sample1 = sample1, sample2 = sample2,
       method = method, verbose = verbose
     )
-  object[["joined_models"]] <- splits |>
+  object$misc_by_patient[["joined_models"]] <- splits |>
+    map("misc_by_patient") |>
     map("joined_models") |>
     reduce(c)
+  object$misc[["selection_probabilities"]] <- splits |>
+    map("models") |>
+    map("selection_probabilities") |>
+    bind_rows()
 
   object
 }
@@ -86,7 +91,8 @@ identify_non_neutral_tail_mutations.singlepatient_cevodata <- function(
   )
   top_model_ev <- evaluate_MC_runs(joined_models$solution, row_predictions, col_predictions)
 
-  object[["joined_models"]][[patient_id]] <- list(
+  object$misc_by_patient[["joined_models"]] <- list()
+  object$misc_by_patient[["joined_models"]][[patient_id]] <- list(
     rowsample = rowsample,
     colsample = colsample,
     row_predictions = row_predictions,
@@ -466,7 +472,7 @@ get_selection_probability_tbl <- function(object) {
 
 
 get_two_sample_selection_probability <- function(object) {
-  selection_prob_tbl <- object$joined_models |>
+  selection_prob_tbl <- object$misc_by_patient$joined_models |>
     map("selection_probability_mat") |>
     map(selection_prob_mat_to_long_tiblle) |>
     bind_rows(.id = "patient_id")
