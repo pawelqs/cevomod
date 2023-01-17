@@ -106,7 +106,7 @@ identify_non_neutral_tail_mutations.singlepatient_cevodata <- function(
 
 
 get_binomial_model_predictions <- function(object, sample_id, zero_interval = NULL) {
-  binom_predictions <- get_residuals(object) |>
+  binom_predictions <- get_residuals(object, model = "binomial_models") |>
     filter(.data$sample_id == .env$sample_id) |>
     select("VAF_interval", "binom_pred") |>
     deframe()
