@@ -29,13 +29,15 @@ get_SNVs_2d_matrix <- function(object,
     cols_sample <- patients_to_samples$sample[[2]]
     msg("Using '", rows_sample, "' as rows and '", cols_sample, "' as cols", verbose = verbose)
   }
+  if (n_distinct(patients_to_samples$patient_id) > 1) {
+    stop("This function works only for single sample objects")
+  }
   if (rows_sample %not in% patients_to_samples$sample) {
     stop("Sample requested for rows is not present for this patient")
   }
   if (cols_sample %not in% patients_to_samples$sample) {
     stop("Sample requested for cols is not present for this patient")
   }
-
 
   breaks <- object |>
     SNVs() |>
@@ -76,5 +78,29 @@ get_SNVs_2d_matrix <- function(object,
 
   attr(mat, "rows_sample") <- rows_sample
   attr(mat, "cols_sample") <- cols_sample
+  attr(mat, "rows_sample_id") <- sample_ids[[rows_sample]]
+  attr(mat, "cols_sample_id") <- sample_ids[[cols_sample]]
   mat
+}
+
+
+get_SNVs_wider_intervals <- function(object, fill_na = NULL) {
+  metadata <- object$metadata
+  if (n_distinct(metadata$patient_id) > 1) {
+    stop("This function works only for single sample objects")
+  }
+
+  breaks <- object |>
+    SNVs() |>
+    get_interval_breaks(bins = bins)
+  breaks <- breaks[metadata$sample_id]
+  names(breaks) <- metadata$sample
+
+  mutations <-get_SNVs_wider(object, fill_na = 0)
+  for (sample in metadata$sample) {
+    mutations[[sample]] <- cut(mutations[[sample]], breaks = breaks[[sample]]) |>
+      as.character()
+  }
+
+  mutations
 }
