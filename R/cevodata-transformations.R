@@ -17,12 +17,14 @@ filter.cevodata <- function(.data, ..., .preserve = FALSE) {
   new_object <- .data
   new_object$metadata <- filter(new_object$metadata, ...)
   ids <- new_object$metadata$sample_id
-  new_object$SNVs <- map(new_object$SNVs, ~filter(.x, sample_id %in% ids))
-  new_object$CNVs <- map(new_object$CNVs, ~filter(.x, sample_id %in% ids))
-  new_object$clones <- map(new_object$clones, ~filter(.x, sample_id %in% ids))
+  patient_ids <- unique(new_object$metadata[["patient_id"]])
+
+  new_object$SNVs   <- map(new_object$SNVs,   ~filter(.x, sample_id %in% ids))
+  new_object$CNVs   <- map(new_object$CNVs,   ~filter(.x, sample_id %in% ids))
   new_object$models <- map(new_object$models, ~filter(.x, sample_id %in% ids))
-  new_object$residuals <- map(new_object$residuals, ~filter(.x, sample_id %in% ids))
-  new_object$joined_models <- filter_joined_models(new_object$joined_models, ...)
+  new_object$misc   <- map(new_object$misc,   ~filter(.x, sample_id %in% ids))
+  new_object$misc_by_sample  <- map(new_object$misc_by_sample,  ~.x[ids])
+  new_object$misc_by_patient <- map(new_object$misc_by_patient, ~.x[patient_ids])
 
   if (is_cevodata_singlepatient(new_object)) {
     class(new_object) <- c("singlepatient_cevodata", class(new_object))
@@ -67,23 +69,20 @@ merge.cevodata <- function(x, y, name = "Merged datasets", verbose = TRUE, ...) 
 
   cd$SNVs <- bind_assays(x, y, "SNVs")
   cd$CNVs <- bind_assays(x, y, "CNVs")
-  cd$clones <- bind_assays(x, y, "clones")
   cd$models <- bind_assays(x, y, "models")
-  cd$residuals <- bind_assays(x, y, "residuals")
-  # TODO merge joined_models slot
+  cd$misc <- bind_assays(x, y, "misc")
+  cd$misc_by_sample <- map2(x$misc_by_sample, y$misc_by_sample, ~union(.x, .y))
+  cd$misc_by_patient <- map2(x$misc_by_patient, y$misc_by_patient, ~union(.x, .y))
 
   if (verbose) {
     message("Setting active SNVs to ", x$active_SNV)
     message("Setting active CNVs to ", x$active_CNV)
-    message("Setting active clones to ", x$active_clones)
   }
   cd$active_SNVs <- NULL
   cd$active_CNVs <- NULL
-  cd$active_clones <- NULL
   active_assays <- list(
     active_SNVs = x$active_SNVs,
-    active_CNVs = x$active_CNVs,
-    active_clones = x$active_clones
+    active_CNVs = x$active_CNVs
   )
   cd <- c(cd, active_assays)
   structure(cd, class = "cevodata")

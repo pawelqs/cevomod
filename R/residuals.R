@@ -1,6 +1,7 @@
 
 get_residuals <- function(cd, model = cd$active_model) {
-  cd$residuals[[model]]
+  slot_name <- paste0("residuals_", model)
+  cd$misc[[slot_name]]
 }
 
 
@@ -12,6 +13,7 @@ get_residuals <- function(cd, model = cd$active_model) {
 #' @param fit_clones plot clonal fits?
 #' @param ... other parameters
 #' @name plot_residuals
+NULL
 
 
 #' @rdname plot_residuals

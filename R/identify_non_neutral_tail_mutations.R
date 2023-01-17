@@ -491,7 +491,7 @@ selection_prob_mat_to_long_tiblle <- function(selection_probability_mat)  {
 
 
 get_single_sample_selection_probability <- function(object) {
-  binom_res <- object$residuals$binomial_models |>
+  binom_res <- get_residuals(object, model = "binomial_models") |>
     select("sample_id", "VAF_interval", "SFS", "binom_pred")
   metadata <- object$metadata[c("patient_id", "sample_id", "sample")]
 

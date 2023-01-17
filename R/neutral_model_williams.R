@@ -56,7 +56,7 @@ fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, verbose = T
   class(models) <- c("cevo_lm_models_tbl", class(models))
 
   object$models[["neutral_models"]] <- models
-  object$residuals[["neutral_models"]] <- calc_residuals(object)
+  object$misc[["residuals_neutral_models"]] <- calc_residuals(object)
   object$active_models <- "neutral_models"
   object
 }
