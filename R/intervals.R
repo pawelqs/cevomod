@@ -24,6 +24,8 @@ cut_VAF_intervals.cevo_snvs <- function(object, bins = NULL, ...) {
     deframe() |>
     map("VAF_interval") |>
     map(levels)
+  res$data <- res$data |>
+    map(~mutate(.x, VAF_interval = as.character(.data$VAF_interval)))
   res <- res |>
     select("sample_id", "data") |>
     unnest("data")
@@ -41,7 +43,7 @@ cut_VAF <- function(tbl, breaks) {
 }
 
 
-get_interval_breaks <- function(object, bins = NULL) {
+get_interval_breaks <- function(object, bins = NULL, sample_id = NULL) {
   if (is.null(bins)) {
     bins_by_sample <- get_sample_sequencing_depths(object) |>
       transmute(.data$sample_id, bins = round(.data$median_DP))
@@ -54,7 +56,12 @@ get_interval_breaks <- function(object, bins = NULL) {
   breaks <- bins_by_sample |>
     deframe() |>
     map(~c(-1/.x, seq(0, 1, length.out = .x + 1)))
-  breaks
+
+  if (is.null(sample_id)) {
+    breaks
+  } else {
+    breaks[[sample_id]]
+  }
 }
 
 
