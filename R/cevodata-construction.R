@@ -7,12 +7,12 @@ new_cevodata <- function(name, genome, cancer) {
     metadata = NULL,
     SNVs = list(),
     CNVs = list(),
-    clones = list(),
     models = list(),
-    residuals = list(),
+    misc = list(),
+    misc_by_patient = list(),
+    misc_by_sample = list(),
     active_SNVs = "",
     active_CNVs = "",
-    active_clones = "",
     active_models = ""
   )
   structure(cd, class = "cevodata")

@@ -57,7 +57,7 @@ fit_subclones.cevodata <- function(object, N = 1:3, verbose = TRUE, ...) {
     arrange(.data$sample_id, .data$best, .data$model)
 
   object$models[["binomial_models"]] <- models
-  object$residuals[["binomial_models"]] <- residuals
+  object$misc[["residuals_binomial_models"]] <- residuals
   # object$SNVs[[default_SNVs(object)]] <- classify_SNVs(SNVs(object), residuals)
   object$active_models <- "binomial_models"
   object
