@@ -97,7 +97,7 @@ identify_non_neutral_tail_mutations.singlepatient_cevodata <- function(
     mc_arr = joined_models$mc_arr,
     metrics = joined_models$metrics,
     neutral_tail_mutations_mat = mutations_mat - joined_models$solution,
-    selection_probability_mat = joined_models$solution / mutations_mat
+    selection_probability_mat = fill_na(joined_models$solution / mutations_mat, 0)
   )
   object
 }
@@ -277,7 +277,7 @@ calc_scaling_factors <- function(actual, predicted) {
 }
 
 
-# ------------------------- method: MC ---------------------------------------
+# ---------------------------- method: MC -------------------------------------
 
 solve_MC <- function(mutations_mat, row_predictions, col_predictions, N = 5, verbose = TRUE) {
   limits <- init_MC_simulation_limits(mutations_mat, row_predictions, col_predictions)
