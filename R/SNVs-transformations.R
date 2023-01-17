@@ -102,10 +102,13 @@ get_SNVs_wider_intervals <- function(object, fill_na = NULL) {
   names(breaks) <- metadata$sample
 
   mutations <-get_SNVs_wider(object, fill_na = 0)
+  sample_intervals <- list()
   for (sample in metadata$sample) {
-    mutations[[sample]] <- cut(mutations[[sample]], breaks = breaks[[sample]]) |>
-      as.character()
+    VAF_intervals <- cut(mutations[[sample]], breaks = breaks[[sample]])
+    sample_intervals[[sample]] <- levels(VAF_intervals)
+    mutations[[sample]] <- as.character(VAF_intervals)
   }
 
+  attr(mutations, "sample_intervals") <- sample_intervals
   mutations
 }
