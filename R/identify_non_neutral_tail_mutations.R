@@ -99,6 +99,8 @@ identify_non_neutral_tail_mutations.singlepatient_cevodata <- function(
     neutral_tail_mutations_mat = mutations_mat - joined_models$solution,
     selection_probability_mat = fill_na(joined_models$solution / mutations_mat, 0)
   )
+
+  object[["models"]][["selection_probabilities"]] <- get_selection_probability_tbl(object)
   object
 }
 
@@ -448,6 +450,68 @@ print.non_neutral_2d_fit_eval <- function(x, ...) {
 #' @export
 plot.cevo_MC_solutions_eval <- function(x, ...) {
   graphics::hist(x$MSE)
+}
+
+
+# ----------------------- Get selection probabilities ------------------------
+
+
+get_selection_probability_tbl <- function(object) {
+  two_sample_probs <- get_single_sample_selection_probability(object)
+  single_sample_probs <- get_two_sample_selection_probability(object)
+  res <- two_sample_probs |>
+    left_join(single_sample_probs, by = c("patient_id", "mutation_id"))
+  res
+}
+
+
+get_two_sample_selection_probability <- function(object) {
+  selection_prob_tbl <- object$joined_models |>
+    map("selection_probability_mat") |>
+    map(selection_prob_mat_to_long_tiblle) |>
+    bind_rows(.id = "patient_id")
+  samples <- colnames(selection_prob_tbl)[2:3]
+  mutations <- get_SNVs_wider_intervals(object)
+
+  res <- mutations |>
+    left_join(selection_prob_tbl, by = c("patient_id", samples)) |>
+    select("patient_id", "mutation_id", "2sample_selection_prob")
+  res
+}
+
+
+selection_prob_mat_to_long_tiblle <- function(selection_probability_mat)  {
+  rows_sample <- attributes(selection_probability_mat)$rows_sample
+  cols_sample <- attributes(selection_probability_mat)$cols_sample
+  selection_probability_mat |>
+    as.data.frame() |>
+    rownames_to_column(rows_sample) |>
+    pivot_longer(-rows_sample, names_to = cols_sample, values_to = "2sample_selection_prob")
+}
+
+
+get_single_sample_selection_probability <- function(object) {
+  binom_res <- object$residuals$binomial_models |>
+    select("sample_id", "VAF_interval", "SFS", "binom_pred")
+  metadata <- object$metadata[c("patient_id", "sample_id", "sample")]
+
+  selection_prob_tbl <- metadata |>
+    left_join(binom_res, by = "sample_id") |>
+    transmute(
+      .data$patient_id,
+      .data$sample,
+      .data$VAF_interval,
+      `1sample_selection_prob` = binom_pred / SFS
+    )
+
+  SNVs(object) |>
+    cut_VAF_intervals() |>
+    unite_mutation_id() |>
+    left_join(metadata, by = "sample_id") |>
+    select("patient_id", "sample", "mutation_id", "VAF_interval") |>
+    left_join(selection_prob_tbl, by = c("patient_id", "sample", "VAF_interval")) |>
+    pivot_wider(names_from = "sample", values_from = "1sample_selection_prob") |>
+    select("patient_id", "mutation_id", all_of(metadata$sample))
 }
 
 
