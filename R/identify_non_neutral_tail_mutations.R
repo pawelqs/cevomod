@@ -23,6 +23,7 @@ identify_non_neutral_tail_mutations.cevodata <- function(
     stop("Fit subclonal models first!")
   }
   object$misc_by_patient[["joined_models"]] <- NULL
+  object$misc[["selection_probabilities"]] <- NULL
 
   splits <- object |>
     split_by("patient_id")
