@@ -18,14 +18,21 @@ plot_sequencing_depth.cevodata <- function(object,
                                            geom = geom_boxplot,
                                            ...) {
   snvs <- SNVs(object) |>
-    left_join(object$metadata)
+    left_join(object$metadata, by = "sample_id")
+  samples_order <- snvs |>
+    group_by(.data$sample_id) |>
+    summarise(median_dp = stats::median(.data$DP)) |>
+    arrange(desc(.data$median_dp)) |>
+    pull("sample_id")
+  snvs <- snvs |>
+    mutate(sample_id = parse_factor(.data$sample_id, levels = samples_order))
   default_mapping <- aes(.data$sample_id, .data$DP, fill = .data$sample_id)
   ggplot(snvs, join_aes(default_mapping, mapping)) +
     geom(...) +
     scale_y_log10() +
     theme_minimal() +
     labs(
-      y = "Sequencing depth of mutations",
+      y = "Sequencing coverage of mutations",
       x = "Sample"
     ) +
     hide_legend()
