@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Set of methods facilitating the analysis of Cancer Evolution. Developped for my PhD.
+Cancer Evolutionary Models. Set of methods facilitating the analysis of Cancer Evolution. Developped for my PhD.
 }
 \author{
 \strong{Maintainer}: Paweł Kuś \email{kpawel2210@gmail.com} (\href{https://orcid.org/0000-0002-4367-9821}{ORCID})
