@@ -81,35 +81,27 @@ plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
 #' @return ggplot obj
 #' @export
 plot.cevo_SFS_tbl <- function(x, mapping = NULL, ..., geom = "bar") {
+  x <- filter(x, .data$VAF >= 0)
+  default_mapping <- aes(.data$VAF, .data$y, color = .data$sample_id)
+
   if (geom == "bar") {
     x <- x |>
       group_by(.data$sample_id) |>
       mutate(width = 0.9 / n())
-    bar_mapping_default <- aes(fill = .data$sample_id, width = .data$width)
-    geom <- list(
+    bar_mapping <- aes(fill = .data$sample_id, width = .data$width)
+    p <- ggplot(x) +
+      join_aes(default_mapping, mapping) +
       geom_bar(
-        join_aes(bar_mapping_default, mapping),
-        stat = "identity", alpha = 0.8, ...
-      ),
+        join_aes(bar_mapping, mapping),
+        stat = "identity", alpha = 0.8, show.legend = FALSE, ...
+      ) +
       facet_wrap(~.data$sample_id, scales = "free")
-    )
   } else if (geom == "line") {
-    geom <- list(
+    p <- ggplot(x, join_aes(default_mapping, mapping)) +
       geom_line(...)
-    )
   }
 
-  default_mapping <- aes(.data$VAF, .data$y, color = .data$sample_id)
-  x |>
-    filter(.data$VAF >= 0) |>
-    ggplot(join_aes(default_mapping, mapping)) +
-    geom +
-    # theme_ellie(n = n_distinct(x$sample_id)) +
-    hide_legend() +
-    labs(
-      title = "SFS",
-      y = "count"
-    )
+  p + labs(title = "SFS", y = "count")
 }
 
 
