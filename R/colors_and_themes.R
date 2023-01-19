@@ -126,3 +126,24 @@ theme_ellie <- function(n = 6) {
 hide_legend <- function() {
   theme(legend.position = "none")
 }
+
+
+colors <- list(
+  starfleet = c("#5B1414", "#AD722C", "#1A6384")
+)
+
+
+#' Different color pallettes
+#' @param palette palette name
+#' @param ... other arguments passed to scale_*_manual()
+#' @export
+scale_fill_cevomod <- function(palette = "starfleet", ...) {
+  scale_fill_manual(values = colors[[palette]], ...)
+}
+
+
+#' @rdname scale_fill_cevomod
+#' @export
+scale_color_cevomod <- function(palette = "starfleet", ...) {
+  scale_color_manual(values = colors[[palette]], ...)
+}
