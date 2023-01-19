@@ -4,10 +4,12 @@
 \alias{plot.cevo_SFS_tbl}
 \title{Plot SFS}
 \usage{
-\method{plot}{cevo_SFS_tbl}(x, ..., geom = "bar")
+\method{plot}{cevo_SFS_tbl}(x, mapping = NULL, ..., geom = "bar")
 }
 \arguments{
 \item{x}{tibble with calc_SFS() results}
+
+\item{mapping}{aes()}
 
 \item{...}{futher passed to geom_()}
 

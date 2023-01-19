@@ -64,27 +64,31 @@ plot_SFS <- function(object, ...) {
 
 #' @describeIn sfs Plot SFS
 #' @export
-plot_SFS.cevodata <- function(object, ..., geom = "bar") {
+plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
   # TODO: Fix 'width' warning
-  plot(object$models$SFS, geom = geom)
+  object$models$SFS |>
+    left_join(object$metadata, by = "sample_id") |>
+    plot(mapping = mapping, ..., geom = geom)
 }
 
 
 #' Plot SFS
 #'
 #' @param x tibble with calc_SFS() results
+#' @param mapping aes()
 #' @param ... futher passed to geom_()
 #' @param geom geom
 #' @return ggplot obj
 #' @export
-plot.cevo_SFS_tbl <- function(x, ..., geom = "bar") {
+plot.cevo_SFS_tbl <- function(x, mapping = NULL, ..., geom = "bar") {
   if (geom == "bar") {
     x <- x |>
       group_by(.data$sample_id) |>
       mutate(width = 0.9 / n())
+    bar_mapping_default <- aes(fill = .data$sample_id, width = .data$width)
     geom <- list(
       geom_bar(
-        aes(fill = .data$sample_id, width = .data$width),
+        join_aes(bar_mapping_default, mapping),
         stat = "identity", alpha = 0.8, ...
       ),
       facet_wrap(~.data$sample_id, scales = "free")
@@ -95,11 +99,12 @@ plot.cevo_SFS_tbl <- function(x, ..., geom = "bar") {
     )
   }
 
+  default_mapping <- aes(.data$VAF, .data$y, color = .data$sample_id)
   x |>
     filter(.data$VAF >= 0) |>
-    ggplot(aes(.data$VAF, .data$y, color = .data$sample_id)) +
+    ggplot(join_aes(default_mapping, mapping)) +
     geom +
-    theme_ellie(n = n_distinct(x$sample_id)) +
+    # theme_ellie(n = n_distinct(x$sample_id)) +
     hide_legend() +
     labs(
       title = "SFS",

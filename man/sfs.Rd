@@ -17,7 +17,7 @@ calc_SFS(object, ...)
 
 plot_SFS(object, ...)
 
-\method{plot_SFS}{cevodata}(object, ..., geom = "bar")
+\method{plot_SFS}{cevodata}(object, mapping = NULL, ..., geom = "bar")
 }
 \arguments{
 \item{object}{SNVs tibble object}
