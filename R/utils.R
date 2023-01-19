@@ -92,3 +92,15 @@ fill_na <- function(object, val) {
   object[is.na(object)] <- val
   object
 }
+
+
+get_patients_data <- function(metadata) {
+  patient_data_cols <- metadata |>
+    group_by(.data$patient_id) |>
+    summarise_all(n_distinct) |>
+    map(~all(.x == 1)) |>
+    keep(~.x) |>
+    names()
+  metadata |>
+    select("patient_id", all_of(patient_data_cols))
+}
