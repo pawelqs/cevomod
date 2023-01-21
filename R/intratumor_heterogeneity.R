@@ -64,11 +64,12 @@ calc_Jaccard_index <- function(tbl) {
   items_vec <- tbl[[2]]
   groups <- unique(tbl[[1]])
   res <- get_combinations_tbl(groups) |>
-    set_names(c("group1", "group2"))
-  for(i in 1:nrow(combinations)) {
+    set_names(c("group1", "group2")) |>
+    mutate(Jaccard_index = NA_real_)
+  for(i in 1:nrow(res)) {
     A <- items_vec[groups_vec == res$group1[[i]]]
     B <- items_vec[groups_vec == res$group2[[i]]]
-    res$Jaccard_index <- length(intersect(A, B)) / length(union(A, B))
+    res$Jaccard_index[[i]] <- length(intersect(A, B)) / length(union(A, B))
   }
   res
 }
