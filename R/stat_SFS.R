@@ -93,7 +93,7 @@ plot.cevo_SFS_tbl <- function(x, mapping = NULL, ..., geom = "bar") {
       join_aes(default_mapping, mapping) +
       geom_bar(
         join_aes(bar_mapping, mapping),
-        stat = "identity", alpha = 0.8, show.legend = FALSE, ...
+        stat = "identity", alpha = 0.8, ...
       ) +
       facet_wrap(~.data$sample_id, scales = "free")
   } else if (geom == "line") {
