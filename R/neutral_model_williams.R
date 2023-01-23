@@ -21,6 +21,7 @@
 #' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
 #'   layer_lm_fits(cd)
 #' @name neutral_model
+NULL
 
 
 #' @rdname neutral_model
