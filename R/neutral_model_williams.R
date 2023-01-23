@@ -41,12 +41,12 @@ fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, verbose = T
   msg("Fitting neutral models...", verbose = verbose)
 
   bounds <- get_VAF_range(SNVs(object))
-  dt <- Mf_1f |>
+  data <- Mf_1f |>
     left_join(bounds, by = "sample_id") |>
     filter(.data$VAF > .data$lower_bound, .data$VAF < .data$higher_bound) |>
     select("sample_id", "VAF", "M(f)", "1/f") |>
     nest(data = c("VAF", "M(f)", "1/f"))
-  models <- dt |>
+  models <- data |>
     mutate(
       model = "neutral_A/f^2",
       component = "Neutral tail",
@@ -63,17 +63,17 @@ fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, verbose = T
 }
 
 
-fit_optimal_lm <- function(dt, rsq_treshold = 0.98) {
-  min_val <- min(dt$VAF)
-  max_val <- max(dt$VAF)
+fit_optimal_lm <- function(data, rsq_treshold = 0.98) {
+  min_val <- min(data$VAF)
+  max_val <- max(data$VAF)
   grid <- expand_grid(
       from = seq(min_val, max_val, by = 0.01),
       to = seq(min_val, max_val, by = 0.01)
     ) |>
     mutate(length = .data$to - .data$from) |>
     filter(near(.data$length, 0.05))
-  grid$data <- pmap(grid, function(from, to, ...) filter(dt, .data$VAF >= from, .data$VAF <= to))
-  grid$fits <- map(grid$data, function(dt) tidy_lm(dt$`1/f`, dt$`M(f)`))
+  grid$data <- pmap(grid, prepare_Mf_1f_data, data = data)
+  grid$fits <- map(grid$data, ~tidy_lm(.x$`1/f`, .x$`M(f)`))
   grid |>
     select(-"data") |>
     unnest("fits") |>
@@ -82,6 +82,20 @@ fit_optimal_lm <- function(dt, rsq_treshold = 0.98) {
     mutate(alpha = 2, .before = "rsquared") |>
     arrange(.data$A) |>
     mutate(best = (row_number() == 1))
+}
+
+
+prepare_Mf_1f_data <- function(from, to, data, ...) {
+  data |>
+    filter(.data$VAF >= from, .data$VAF <= to)
+    # Following may be used to fit the model exactly as Williams, without the
+    # Intercept term (lm(y ~ x + 0)). It does not affect slope coefficient,
+    # thus I keep the current implementation for visualization purposes
+    #
+    # mutate(
+    #   y = `M(f)` - min(`M(f)`),
+    #   x = `1/f` - min(`1/f`)
+    # )
 }
 
 
