@@ -152,6 +152,17 @@ get_neutral_models <- function(object, best_only = TRUE, ...) {
 }
 
 
+#' Plot M(f) ~ 1/f fits
+#' @param object cevodata object
+#' @param ... other params
+#' @export
+plot_Mf_1f_fits <- function(object, ...) {
+  plot_Mf_1f(object, scale = FALSE, ...) +
+    layer_lm_fits(object, alpha = 0.5) +
+    theme(axis.text.x = element_text(angle = 90))
+}
+
+
 #' @describeIn neutral_model Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
 #'
 #' @param cd cevodata
