@@ -11,9 +11,9 @@
 \usage{
 calc_Mf_1f(object, ...)
 
-\method{calc_Mf_1f}{cevodata}(object, bins = 100, ...)
+\method{calc_Mf_1f}{cevodata}(object, bins = 100, verbose = TRUE, ...)
 
-\method{calc_Mf_1f}{cevo_snvs}(object, bins = 100, ...)
+\method{calc_Mf_1f}{cevo_snvs}(object, bins = 100, verbose = TRUE, ...)
 
 plot_Mf_1f(object, ...)
 
@@ -33,6 +33,8 @@ plot_Mf_1f(object, ...)
 \item{...}{other arguments}
 
 \item{bins}{resolution of the cumulative tails calculation}
+
+\item{verbose}{verbose?}
 
 \item{from}{min VAF to plot}
 

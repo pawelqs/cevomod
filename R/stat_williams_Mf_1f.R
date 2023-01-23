@@ -8,6 +8,7 @@
 #'
 #' @param object SNVs tibble object
 #' @param bins resolution of the cumulative tails calculation
+#' @param verbose verbose?
 #' @param ... other arguments
 #' @examples
 #' data("tcga_brca_test")
@@ -29,7 +30,7 @@ calc_Mf_1f <- function(object, ...) {
 
 #' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
 #' @export
-calc_Mf_1f.cevodata <- function(object, bins = 100, ...) {
+calc_Mf_1f.cevodata <- function(object, bins = 100, verbose = TRUE, ...) {
   Mf_1f <- SNVs(object) |>
     calc_Mf_1f(bins = bins)
   object$models[["Mf_1f"]] <- Mf_1f
@@ -39,7 +40,9 @@ calc_Mf_1f.cevodata <- function(object, bins = 100, ...) {
 
 #' @describeIn Mf_1f Calculate Williams M(f) ~ 1/f
 #' @export
-calc_Mf_1f.cevo_snvs <- function(object, bins = 100, ...) {
+calc_Mf_1f.cevo_snvs <- function(object, bins = 100, verbose = TRUE, ...) {
+  msg("Calculating Williams's M(f) ~ 1/f statistics", verbose = verbose)
+
   snvs <- cut_VAF_intervals(object, bins = bins)
   intervals <- attributes(snvs)$intervals
   res <- snvs |>
