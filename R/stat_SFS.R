@@ -82,13 +82,13 @@ plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
 #' @export
 plot.cevo_SFS_tbl <- function(x, mapping = NULL, ..., geom = "bar") {
   x <- filter(x, .data$VAF >= 0)
-  default_mapping <- aes(.data$VAF, .data$y, color = .data$sample_id)
+  default_mapping <- aes(.data$VAF, .data$y, group = .data$sample_id)
 
   if (geom == "bar") {
     x <- x |>
       group_by(.data$sample_id) |>
       mutate(width = 0.9 / n())
-    bar_mapping <- aes(fill = .data$sample_id, width = .data$width)
+    bar_mapping <- aes(width = .data$width)
     p <- ggplot(x) +
       join_aes(default_mapping, mapping) +
       geom_bar(
