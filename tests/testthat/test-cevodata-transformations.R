@@ -15,7 +15,7 @@ test_that("Filtering cevodata works", {
     add_SNV_data(snvs = snvs, "tcga") |>
     add_sample_data(meta) |>
     calc_SFS() |>
-    calc_Mf_1f()
+    calc_Mf_1f(verbose = FALSE)
   cd$misc_by_sample[["slot1"]] <- meta$sample_id |>
     set_names(meta$sample_id) |>
     map(~c(1, 2, 3))

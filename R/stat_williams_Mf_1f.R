@@ -32,7 +32,7 @@ calc_Mf_1f <- function(object, ...) {
 #' @export
 calc_Mf_1f.cevodata <- function(object, bins = 100, verbose = TRUE, ...) {
   Mf_1f <- SNVs(object) |>
-    calc_Mf_1f(bins = bins)
+    calc_Mf_1f(bins = bins, verbose = verbose)
   object$models[["Mf_1f"]] <- Mf_1f
   object
 }

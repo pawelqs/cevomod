@@ -1,11 +1,15 @@
-# cevomod 0.3.0
+# cevomod 0.3.x
 
-* Residuals plotting done
-* shiny app for browsing results implemented
+* **v0.3.0**
+  - Residuals plotting done
+  - shiny app for browsing results implemented
+* **v0.3.5** experimental models joining
+
 
 # cevomod 0.2.0
 
 * Binomial model fitting and plotting v1
+
 
 # cevomod 0.1.0
 
