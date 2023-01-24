@@ -25,6 +25,7 @@ plot_ITH.cevodata <- function(object, ...) {
 
 
 #' @rdname ITH
+#' @param x ITH tibble to plot
 #' @export
 plot.cevo_ITH_tbl <- function(x, ...) {
   x |>
@@ -48,9 +49,9 @@ estimate_ITH <- function(object, ...) {
 estimate_ITH.cevodata <- function(object, ...) {
   dt <- SNVs(object) |>
     unite_mutation_id() |>
-    filter(alt_reads > 0) |>
+    filter(.data$alt_reads > 0) |>
     left_join(object$metadata, by = "sample_id") |>
-    select(patient_id, sample, mutation_id) |>
+    select("patient_id", "sample", "mutation_id") |>
     nest_by(.data$patient_id)
   ITH <- dt |>
     summarise(calc_Jaccard_index(.data$data), .groups = "drop") |>
@@ -76,7 +77,7 @@ calc_Jaccard_index <- function(tbl) {
 
 
 get_combinations_tbl <- function(items) {
-  combn(items, m = 2) |>
+  utils::combn(items, m = 2) |>
     t() |>
     as_tibble() |>
     set_names(c("item1", "item2"))

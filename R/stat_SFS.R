@@ -63,6 +63,7 @@ plot_SFS <- function(object, ...) {
 
 
 #' @describeIn sfs Plot SFS
+#' @param mapping aes()
 #' @export
 plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
   # TODO: Fix 'width' warning

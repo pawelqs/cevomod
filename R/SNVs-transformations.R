@@ -89,7 +89,7 @@ get_SNVs_2d_matrix <- function(object,
 }
 
 
-get_SNVs_wider_intervals <- function(object, fill_na = NULL) {
+get_SNVs_wider_intervals <- function(object, fill_na = NULL, bins = NULL) {
   metadata <- object$metadata
   if (n_distinct(metadata$patient_id) > 1) {
     stop("This function works only for single sample objects")

@@ -508,7 +508,7 @@ get_single_sample_selection_probability <- function(object) {
       .data$patient_id,
       .data$sample,
       .data$VAF_interval,
-      `1sample_selection_prob` = binom_pred / SFS
+      `1sample_selection_prob` = .data$binom_pred / .data$SFS
     )
 
   SNVs(object) |>

@@ -26,6 +26,8 @@ plot_SFS(object, ...)
 
 \item{bins}{resolution of the cumulative tails calculation}
 
+\item{mapping}{aes()}
+
 \item{geom}{geom}
 }
 \description{

@@ -20,6 +20,8 @@ estimate_ITH(object, ...)
 \item{object}{object}
 
 \item{...}{not used}
+
+\item{x}{ITH tibble to plot}
 }
 \description{
 Intratumor heterogeneity
