@@ -1,3 +1,8 @@
+# cevomod 0.4.x
+
+* **v0.4.0** calculation of mutation rates and selection coefficients by Williams
+  implemented
+
 # cevomod 0.3.x
 
 * **v0.3.0**
