@@ -35,6 +35,7 @@ get_mutation_rates <- function(object) {
 #' Get subclonal selection coefficients Williams
 #' @param object cevodata object
 #' @param Nmax Time when tumour is sampled (in tumour doublings)
+#' @export
 get_selection_coefficients <- function(object, Nmax = 10^10) {
   mutation_rates <- get_mutation_rates(object)
 
