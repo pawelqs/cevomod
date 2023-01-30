@@ -128,6 +128,13 @@ hide_legend <- function() {
 }
 
 
+#'Rotate x axix labels
+#' @export
+rotate_x_labels <- function() {
+  theme(axis.text.x = element_text(angle = 90))
+}
+
+
 colors <- list(
   starfleet = c("#5B1414", "#AD722C", "#1A6384")
 )
