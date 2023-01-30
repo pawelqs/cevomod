@@ -27,7 +27,8 @@ Suggests:
     shinyWidgets,
     ggrepel,
     pheatmap,
-    mobster
+    mobster,
+    mutSignatures
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
