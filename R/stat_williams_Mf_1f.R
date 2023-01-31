@@ -75,6 +75,9 @@ plot_Mf_1f <- function(object, ...) {
 plot_Mf_1f.cevodata <- function(object,
                                 bins = NULL, from = 0.1, to = 0.25,
                                 scale = TRUE, geom = "point", ...) {
+  if (is.null(object$models$Mf_1f)) {
+    object <- calc_Mf_1f(object)
+  }
   object$models$Mf_1f |>
     left_join(object$metadata, by = "sample_id") |>
     plot(geom = geom, from = from, to = to, scale = scale, ...)

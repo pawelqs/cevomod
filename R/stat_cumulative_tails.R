@@ -116,6 +116,9 @@ plot.cevo_cumulative_tails_tbl <- function(x, scale_y = TRUE, scales = "loglog",
 #' @return ggplot obj
 #' @export
 plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, scales = "loglog", ...) {
+  if (is.null(object$models$cumulative_tails)) {
+    object <- calc_cumulative_tails(object)
+  }
   plot(object$models$cumulative_tails, scale_y = scale_y, scales = scales)
 }
 

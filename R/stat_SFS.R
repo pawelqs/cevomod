@@ -66,6 +66,9 @@ plot_SFS <- function(object, ...) {
 #' @param mapping aes()
 #' @export
 plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
+  if (is.null(object$models$SFS)) {
+    object <- calc_SFS(object)
+  }
   # TODO: Fix 'width' warning
   object$models$SFS |>
     left_join(object$metadata, by = "sample_id") |>

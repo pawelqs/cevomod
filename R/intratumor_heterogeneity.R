@@ -79,6 +79,6 @@ calc_Jaccard_index <- function(tbl) {
 get_combinations_tbl <- function(items) {
   utils::combn(items, m = 2) |>
     t() |>
-    as_tibble() |>
-    set_names(c("item1", "item2"))
+    `colnames<-`(c("item1", "item2")) |>
+    as_tibble()
 }
