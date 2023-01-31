@@ -22,7 +22,7 @@ merge-to-main:
 
 
 run-cevomod-on-cevodatasets:
-	Rscript inst/run_cevomod_on_cevodatasets.R
+	R -e 'cevoDatasets::process_datasets()'
 
 
 run-browser:
