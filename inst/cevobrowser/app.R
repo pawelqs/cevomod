@@ -7,8 +7,9 @@ library(paletteer)
 library(tibble)
 library(ggplot2)
 
+theme_set(theme_minimal())
 datasets <- readr::read_rds(
-  "~/.cevomod/data.Rds"
+  "~/.cevoDatasets/data.Rds"
 )
 default_dataset <- names(datasets)[[1]]
 
