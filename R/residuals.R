@@ -1,7 +1,11 @@
 
 get_residuals <- function(cd, model = cd$active_model) {
   slot_name <- paste0("residuals_", model)
-  cd$misc[[slot_name]]
+  residuals <- cd$misc[[slot_name]]
+  if (is.null(residuals)) {
+    stop(slot_name, "slot empty. Fit apropriate model first!")
+  }
+  residuals
 }
 
 
