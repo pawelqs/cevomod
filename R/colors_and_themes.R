@@ -124,6 +124,7 @@ hide_facet_labels <- function() {
   )
 }
 
+
 # ---------------------------- color scales ------------------------------------
 
 colors <- list(
