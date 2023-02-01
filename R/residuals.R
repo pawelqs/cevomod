@@ -59,17 +59,19 @@ plot_residuals_neutral_model.cevodata <- function(object,
                                                   fit_clones = TRUE,
                                                   ...) {
   residuals <- get_residuals(object) |>
-    left_join(object$metadata, by = "sample_id")
+    left_join(object$metadata, by = "sample_id") |>
+    group_by(.data$sample_id) |>
+    mutate(width = 0.9 / n())
   binomial_model_fitted <- !is.null(residuals[["binom_pred"]])
-  default_mapping <- aes(.data$VAF, .data$neutral_resid_clones, color = .data$sample_id)
+  default_mapping <- aes(.data$VAF, .data$neutral_resid_clones, group = .data$sample_id, width = .data$width)
   final_mapping <- join_aes(default_mapping, mapping)
   clones_fit <- if (fit_clones && binomial_model_fitted) {
-    fit_mapping <- aes(.data$VAF, .data$binom_pred, color = .data$sample_id, group = .data$sample_id)
+    fit_mapping <- aes(.data$VAF, .data$binom_pred, group = .data$sample_id)
     final_fit_mapping <- join_aes(fit_mapping, mapping)
     geom_line(final_fit_mapping, color = "black")
   }
   ggplot(residuals) +
-    geom() +
+    geom(...) +
     clones_fit +
     final_mapping +
     labs(y = "Residuals") +
