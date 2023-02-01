@@ -119,7 +119,9 @@ plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, scales = "log
   if (is.null(object$models$cumulative_tails)) {
     object <- calc_cumulative_tails(object)
   }
-  plot(object$models$cumulative_tails, scale_y = scale_y, scales = scales)
+  object$models$cumulative_tails |>
+    left_join(object$metadata, by = "sample_id") |>
+    plot(scale_y = scale_y, scales = scales)
 }
 
 
