@@ -40,7 +40,8 @@ calc_SFS.cevodata <- function(object, bins = NULL, ...) {
 #' @describeIn sfs Calculate SFS
 #' @export
 calc_SFS.cevo_snvs <- function(object, bins = NULL, ...) {
-  snvs <- cut_VAF_intervals(object, bins = bins)
+  snvs <- cut_VAF_intervals(object, bins = bins) |>
+    filter(alt_reads > 0)
   intervals <- attributes(snvs)$intervals
   res <- snvs |>
     group_by(.data$sample_id, .data$VAF_interval) |>
@@ -85,7 +86,6 @@ plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
 #' @return ggplot obj
 #' @export
 plot.cevo_SFS_tbl <- function(x, mapping = NULL, ..., geom = "bar") {
-  x <- filter(x, .data$VAF >= 0)
   default_mapping <- aes(.data$VAF, .data$y, group = .data$sample_id)
 
   if (geom == "bar") {
