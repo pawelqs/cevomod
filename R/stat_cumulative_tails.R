@@ -30,6 +30,7 @@ calc_cumulative_tails <- function(object, ...) {
 #' @export
 calc_cumulative_tails.cevodata <- function(object, bins = 100, ...) {
   cumulative_tails <- SNVs(object) |>
+    filter(.data$alt_reads > 0) |>
     calc_cumulative_tails(bins)
   object$models[["cumulative_tails"]] <- cumulative_tails
   object
