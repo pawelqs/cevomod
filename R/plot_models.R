@@ -91,7 +91,7 @@ plot_models.cevodata <- function(object,
     }
   )
 
-  plot_SFS(object, geom = "bar") +
+  plot_SFS(object, geom = "bar", ...) +
     model_layers +
     facet_wrap(~.data$sample_id, scales = "free_y")
 }
