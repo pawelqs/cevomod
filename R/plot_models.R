@@ -5,7 +5,7 @@
 #' @param binomial_layer FALSE,
 #' @param subclones TRUE,
 #' @param final_fit TRUE,
-#' @param ... other arguments
+#' @param ... other arguments passed to plot_SFS()
 #' @name plot_models
 
 

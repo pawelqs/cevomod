@@ -19,7 +19,7 @@ plot_models(object, ...)
 \arguments{
 \item{object}{cevodata object}
 
-\item{...}{other arguments}
+\item{...}{other arguments passed to plot_SFS()}
 
 \item{neutral_tail}{TRUE,}
 
