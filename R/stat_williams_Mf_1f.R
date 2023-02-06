@@ -138,3 +138,26 @@ plot.cevo_Mf_1f_tbl <- function(x, from = 0.1, to = 0.25, scale = TRUE,
     labs(title = "M(f) ~ 1/f")
 }
 
+
+
+#' @describeIn Mf_1f Get Mf_1f
+#' @export
+get_Mf_1f <- function(object, ...) {
+  UseMethod("get_Mf_1f")
+}
+
+
+#' @describeIn Mf_1f Get Mf_1f
+#' @export
+get_Mf_1f.cevodata <- function(object, name = "Mf_1f", verbose = TRUE, ...) {
+  Mf_1f <- object$models[[name]]
+  if (is.null(Mf_1f)) {
+    msg(
+      "Mf_1f's not calculated yet. Calculating with default bins",
+      verbose = verbose
+    )
+    object <- calc_Mf_1f(object)
+    Mf_1f <- object$models[[name]]
+  }
+  Mf_1f
+}
