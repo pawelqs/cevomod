@@ -13,7 +13,7 @@ fit_neutral_models(object, ...)
 \method{fit_neutral_models}{cevodata}(
   object,
   rsq_treshold = 0.98,
-  name = "neutral_models",
+  name = "williams_neutral",
   verbose = TRUE,
   ...
 )

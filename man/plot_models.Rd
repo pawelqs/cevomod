@@ -9,6 +9,7 @@ plot_models(object, ...)
 
 \method{plot_models}{cevodata}(
   object,
+  models_name = active_models(object),
   neutral_tail = TRUE,
   binomial_layer = FALSE,
   subclones = TRUE,
@@ -20,6 +21,8 @@ plot_models(object, ...)
 \item{object}{cevodata object}
 
 \item{...}{other arguments passed to plot_SFS()}
+
+\item{models_name}{models name}
 
 \item{neutral_tail}{TRUE,}
 

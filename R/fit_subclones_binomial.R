@@ -11,12 +11,18 @@ fit_subclones <- function(object, ...) {
 
 #' @rdname fit_subclones
 #' @param N vector of numbers of clones to test
+#' @param powerlaw_model residual of which powerlaw model to use?
+#'   williams_neutral/tung_durrett
 #' @param verbose verbose?
 #' @export
-fit_subclones.cevodata <- function(object, N = 1:3, verbose = TRUE, ...) {
+fit_subclones.cevodata <- function(object,
+                                   N = 1:3,
+                                   powerlaw_model_name = active_models(object),
+                                   verbose = TRUE, ...) {
   msg("Fitting binomial models", verbose = verbose)
+  powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
 
-  residuals <- get_residuals(object, model = "neutral_models") |>
+  residuals <- get_residuals(object, model = powerlaw_model_name) |>
     filter(.data$VAF >= 0 )
 
   sequencing_depths <- SNVs(object) |>
@@ -52,14 +58,15 @@ fit_subclones.cevodata <- function(object, N = 1:3, verbose = TRUE, ...) {
       model_resid = .data$SFS - .data$model_pred
     )
 
-  models <- get_neutral_models(object) |>
+  models <- powerlaw_models |>
     bind_rows(models) |>
     arrange(.data$sample_id, .data$best, .data$model)
 
-  object$models[["binomial_models"]] <- models
-  object$misc[["residuals_binomial_models"]] <- residuals
-  # object$SNVs[[default_SNVs(object)]] <- classify_SNVs(SNVs(object), residuals)
-  object$active_models <- "binomial_models"
+  models_name <- paste0(powerlaw_model_name, "_subclones")
+  resid_name <- paste0("residuals_", models_name)
+  object$models[[models_name]] <- models
+  object$misc[[resid_name]] <- residuals
+  object$active_models <- models_name
   object
 }
 

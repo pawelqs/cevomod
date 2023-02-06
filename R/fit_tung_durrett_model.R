@@ -29,12 +29,15 @@ fit_tung_durrett_models.cevodata <- function(object,
   msg("Fitting Tung-Durrett models...", verbose = verbose)
   sfs <- get_SFS(object, name = "SFS")
   bounds <- get_VAF_range(SNVs(object), pct_left = 0.02, pct_right = 0.98)
+  nbins <- get_sample_sequencing_depths(SNVs(object)) |>
+    transmute(.data$sample_id, nbins = .data$median_DP)
 
   data <- sfs |>
     left_join(bounds, by = "sample_id") |>
     filter(.data$VAF > .data$lower_bound, .data$VAF < .data$higher_bound) |>
     select("sample_id", "VAF", "y") |>
-    nest_by(.data$sample_id)
+    nest_by(.data$sample_id) |>
+    left_join(nbins, by = "sample_id")
 
   models <- data |>
     summarise(
@@ -46,7 +49,7 @@ fit_tung_durrett_models.cevodata <- function(object,
         x = data$VAF,
         y = data$y
       ) |> list(),
-      A = .data$opt$par[[1]],
+      A = .data$opt$par[[1]] * round(.data$nbins),
       alpha = .data$opt$par[[2]],
       val = -.data$opt$value,
       .groups = "drop"

@@ -1,6 +1,7 @@
 
 #' Plot cevodata models
 #' @param object cevodata object
+#' @param models_name models name
 #' @param neutral_tail TRUE,
 #' @param binomial_layer FALSE,
 #' @param subclones TRUE,
@@ -19,47 +20,37 @@ plot_models <- function(object, ...) {
 #' @rdname plot_models
 #' @export
 plot_models.cevodata <- function(object,
+                                 models_name = active_models(object),
                                  neutral_tail = TRUE,
                                  binomial_layer = FALSE,
                                  subclones = TRUE,
                                  final_fit = TRUE,
                                  ...) {
 
-  neutral_lm_fitted <- !is.null(object$models[["neutral_models"]])
-  subclones_fitted <- !is.null(object$models[["binomial_models"]])
+  models <- get_models(object, models_name)
+  neutral_lm_fitted <- "alpha" %in% names(models)
+  subclones_fitted <- "cellularity" %in% names(models)
 
-  neutral_models <- get_neutral_models(object) |>
-    select("sample_id", "from", "to")
-
-  resid <- get_residuals(object) |>
-    left_join(neutral_models, by = "sample_id") |>
+  resid <- get_residuals(object, models_name) |>
     left_join(object$metadata, by = "sample_id") |>
     group_by(.data$sample_id) |>
     mutate(
       ylim = max(.data$SFS) * 1.2,
       powerlaw_pred = if_else(.data$powerlaw_pred > .data$ylim, .data$ylim, .data$powerlaw_pred)
     ) |>
-    ungroup() |>
-    mutate(neutr = .data$VAF >= .data$from & .data$VAF <= .data$to)
+    ungroup()
 
   model_layers <- list(
     if (neutral_tail && neutral_lm_fitted) {
       geom_area(
         aes(.data$VAF, .data$powerlaw_pred),
-        data = resid, # |> filter(.data$VAF >= 0),
+        data = resid,
         fill = "white", color = "gray90",
         alpha = 0.3,
         size = 0.5, show.legend = FALSE,
         stat = "identity"
       )
     },
-    # if (neutral_tail && neutral_lm_fitted) {
-    #   geom_line(
-    #     aes(.data$VAF, .data$powerlaw_pred),
-    #     data = resid |> filter(.data$neutr, .data$powerlaw_pred < .data$ylim),
-    #     size = 1, show.legend = FALSE
-    #   )
-    # },
     if (binomial_layer && subclones_fitted) {
       geom_line(
         aes(.data$VAF, .data$binom_pred),

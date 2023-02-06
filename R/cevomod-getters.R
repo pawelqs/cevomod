@@ -1,4 +1,18 @@
 
+#' Get model names
+#' @param object object
+#' @export
+get_model_names <- function(object) {
+  UseMethod("get_model_names")
+}
+
+
+#' @export
+get_model_names.cevodata <- function(object) {
+  names(object$models)
+}
+
+
 #' Get models from the object
 #' @param object object to get the models from
 #' @param ... other arguments
@@ -25,6 +39,21 @@ get_models.cevodata <- function(object,
   } else {
     models
   }
+}
+
+
+get_powerlaw_models <- function(object,
+                                which = active_models(object),
+                                best_only = TRUE,
+                                ...) {
+  models <- get_models(object, which)
+  if ("cevo_powerlaw_models" %not in% class(models)) {
+    stop(
+      which, " is not a powerlaw model, required to fit subclones.",
+      "Use another model"
+    )
+  }
+  models
 }
 
 

@@ -15,9 +15,9 @@ test_that("Fitting neutral partial models works", {
       component = "Neutral tail",
       .before = "from"
     )
-  class(expected) <- c("cevo_lm_models_tbl", class(expected))
+  class(expected) <- c("cevo_powerlaw_models", class(expected))
   # write_tsv(cd$models$neutral_model, "tests/testdata/tcga_brca_partial_neutral_models.tsv")
-  expect_equal(cd$models$neutral_model, expected)
+  expect_equal(get_models(cd, best_only = FALSE), expected)
 })
 
 
@@ -48,8 +48,8 @@ cd <- init_cevodata("Test") |>
 
 
 test_that("calc_residuals creates proper tibble", {
-  cd <- calc_powerlaw_model_residuals(cd, "neutral_models")
-  resids <- get_residuals(cd, "neutral_models")
+  cd <- calc_powerlaw_model_residuals(cd, "williams_neutral")
+  resids <- get_residuals(cd, "williams_neutral")
   expect_equal(nrow(resids), 101)
   expect_true(all(c("powerlaw_resid", "sampling_rate") %in% names(resids)))
   expect_equal(

@@ -7,7 +7,13 @@
 \usage{
 fit_subclones(object, ...)
 
-\method{fit_subclones}{cevodata}(object, N = 1:3, verbose = TRUE, ...)
+\method{fit_subclones}{cevodata}(
+  object,
+  N = 1:3,
+  powerlaw_model_name = active_models(object),
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{object}{object}
@@ -17,6 +23,9 @@ fit_subclones(object, ...)
 \item{N}{vector of numbers of clones to test}
 
 \item{verbose}{verbose?}
+
+\item{powerlaw_model}{residual of which powerlaw model to use?
+williams_neutral/tung_durrett}
 }
 \description{
 Fit subclonal distributions to neutral model residuals

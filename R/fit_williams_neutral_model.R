@@ -36,9 +36,9 @@ fit_neutral_models <- function(object, ...) {
 #' @export
 fit_neutral_models.cevodata <- function(object,
                                         rsq_treshold = 0.98,
-                                        name = "neutral_models",
+                                        name = "williams_neutral",
                                         verbose = TRUE, ...) {
-  msg("Fitting neutral models...", verbose = verbose)
+  msg("Fitting williams neutral models...", verbose = verbose)
   Mf_1f <- get_Mf_1f(object)
   bounds <- get_VAF_range(SNVs(object))
 
@@ -56,7 +56,7 @@ fit_neutral_models.cevodata <- function(object,
     ) |>
     select(-"data") |>
     unnest("fits")
-  class(models) <- c("cevo_lm_models_tbl", class(models))
+  class(models) <- c("cevo_powerlaw_models", class(models))
 
   object$models[[name]] <- models
   object$active_models <- name
