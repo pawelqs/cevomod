@@ -322,39 +322,6 @@ add_sample_data.cevodata <- function(object, data, ...) {
 }
 
 
-#' Get models from the object
-#' @param object object to get the models from
-#' @param ... other arguments
-#' @export
-get_models <- function(object, ...) {
-  UseMethod("get_models")
-}
-
-#' @describeIn get_models Get models from cevodata object
-#' @param which `chr` which models to get
-#' @param best_only `lgl` return only the best models?
-#' @export
-get_models.cevodata <- function(object,
-                                which = active_models(object),
-                                best_only = TRUE,
-                                ...) {
-  models <- object$models[[which]]
-  if (best_only) {
-    filter(models, .data$best)
-  } else {
-    models
-  }
-}
-
-
-active_models <- function(object, ...) {
-  if (is.null(object$active_models) | length(object$models) == 0) {
-    stop("No models has been fitted yet!")
-  }
-  object$active_models
-}
-
-
 is_cevodata_singlepatient <- function(object) {
   n_patients <- count_patients(object)
   if (is.na(n_patients)) {
