@@ -43,7 +43,7 @@ calc_Mf_1f.cevodata <- function(object, bins = 100, verbose = TRUE, ...) {
 calc_Mf_1f.cevo_snvs <- function(object, bins = 100, verbose = TRUE, ...) {
   msg("Calculating Williams's M(f) ~ 1/f statistics", verbose = verbose)
 
-  snvs <- cut_VAF_intervals(object, bins = bins)
+  snvs <- cut_f_intervals(object, bins = bins)
   intervals <- attributes(snvs)$intervals
   res <- snvs |>
     group_by(.data$sample_id, .data$VAF_interval) %>%

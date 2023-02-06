@@ -1,31 +1,32 @@
 
-#' Cut VAF into intervals
+#' Cut f or VAF into intervals
 #' @param object object
 #' @param ... other params
 #' @export
-cut_VAF_intervals <- function(object, ...) {
-  UseMethod("cut_VAF_intervals")
+cut_f_intervals <- function(object, ...) {
+  UseMethod("cut_f_intervals")
 }
 
 
-#' @rdname cut_VAF_intervals
+#' @rdname cut_f_intervals
 #' @param bins number of bins
 #' @export
-cut_VAF_intervals.cevo_snvs <- function(object, bins = NULL, ...) {
+cut_f_intervals.cevo_snvs <- function(object, bins = NULL, column = "VAF", ...) {
+  intervals_column <- paste0(column, "_interval")
   breaks <- get_interval_breaks(object, bins = bins) |>
     enframe(name = "sample_id", value = "breaks")
   res <- object |>
     nest_by(.data$sample_id) |>
     left_join(breaks, by = "sample_id") |>
-    mutate(data = list(cut_f(.data$data, .data$breaks, column = "VAF"))) |>
+    mutate(data = list(cut_f(.data$data, .data$breaks, column = column))) |>
     ungroup()
   interval_levels <- res |>
     select("sample_id", "data") |>
     deframe() |>
-    map("VAF_interval") |>
+    map(intervals_column) |>
     map(levels)
   res$data <- res$data |>
-    map(~mutate(.x, VAF_interval = as.character(.data$VAF_interval)))
+    map(~mutate(.x, across(all_of(intervals_column), as.character)))
   res <- res |>
     select("sample_id", "data") |>
     unnest("data")

@@ -40,7 +40,7 @@ calc_SFS.cevodata <- function(object, bins = NULL, ...) {
 #' @describeIn sfs Calculate SFS
 #' @export
 calc_SFS.cevo_snvs <- function(object, bins = NULL, ...) {
-  snvs <- cut_VAF_intervals(object, bins = bins) |>
+  snvs <- cut_f_intervals(object, bins = bins) |>
     filter(VAF > 0)
   intervals <- attributes(snvs)$intervals
   res <- snvs |>

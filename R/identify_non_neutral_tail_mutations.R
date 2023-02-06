@@ -512,7 +512,7 @@ get_single_sample_selection_probability <- function(object) {
     )
 
   SNVs(object) |>
-    cut_VAF_intervals() |>
+    cut_f_intervals() |>
     unite_mutation_id() |>
     left_join(metadata, by = "sample_id") |>
     select("patient_id", "sample", "mutation_id", "VAF_interval") |>
