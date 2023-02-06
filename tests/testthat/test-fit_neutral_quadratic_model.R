@@ -11,7 +11,7 @@ test_that("Fitting neutral partial models works", {
   expected <- "../testdata/tcga_brca_partial_neutral_models.tsv" |>
     read_tsv(col_types = "cccdddddddl") |>
     mutate(
-      model = "neutral_A/f^2",
+      model = "williams",
       component = "Neutral tail",
       .before = "from"
     )
@@ -22,9 +22,9 @@ test_that("Fitting neutral partial models works", {
 
 
 test_that("calc_powerlaw_curve works", {
-  dt <- tibble(VAF = 1:100/100, A = 176.5929, nbins = 100)
+  dt <- tibble(VAF = 1:100/100, A = 176.5929, alpha = 2, nbins = 100)
   curve <- dt |>
-    mutate(neutral_pred = calc_powerlaw_curve(VAF, A, nbins))
+    mutate(neutral_pred = calc_powerlaw_curve(VAF, A, alpha, nbins))
   expect_equal(nrow(curve), 100)
   expect_equal(
     curve$neutral_pred[1:5],
@@ -48,7 +48,8 @@ cd <- init_cevodata("Test") |>
 
 
 test_that("calc_residuals creates proper tibble", {
-  resids <- calc_residuals(cd)
+  cd <- calc_powerlaw_model_residuals(cd, "neutral_models")
+  resids <- get_residuals(cd, "neutral_models")
   expect_equal(nrow(resids), 101)
   expect_true(all(c("neutral_resid", "sampling_rate") %in% names(resids)))
   expect_equal(
