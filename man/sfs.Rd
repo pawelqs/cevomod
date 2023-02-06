@@ -7,6 +7,8 @@
 \alias{calc_SFS.cevo_snvs}
 \alias{plot_SFS}
 \alias{plot_SFS.cevodata}
+\alias{get_SFS}
+\alias{get_SFS.cevodata}
 \title{Site Frequency Spectra}
 \usage{
 calc_SFS(object, ...)
@@ -18,6 +20,10 @@ calc_SFS(object, ...)
 plot_SFS(object, ...)
 
 \method{plot_SFS}{cevodata}(object, mapping = NULL, ..., geom = "bar")
+
+get_SFS(object, ...)
+
+\method{get_SFS}{cevodata}(object, name = "SFS", verbose = TRUE, ...)
 }
 \arguments{
 \item{object}{SNVs tibble object}
@@ -49,6 +55,10 @@ Creates  cevodata$models$SFS with the groupping variables and:
 \item \code{plot_SFS()}: Plot SFS
 
 \item \code{plot_SFS(cevodata)}: Plot SFS
+
+\item \code{get_SFS()}: Get SFS
+
+\item \code{get_SFS(cevodata)}: Get SFS
 
 }}
 \examples{

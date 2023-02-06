@@ -124,3 +124,26 @@ stat_SFS <- function(mapping = NULL, data = NULL,
                      binwidth = 0.01, geom = "line", position = "identity", ...) {
   stat_bin(mapping = mapping, data = data, binwidth = binwidth, geom = geom, position = position, ...)
 }
+
+
+#' @describeIn sfs Get SFS
+#' @export
+get_SFS <- function(object, ...) {
+  UseMethod("get_SFS")
+}
+
+
+#' @describeIn sfs Get SFS
+#' @export
+get_SFS.cevodata <- function(object, name = "SFS", verbose = TRUE, ...) {
+  sfs <- object$models[[name]]
+  if (is.null(sfs)) {
+    msg(
+      "SFS's not calculated yet. Calculating with sample DP as number of bins",
+      verbose = verbose
+    )
+    object <- calc_SFS(object)
+    sfs <- object$models[[name]]
+  }
+  sfs
+}
