@@ -10,8 +10,11 @@ get_residuals <- function(cd, model = cd$active_model) {
 
 
 calc_powerlaw_model_residuals <- function(object, models_name, ...) {
-  powerlaw_models <- get_models(object, models_name) |>
-    select("sample_id", "from", "to", "A", "b", "alpha")
+  powerlaw_models <- get_models(object, models_name)
+  optional_cols <- c("from", "to", "b") |> intersect(colnames(powerlaw_models))
+  from_to_cols_present <- all(c("from", "to") %in% optional_cols)
+  powerlaw_models <- powerlaw_models |>
+    select("sample_id", "A", "alpha", all_of(optional_cols))
   sfs <- get_SFS(object)
   nbins <- get_sample_sequencing_depths(SNVs(object)) |>
     transmute(.data$sample_id, nbins = .data$median_DP)
@@ -21,7 +24,11 @@ calc_powerlaw_model_residuals <- function(object, models_name, ...) {
     inner_join(powerlaw_models, by = "sample_id") |>
     left_join(nbins, by = "sample_id") |>
     mutate(
-      neutr = (.data$VAF >= .data$from & .data$VAF <= .data$to),
+      neutr = if (from_to_cols_present) {
+        .data$VAF >= .data$from & .data$VAF <= .data$to
+        } else NA,
+    ) |>
+    mutate(
       neutral_pred = calc_powerlaw_curve(.data$VAF, .data$A, .data$alpha, .data$nbins),
       neutral_resid = .data$neutral_pred - .data$SFS,
       neutral_resid_clones = if_else(.data$neutral_resid > 0, 0, -.data$neutral_resid),
