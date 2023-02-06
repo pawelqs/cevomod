@@ -11,3 +11,9 @@ test_that("join_aes works", {
   expected <- aes(VAF, y, color = patient_id, shape = effect)
   expect_identical(res, expected)
 })
+
+
+test_that("segment() function works", {
+  vec <- c(T, T, T, F, F, T, F, F)
+  expect_equal(segment(vec), c(0, 0, 0, 1, 1, 2, 3, 3))
+})

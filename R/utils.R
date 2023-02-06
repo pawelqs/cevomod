@@ -109,3 +109,10 @@ get_patients_data <- function(metadata) {
   metadata |>
     select("patient_id", all_of(patient_data_cols))
 }
+
+
+segment <- function(vec) {
+  x <- vec != lag(vec)
+  x[1] <- 0
+  cumsum(x)
+}
