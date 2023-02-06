@@ -17,7 +17,7 @@ cut_VAF_intervals.cevo_snvs <- function(object, bins = NULL, ...) {
   res <- object |>
     nest_by(.data$sample_id) |>
     left_join(breaks, by = "sample_id") |>
-    mutate(data = list(cut_VAF(.data$data, .data$breaks))) |>
+    mutate(data = list(cut_f(.data$data, .data$breaks, column = "VAF"))) |>
     ungroup()
   interval_levels <- res |>
     select("sample_id", "data") |>
@@ -34,11 +34,11 @@ cut_VAF_intervals.cevo_snvs <- function(object, bins = NULL, ...) {
 }
 
 
-cut_VAF <- function(tbl, breaks) {
+cut_f <- function(tbl, breaks, column = "f") {
   tbl |>
     mutate(
-      VAF_interval = cut(.data$VAF, breaks = breaks),
-      .before = "VAF"
+      "{column}_interval" := cut(.data[[column]], breaks = breaks),
+      .before = all_of(column)
     )
 }
 
