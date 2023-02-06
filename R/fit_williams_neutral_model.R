@@ -48,7 +48,7 @@ fit_neutral_models.cevodata <- function(object, rsq_treshold = 0.98, verbose = T
     nest(data = c("VAF", "M(f)", "1/f"))
   models <- data |>
     mutate(
-      model = "neutral_A/f^2",
+      model = "williams",
       component = "Neutral tail",
       fits = map(.data$data, fit_optimal_lm, rsq_treshold)
     ) |>
