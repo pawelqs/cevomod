@@ -3,8 +3,8 @@ snvs <- SNVs(tcga_brca_test)
 cnvs <- CNVs(tcga_brca_test)
 meta <- tcga_brca_test$metadata |>
   mutate(
-    patient_id = c("A", "A", "B", "B", "C"),
-    sample = c("S1", "S2", "S1", "S2", "S1")
+    patient_id = c("A", "A", "B", "B"),
+    sample = c("S1", "S2", "S1", "S2")
   )
 
 

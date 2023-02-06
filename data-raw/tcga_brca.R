@@ -44,7 +44,8 @@ top_mutated_patients <- snvs_tcga_brca %>%
   count() %>%
   arrange(desc(n)) %>%
   pull(sample_id) %>%
-  head(5)
+  head(5) |>
+  setdiff(c("TCGA-BH-A18G-01"))
 
 snvs_test <- snvs_tcga_brca %>%
   filter(sample_id %in% top_mutated_patients)

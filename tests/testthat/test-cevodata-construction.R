@@ -44,7 +44,7 @@ test_that("Adding SNVs to cevodata extends metadata", {
   cd <- init_cevodata("TCGA BRCA small", snvs = small_snvs)
   expect_equal(cd$metadata$sample_id, c("TCGA-AC-A23H-01", "TCGA-AN-A046-01"))
   cd <- add_SNV_data(cd, snvs = snvs, "head")
-  expect_equal(nrow(cd$metadata), 5)
+  expect_equal(nrow(cd$metadata), 4)
 })
 
 
@@ -60,7 +60,7 @@ test_that("Getting SNV from cevodata works", {
   expect_identical(SNVs(cd), tcga2)
   expect_equal(SNVs(cd) |> nrow(), 6)
   expect_identical(SNVs(cd, "head"), tcga2)
-  expect_equal(SNVs(cd, "snvs") |> nrow(), 23492)
+  expect_equal(SNVs(cd, "snvs") |> nrow(), 21570)
   expect_error(SNVs(cd, "xxx"))
 })
 
@@ -97,7 +97,7 @@ test_that("Adding CNVs to cevodata extends metadata", {
   cd <- init_cevodata("TCGA BRCA small", cnvs = small_cnvs)
   expect_equal(cd$metadata$sample_id, c("TCGA-AC-A23H-01", "TCGA-AN-A046-01"))
   cd <- add_CNV_data(cd, cnvs = cnvs, "head")
-  expect_equal(nrow(cd$metadata), 5)
+  expect_equal(nrow(cd$metadata), 4)
 })
 
 
@@ -114,7 +114,7 @@ test_that("Getting CNV from cevodata works", {
   expect_equal(CNVs(cd) |> nrow(), 6)
   expect_identical(CNVs(cd, "tcga2"), cnvs2)
   expect_identical(CNVs(cd, "cnvs"), cnvs)
-  expect_equal(CNVs(cd, "cnvs") |> nrow(), 762)
+  expect_equal(CNVs(cd, "cnvs") |> nrow(), 714)
   expect_error(CNVs(cd, "xxx"))
 })
 
@@ -164,8 +164,8 @@ test_that("Adding sample data to cevodata works", {
   expect_equal(cd$metadata$meta2, c(NA_character_, "b", "a"))
 
   cd <- add_SNV_data(cd, snvs)
-  expect_equal(nrow(cd$metadata), 5)
+  expect_equal(nrow(cd$metadata), 4)
   expect_named(cd$metadata, c("sample_id", "meta1", "meta2"))
   expect_true(all(unique(snvs$sample_id) %in% cd$metadata$sample_id))
-  expect_equal(cd$metadata$meta1, c(1, 2, NA_real_, NA_real_, NA_real_))
+  expect_equal(cd$metadata$meta1, c(1, 2, NA_real_, NA_real_))
 })
