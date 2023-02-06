@@ -43,7 +43,7 @@ fit_tung_durrett_models.cevodata <- function(object,
     summarise(
       model = "tung_durrett",
       component = "powerlaw",
-      opt = optim(
+      opt = stats::optim(
         par = c(5, 1),
         fn = td_objective_function,
         x = data$VAF,

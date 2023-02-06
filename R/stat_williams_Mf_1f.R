@@ -148,16 +148,17 @@ get_Mf_1f <- function(object, ...) {
 
 
 #' @describeIn Mf_1f Get Mf_1f
+#' @param model_name name of slot with Mf_1f statistics
 #' @export
-get_Mf_1f.cevodata <- function(object, name = "Mf_1f", verbose = TRUE, ...) {
-  Mf_1f <- object$models[[name]]
+get_Mf_1f.cevodata <- function(object, model_name = "Mf_1f", verbose = TRUE, ...) {
+  Mf_1f <- object$models[[model_name]]
   if (is.null(Mf_1f)) {
     msg(
       "Mf_1f's not calculated yet. Calculating with default bins",
       verbose = verbose
     )
     object <- calc_Mf_1f(object)
-    Mf_1f <- object$models[[name]]
+    Mf_1f <- object$models[[model_name]]
   }
   Mf_1f
 }

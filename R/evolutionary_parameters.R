@@ -2,8 +2,9 @@
 
 #' Get mutation rates by Williams
 #' @param object cevodata object  with fitted cevomod models
+#' @param models_name models_name
 #' @export
-get_mutation_rates <- function(object, model_name = "williams_neutral") {
+get_mutation_rates <- function(object, models_name = "williams_neutral") {
   mutation_rates <- get_models(object, models_name) |>
     transmute(
       .data$sample_id,
@@ -40,7 +41,7 @@ get_selection_coefficients <- function(object, Nmax = 10^10) {
   mutation_rates <- get_mutation_rates(object)
 
   subclones <- get_models(object) |>
-    filter(str_detect(component, "Subclone")) |>
+    filter(str_detect(.data$component, "Subclone")) |>
     drop_na_columns() |>
     select("sample_id", "component", "N_mutations", "cellularity") |>
     mutate(cellularity = 2 * .data$cellularity)

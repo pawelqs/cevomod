@@ -4,10 +4,12 @@
 \alias{get_mutation_rates}
 \title{Get mutation rates by Williams}
 \usage{
-get_mutation_rates(object, model_name = "williams_neutral")
+get_mutation_rates(object, models_name = "williams_neutral")
 }
 \arguments{
 \item{object}{cevodata object  with fitted cevomod models}
+
+\item{models_name}{models_name}
 }
 \description{
 Get mutation rates by Williams

@@ -33,8 +33,8 @@ generate_neutral_snvs <- function(mut_rate = 2, sample_below = 0.15, resolution 
         floor(mut_rate / sample_below^2 * (.data$VAF / sample_below)^2),
         n
       ),
-      alt_reads = round(DP * VAF),
-      ref_reads = round(DP * (1-VAF)),
+      alt_reads = round(.data$DP * .data$VAF),
+      ref_reads = round(.data$DP * (1 - .data$VAF)),
       mut_id = map(.data$n, ~ tibble(mut_id = rep("a", times = .x)))
     ) |>
     unnest("mut_id")

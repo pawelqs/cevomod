@@ -23,7 +23,7 @@ plot_SFS(object, ...)
 
 get_SFS(object, ...)
 
-\method{get_SFS}{cevodata}(object, name = "SFS", verbose = TRUE, ...)
+\method{get_SFS}{cevodata}(object, model_name = "SFS", verbose = TRUE, ...)
 }
 \arguments{
 \item{object}{SNVs tibble object}
@@ -35,6 +35,8 @@ get_SFS(object, ...)
 \item{mapping}{aes()}
 
 \item{geom}{geom}
+
+\item{model_name}{name of slot with SFS statistics}
 }
 \description{
 Creates  cevodata$models$SFS with the groupping variables and:

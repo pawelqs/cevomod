@@ -10,6 +10,7 @@ cut_f_intervals <- function(object, ...) {
 
 #' @rdname cut_f_intervals
 #' @param bins number of bins
+#' @param column name of column with frequencies, VAF or f
 #' @export
 cut_f_intervals.cevo_snvs <- function(object, bins = NULL, column = "VAF", ...) {
   intervals_column <- paste0(column, "_interval")

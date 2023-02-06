@@ -104,13 +104,15 @@ plot_clones <- function(clones) {
 #' @param mapping mapping, x is required
 #' @param ylim max y allowed
 #' @param color color
+#' @param ... other arguments passed to geom_line
 #' @export
 geom_powerlaw <- function(A, alpha, mapping, ylim = 1000, color = "#54b4FA", ...) {
+  . <- NULL
   geom_line(
-    cevomod:::join_aes(aes(VAF, y), mapping),
+    join_aes(aes(.data$VAF, .data$y), mapping),
     data = . %>%
-      mutate(y = A * 1 / VAF ^ alpha) %>%
-      filter(y <= ylim, y > 0),
+      mutate(y = A * 1 / .data$VAF ^ alpha) %>%
+      filter(.data$y <= ylim, y > 0),
     linewidth = 1.5,
     color = color,
     ...

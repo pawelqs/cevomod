@@ -31,7 +31,7 @@ plot_Mf_1f(object, ...)
 
 get_Mf_1f(object, ...)
 
-\method{get_Mf_1f}{cevodata}(object, name = "Mf_1f", verbose = TRUE, ...)
+\method{get_Mf_1f}{cevodata}(object, model_name = "Mf_1f", verbose = TRUE, ...)
 }
 \arguments{
 \item{object}{SNVs tibble object}
@@ -49,6 +49,8 @@ get_Mf_1f(object, ...)
 \item{scale}{scale data?}
 
 \item{geom}{ggplot geom to use, eg. geom_line()}
+
+\item{model_name}{name of slot with Mf_1f statistics}
 }
 \value{
 ggplot obj

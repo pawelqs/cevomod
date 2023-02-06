@@ -16,6 +16,8 @@ geom_powerlaw(A, alpha, mapping, ylim = 1000, color = "#54b4FA", ...)
 \item{ylim}{max y allowed}
 
 \item{color}{color}
+
+\item{...}{other arguments passed to geom_line}
 }
 \description{
 Plot power-law curve

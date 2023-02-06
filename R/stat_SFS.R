@@ -134,16 +134,17 @@ get_SFS <- function(object, ...) {
 
 
 #' @describeIn sfs Get SFS
+#' @param model_name name of slot with SFS statistics
 #' @export
-get_SFS.cevodata <- function(object, name = "SFS", verbose = TRUE, ...) {
-  sfs <- object$models[[name]]
+get_SFS.cevodata <- function(object, model_name = "SFS", verbose = TRUE, ...) {
+  sfs <- object$models[[model_name]]
   if (is.null(sfs)) {
     msg(
       "SFS's not calculated yet. Calculating with sample DP as number of bins",
       verbose = verbose
     )
     object <- calc_SFS(object)
-    sfs <- object$models[[name]]
+    sfs <- object$models[[model_name]]
   }
   sfs
 }

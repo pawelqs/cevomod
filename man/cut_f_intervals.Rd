@@ -15,6 +15,8 @@ cut_f_intervals(object, ...)
 \item{...}{other params}
 
 \item{bins}{number of bins}
+
+\item{column}{name of column with frequencies, VAF or f}
 }
 \description{
 Cut f or VAF into intervals
