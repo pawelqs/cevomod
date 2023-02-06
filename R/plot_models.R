@@ -106,3 +106,22 @@ plot_clones <- function(clones) {
     geom_point()
 }
 
+
+#' Plot power-law curve
+#' @param A A
+#' @param alpha power
+#' @param mapping mapping, x is required
+#' @param ylim max y allowed
+#' @param color color
+#' @export
+geom_powerlaw <- function(A, alpha, mapping, ylim = 1000, color = "#54b4FA", ...) {
+  geom_line(
+    cevomod:::join_aes(aes(VAF, y), mapping),
+    data = . %>%
+      mutate(y = A * 1 / VAF ^ alpha) %>%
+      filter(y <= ylim, y > 0),
+    linewidth = 1.5,
+    color = color,
+    ...
+  )
+}
