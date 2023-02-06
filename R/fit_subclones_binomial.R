@@ -11,7 +11,7 @@ fit_subclones <- function(object, ...) {
 
 #' @rdname fit_subclones
 #' @param N vector of numbers of clones to test
-#' @param powerlaw_model residual of which powerlaw model to use?
+#' @param powerlaw_model_name residual of which powerlaw model to use?
 #'   williams_neutral/tung_durrett
 #' @param verbose verbose?
 #' @export

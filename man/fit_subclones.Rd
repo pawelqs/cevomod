@@ -22,10 +22,10 @@ fit_subclones(object, ...)
 
 \item{N}{vector of numbers of clones to test}
 
-\item{verbose}{verbose?}
-
-\item{powerlaw_model}{residual of which powerlaw model to use?
+\item{powerlaw_model_name}{residual of which powerlaw model to use?
 williams_neutral/tung_durrett}
+
+\item{verbose}{verbose?}
 }
 \description{
 Fit subclonal distributions to neutral model residuals

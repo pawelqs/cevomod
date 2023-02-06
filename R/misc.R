@@ -1,5 +1,6 @@
 
 #' Get sample mutation burden
+#' @param cd cevodata object
 #' @export
 get_sample_mutation_burden <- function(cd) {
   SNVs(cd) |>
@@ -10,6 +11,7 @@ get_sample_mutation_burden <- function(cd) {
 
 
 #' Get tumor mutation burden
+#' @param cd cevodata object
 #' @export
 get_patient_mutation_burden <- function(cd) {
   SNVs(cd) |>

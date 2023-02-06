@@ -6,6 +6,9 @@
 \usage{
 get_patient_mutation_burden(cd)
 }
+\arguments{
+\item{cd}{cevodata object}
+}
 \description{
 Get tumor mutation burden
 }

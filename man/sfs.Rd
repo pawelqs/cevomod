@@ -37,6 +37,8 @@ get_SFS(object, ...)
 \item{geom}{geom}
 
 \item{model_name}{name of slot with SFS statistics}
+
+\item{verbose}{verbose?}
 }
 \description{
 Creates  cevodata$models$SFS with the groupping variables and:

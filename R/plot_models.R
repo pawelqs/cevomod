@@ -112,7 +112,7 @@ geom_powerlaw <- function(A, alpha, mapping, ylim = 1000, color = "#54b4FA", ...
     join_aes(aes(.data$VAF, .data$y), mapping),
     data = . %>%
       mutate(y = A * 1 / .data$VAF ^ alpha) %>%
-      filter(.data$y <= ylim, y > 0),
+      filter(.data$y <= ylim, .data$y > 0),
     linewidth = 1.5,
     color = color,
     ...

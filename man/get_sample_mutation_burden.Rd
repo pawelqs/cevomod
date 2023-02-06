@@ -6,6 +6,9 @@
 \usage{
 get_sample_mutation_burden(cd)
 }
+\arguments{
+\item{cd}{cevodata object}
+}
 \description{
 Get sample mutation burden
 }

@@ -135,6 +135,7 @@ get_SFS <- function(object, ...) {
 
 #' @describeIn sfs Get SFS
 #' @param model_name name of slot with SFS statistics
+#' @param verbose verbose?
 #' @export
 get_SFS.cevodata <- function(object, model_name = "SFS", verbose = TRUE, ...) {
   sfs <- object$models[[model_name]]

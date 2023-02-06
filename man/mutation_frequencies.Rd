@@ -13,6 +13,8 @@ calc_mutation_frequencies(object, ...)
 \arguments{
 \item{object}{data object}
 
+\item{...}{other arguments}
+
 \item{method}{method: "use_VAF". Other methods will be implemented later}
 }
 \description{
