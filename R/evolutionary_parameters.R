@@ -3,8 +3,8 @@
 #' Get mutation rates by Williams
 #' @param object cevodata object  with fitted cevomod models
 #' @export
-get_mutation_rates <- function(object) {
-  mutation_rates <- get_neutral_models(object) |>
+get_mutation_rates <- function(object, model_name = "williams_neutral") {
+  mutation_rates <- get_models(object, models_name) |>
     transmute(
       .data$sample_id,
       mutation_rate_williams = .data$A

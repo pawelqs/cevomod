@@ -6,7 +6,7 @@
 annotate_mutation_contexts <- function(snvs, bsgenome) {
   rlang::check_installed("mutSignatures", reason = "Used to annotate mutations")
   snvs |>
-    filter(str_length(ref) == 1, str_length(alt) == 1) |>
+    filter(str_length(.data$ref) == 1, str_length(.data$alt) == 1) |>
     mutSignatures::attachContext(
       chr_colName = "chrom",
       start_colName = "pos",

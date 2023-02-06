@@ -4,10 +4,12 @@
 \alias{plot_neutral_A_coefficients}
 \title{Plot 'a' coefficients for all fitted neutral models}
 \usage{
-plot_neutral_A_coefficients(object, ...)
+plot_neutral_A_coefficients(object, model_name = "williams_neutral", ...)
 }
 \arguments{
 \item{object}{cevodata object}
+
+\item{model_name}{modelname}
 
 \item{...}{other parameters passed to geom}
 }

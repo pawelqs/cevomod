@@ -1,3 +1,7 @@
+# cevomod 0.5.x
+
+* **v0.5.0** fitting Tung-Durrett models implemented
+
 # cevomod 0.4.x
 
 * **v0.4.0** calculation of mutation rates and selection coefficients by Williams

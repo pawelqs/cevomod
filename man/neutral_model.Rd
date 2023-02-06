@@ -22,7 +22,7 @@ get_neutral_models(object, best_only = TRUE, ...)
 
 get_neutral_models(object, best_only = TRUE, ...)
 
-layer_lm_fits(cd, ...)
+layer_lm_fits(cd, model_name = "williams_neutral", ...)
 }
 \arguments{
 \item{object}{SNVs tibble object}
@@ -38,6 +38,8 @@ layer_lm_fits(cd, ...)
 \item{best_only}{return only the best fits}
 
 \item{cd}{cevodata}
+
+\item{model_name}{modelname}
 }
 \description{
 Creates  cevodata$models$neutral_model

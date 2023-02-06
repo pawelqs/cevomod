@@ -146,9 +146,10 @@ plot_Mf_1f_fits <- function(object, ...) {
 #' @describeIn neutral_model Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
 #'
 #' @param cd cevodata
+#' @param model_name modelname
 #' @param ... other params passed to geom_segment()
 #' @export
-layer_lm_fits <- function(cd, ...) {
+layer_lm_fits <- function(cd, model_name = "williams_neutral", ...) {
   geom_segment(
     aes(
       x = 1/.data$from,
@@ -157,7 +158,7 @@ layer_lm_fits <- function(cd, ...) {
       yend = 1/.data$to * .data$A + .data$b
     ),
     size = 1,
-    data = get_neutral_models(cd) |>
+    data = get_models(cd, model_name) |>
       left_join(cd$metadata, by = "sample_id"),
     show.legend = FALSE,
     ...
@@ -167,6 +168,7 @@ layer_lm_fits <- function(cd, ...) {
 
 #' Plot 'a' coefficients for all fitted neutral models
 #' @param object cevodata object
+#' @param model_name modelname
 #' @param ... other parameters passed to geom
 #' @export
 plot_neutral_A_coefficients <- function(object, ...) {
@@ -175,8 +177,8 @@ plot_neutral_A_coefficients <- function(object, ...) {
 
 
 #' @export
-plot_neutral_A_coefficients <- function(object, ...) {
-  get_neutral_models(object, best_only = FALSE) |>
+plot_neutral_A_coefficients <- function(object, model_name = "williams_neutral", ...) {
+  get_models(object, model_name, best_only = FALSE) |>
     ggplot() +
     aes(x = .data$from, xend = .data$to, y = .data$A, yend = .data$A, color = .data$best) +
     geom_segment(...) +
