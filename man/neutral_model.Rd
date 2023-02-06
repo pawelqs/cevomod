@@ -10,7 +10,13 @@
 \usage{
 fit_neutral_models(object, ...)
 
-\method{fit_neutral_models}{cevodata}(object, rsq_treshold = 0.98, verbose = TRUE, ...)
+\method{fit_neutral_models}{cevodata}(
+  object,
+  rsq_treshold = 0.98,
+  name = "neutral_models",
+  verbose = TRUE,
+  ...
+)
 
 get_neutral_models(object, best_only = TRUE, ...)
 
@@ -24,6 +30,8 @@ layer_lm_fits(cd, ...)
 \item{...}{other params passed to geom_segment()}
 
 \item{rsq_treshold}{R-squared tresholds to keep model as neutral}
+
+\item{name}{name in the models' slot}
 
 \item{verbose}{verbose?}
 

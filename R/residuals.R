@@ -9,6 +9,38 @@ get_residuals <- function(cd, model = cd$active_model) {
 }
 
 
+calc_powerlaw_model_residuals <- function(object, models_name, ...) {
+  powerlaw_models <- get_models(object, models_name) |>
+    select("sample_id", "from", "to", "A", "b", "alpha")
+  sfs <- get_SFS(object)
+  nbins <- get_sample_sequencing_depths(SNVs(object)) |>
+    transmute(.data$sample_id, nbins = .data$median_DP)
+
+  residuals <- sfs |>
+    select("sample_id", "VAF_interval", "VAF", SFS = "y") |>
+    inner_join(powerlaw_models, by = "sample_id") |>
+    left_join(nbins, by = "sample_id") |>
+    mutate(
+      neutr = (.data$VAF >= .data$from & .data$VAF <= .data$to),
+      neutral_pred = calc_powerlaw_curve(.data$VAF, .data$A, .data$alpha, .data$nbins),
+      neutral_resid = .data$neutral_pred - .data$SFS,
+      neutral_resid_clones = if_else(.data$neutral_resid > 0, 0, -.data$neutral_resid),
+      sampling_rate = .data$neutral_resid / .data$neutral_pred,
+      model_resid = .data$neutral_resid,
+    ) |>
+    select(-("nbins":"alpha"))
+
+  slot_name <- paste0("residuals_", models_name)
+  object$misc[[slot_name]] <- residuals
+  object
+}
+
+
+calc_powerlaw_curve <- function(VAF, A, alpha, nbins) {
+  if_else(VAF < 0, 0, (A / nbins) / VAF^alpha)
+}
+
+
 #' Plot model residuals
 #'
 #' @param object cevodata object
