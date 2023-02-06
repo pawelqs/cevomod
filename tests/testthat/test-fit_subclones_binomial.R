@@ -4,7 +4,7 @@ fit_binomial_models_cols <- c("N", "component", "cellularity", "N_mutations", "B
 test_that("fit_binomial_models() works with very few remaining mutations", {
   residuals_1 <- tibble(VAF = 1:100/100) |>
     mutate(
-      neutral_resid_clones = case_when(
+      powerlaw_resid_clones = case_when(
         VAF == 4/100 ~ 100,
         VAF == 6/100 ~ 50,
         TRUE ~ 0
@@ -19,7 +19,7 @@ test_that("fit_binomial_models() works with very few remaining mutations", {
 test_that("fit_binomial_models() works with no remaining mutations", {
   residuals_0 <- tibble(
     VAF = 1:100/100,
-    neutral_resid_clones = 0
+    powerlaw_resid_clones = 0
   )
   res <- fit_binomial_models(residuals_0, N = 1:3)
   expect_equal(nrow(res), 0)

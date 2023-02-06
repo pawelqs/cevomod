@@ -37,7 +37,7 @@ plot_models.cevodata <- function(object,
     group_by(.data$sample_id) |>
     mutate(
       ylim = max(.data$SFS) * 1.2,
-      neutral_pred = if_else(.data$neutral_pred > .data$ylim, .data$ylim, .data$neutral_pred)
+      powerlaw_pred = if_else(.data$powerlaw_pred > .data$ylim, .data$ylim, .data$powerlaw_pred)
     ) |>
     ungroup() |>
     mutate(neutr = .data$VAF >= .data$from & .data$VAF <= .data$to)
@@ -45,7 +45,7 @@ plot_models.cevodata <- function(object,
   model_layers <- list(
     if (neutral_tail && neutral_lm_fitted) {
       geom_area(
-        aes(.data$VAF, .data$neutral_pred),
+        aes(.data$VAF, .data$powerlaw_pred),
         data = resid, # |> filter(.data$VAF >= 0),
         fill = "white", color = "gray90",
         alpha = 0.3,
@@ -55,8 +55,8 @@ plot_models.cevodata <- function(object,
     },
     # if (neutral_tail && neutral_lm_fitted) {
     #   geom_line(
-    #     aes(.data$VAF, .data$neutral_pred),
-    #     data = resid |> filter(.data$neutr, .data$neutral_pred < .data$ylim),
+    #     aes(.data$VAF, .data$powerlaw_pred),
+    #     data = resid |> filter(.data$neutr, .data$powerlaw_pred < .data$ylim),
     #     size = 1, show.legend = FALSE
     #   )
     # },
@@ -85,7 +85,7 @@ plot_models.cevodata <- function(object,
     if (final_fit && neutral_lm_fitted && subclones_fitted) {
       geom_line(
         aes(.data$VAF, .data$model_pred),
-        data = resid |> filter(.data$neutral_pred < .data$ylim),
+        data = resid |> filter(.data$powerlaw_pred < .data$ylim),
         size = 1, color = "red"
       )
     }

@@ -24,19 +24,19 @@ test_that("Fitting neutral partial models works", {
 test_that("calc_powerlaw_curve works", {
   dt <- tibble(VAF = 1:100/100, A = 176.5929, alpha = 2, nbins = 100)
   curve <- dt |>
-    mutate(neutral_pred = calc_powerlaw_curve(VAF, A, alpha, nbins))
+    mutate(powerlaw_pred = calc_powerlaw_curve(VAF, A, alpha, nbins))
   expect_equal(nrow(curve), 100)
   expect_equal(
-    curve$neutral_pred[1:5],
+    curve$powerlaw_pred[1:5],
     c(17085.6315, 4271.4079, 1898.4035, 1067.8520, 683.4253),
     tolerance = 0.1
   )
   expect_equal(
-    curve$neutral_pred[95:100],
+    curve$powerlaw_pred[95:100],
     c(1.956708, 1.916156, 1.876851, 1.838743, 1.801784, 1.765929),
     tolerance = 0.0001
   )
-  expect_true("neutral_pred" %in% names(curve))
+  expect_true("powerlaw_pred" %in% names(curve))
 })
 
 
@@ -51,7 +51,7 @@ test_that("calc_residuals creates proper tibble", {
   cd <- calc_powerlaw_model_residuals(cd, "neutral_models")
   resids <- get_residuals(cd, "neutral_models")
   expect_equal(nrow(resids), 101)
-  expect_true(all(c("neutral_resid", "sampling_rate") %in% names(resids)))
+  expect_true(all(c("powerlaw_resid", "sampling_rate") %in% names(resids)))
   expect_equal(
     resids$sampling_rate[1:5],
     c(NaN, 1.000000, 0.999868, 0.99890, 0.995713),

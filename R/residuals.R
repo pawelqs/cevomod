@@ -29,11 +29,11 @@ calc_powerlaw_model_residuals <- function(object, models_name, ...) {
         } else NA,
     ) |>
     mutate(
-      neutral_pred = calc_powerlaw_curve(.data$VAF, .data$A, .data$alpha, .data$nbins),
-      neutral_resid = .data$neutral_pred - .data$SFS,
-      neutral_resid_clones = if_else(.data$neutral_resid > 0, 0, -.data$neutral_resid),
-      sampling_rate = .data$neutral_resid / .data$neutral_pred,
-      model_resid = .data$neutral_resid,
+      powerlaw_pred = calc_powerlaw_curve(.data$VAF, .data$A, .data$alpha, .data$nbins),
+      powerlaw_resid = .data$powerlaw_pred - .data$SFS,
+      powerlaw_resid_clones = if_else(.data$powerlaw_resid > 0, 0, -.data$powerlaw_resid),
+      sampling_rate = .data$powerlaw_resid / .data$powerlaw_pred,
+      model_resid = .data$powerlaw_resid,
     ) |>
     select(-("nbins":"alpha"))
 
@@ -102,7 +102,7 @@ plot_residuals_neutral_model.cevodata <- function(object,
     group_by(.data$sample_id) |>
     mutate(width = 0.9 / n())
   binomial_model_fitted <- !is.null(residuals[["binom_pred"]])
-  default_mapping <- aes(.data$VAF, .data$neutral_resid_clones, group = .data$sample_id, width = .data$width)
+  default_mapping <- aes(.data$VAF, .data$powerlaw_resid_clones, group = .data$sample_id, width = .data$width)
   final_mapping <- join_aes(default_mapping, mapping)
   clones_fit <- if (fit_clones && binomial_model_fitted) {
     fit_mapping <- aes(.data$VAF, .data$binom_pred, group = .data$sample_id)

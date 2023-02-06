@@ -24,7 +24,7 @@ fit_subclones.cevodata <- function(object, N = 1:3, verbose = TRUE, ...) {
     transmute(.data$sample_id, .data$VAF, sequencing_DP = .data$median_DP)
 
   models <- residuals |>
-    select("sample_id", "VAF", "neutral_resid_clones") |>
+    select("sample_id", "VAF", "powerlaw_resid_clones") |>
     nest_by(.data$sample_id) |>
     summarise(fit_binomial_models(.data$data, N = N), .groups = "drop") |>
     mutate(model = "binomial_clones", .after = "sample_id") |>
@@ -48,7 +48,7 @@ fit_subclones.cevodata <- function(object, N = 1:3, verbose = TRUE, ...) {
     select(-"model_resid") |>
     left_join(clonal_predictions, by = c("sample_id", "VAF_interval")) |>
     mutate(
-      model_pred = .data$neutral_pred + .data$binom_pred,
+      model_pred = .data$powerlaw_pred + .data$binom_pred,
       model_resid = .data$SFS - .data$model_pred
     )
 
@@ -70,7 +70,7 @@ fit_binomial_models <- function(...) {
 
 
 fit_binomial_models_Mclust <- function(residuals, N) {
-  VAFs <- rep(residuals$VAF, times = floor(residuals$neutral_resid_clones))
+  VAFs <- rep(residuals$VAF, times = floor(residuals$powerlaw_resid_clones))
   if (length(VAFs) == 0) {
     return(empty_clones_tibble())
   }

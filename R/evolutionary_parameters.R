@@ -22,7 +22,7 @@ get_mutation_rates <- function(object) {
   # residuals |>
   #   filter(VAF > min_VAF, VAF < max_VAF) |>
   #   group_by(sample_id) |>
-  #   summarise(N = sum(neutral_pred)) |>
+  #   summarise(N = sum(powerlaw_pred)) |>
   #   left_join(bin_widths) |>
   #   mutate(
   #     min_VAF = min_VAF - bin_width / 2,
