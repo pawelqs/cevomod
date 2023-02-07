@@ -28,7 +28,7 @@ fit_tung_durrett_models.cevodata <- function(object,
                                              verbose = TRUE, ...) {
   msg("Fitting Tung-Durrett models...", verbose = verbose)
   sfs <- get_SFS(object, name = "SFS")
-  bounds <- get_VAF_range(SNVs(object), pct_left = 0.02, pct_right = 0.98)
+  bounds <- get_VAF_range(SNVs(object), pct_left = 0, pct_right = 0.98)
   nbins <- get_sample_sequencing_depths(SNVs(object)) |>
     transmute(.data$sample_id, nbins = .data$median_DP)
 
@@ -76,9 +76,8 @@ td_objective_function <- function(params, x, y) {
 
   # Reward for number of mutations under the curve
   y2 <- pmin(y1, y)
-  before_max <- seq_along(y) < which.max(y)
-  y2[sampled_range] <- 0
-  # weights <- (1 - x) ^ 2
+  before_max <- seq_along(y) < which.max(y[x < 0.3]) # detects peak up to VAF = 0.3
+  y2[before_max | sampled_range] <- 0
   mut_reward <- sum(y2)
 
   # Penalty for bins too low for the curve
