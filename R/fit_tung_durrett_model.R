@@ -69,42 +69,30 @@ td_objective_function <- function(params, x, y) {
   alpha <- params[[2]]
   y1 <- A * 1/(x ^ alpha)
   err <- y - y1
+  err[err < -1000000] <- -1000000
 
-  zeroed_count <- 0
-  for (i in seq_along(err)) {
-    if (err[[i]] < 0) {
-      err[[i]] <- 0
-      zeroed_count <- zeroed_count + 1
-    }
-    if (err[[i]] > 0)
-      break
-  }
+  err_segments <- segment(err < 0)
+  sampled_range <- err < 0 & err_segments == 0
 
-  tail_muts <- pmin(y, y1)[-(1:zeroed_count)]
-  # tail_mut_count <- sum(tail_muts) / sum(y)
-  weights <- (1 - x[-(1:zeroed_count)]) ^ 2
+  # Reward for number of mutations under the curve
+  y2 <- pmin(y1, y)
+  before_max <- seq_along(y) < which.max(y)
+  y2[sampled_range] <- 0
   # weights <- (1 - x) ^ 2
-  # weights <- (length(tail_muts):1) / length(tail_muts)^2
-  mut_reward <- sum(tail_muts*weights)
-  # mut_reward <- sum((tail_muts*weights)^2)
+  mut_reward <- sum(y2)
 
-  scaled_err <- err
-  scaled_err[is.infinite(scaled_err)] <- 0
-  negatives <- scaled_err < 0
-  segmented <- segment(negatives)
-  segments <- unique(segmented)
-
-  weights <- segmented
-  for (seg in segments) {
-    n <- sum(segmented == seg)
-    weights[segmented == seg] <- n
+  # Penalty for bins too low for the curve
+  weights <- err_segments
+  for (seg in err_segments) {
+    seg_length <- sum(err_segments == seg)
+    weights[err_segments == seg] <- seg_length
   }
-  scaled_err[scaled_err > 0] <- 0
-  scaled_err <- scaled_err / y
-  scaled_err[is.infinite(scaled_err)] <- 0
-  scaled_err <- abs(scaled_err) + 1
-  # too_high_penalty <- sum(scaled_err[scaled_err < 0] ^ 2, na.rm = TRUE)
-  too_high_penalty <- sum(scaled_err^weights)
+
+  too_low_err <- err
+  too_low_err[sampled_range] <- 0
+  too_low_err[too_low_err > 0] <- 0
+  too_low_err <- abs(too_low_err)
+  too_high_penalty <- sum(too_low_err^weights)
 
   maxim <- mut_reward - too_high_penalty
   -maxim
