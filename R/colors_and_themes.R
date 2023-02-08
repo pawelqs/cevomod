@@ -127,7 +127,25 @@ hide_facet_labels <- function() {
 
 # ---------------------------- color scales ------------------------------------
 
-colors <- list(
+#' Some colors
+#' @export
+# colors <-
+colors <- structure(
+  list(
+    blue = "#1A6384",
+    red = "#5B1414"
+  ),
+  class = c("cevo_colors", "list")
+)
+
+
+#' @export
+print.cevo_colors <- function(x, ...) {
+  iwalk(x, ~cli::cat_line(.y, background_col = .x))
+}
+
+
+palettes <- list(
   starfleet = c("#5B1414", "#AD722C", "#1A6384")
 )
 
@@ -140,14 +158,14 @@ colors <- list(
 #' @param ... other arguments passed to scale_*_manual()
 #' @export
 scale_fill_cevomod <- function(palette = "starfleet", ...) {
-  scale_fill_manual(values = colors[[palette]], ...)
+  scale_fill_manual(values = palettes[[palette]], ...)
 }
 
 
 #' @rdname scale_fill_cevomod
 #' @export
 scale_color_cevomod <- function(palette = "starfleet", ...) {
-  scale_color_manual(values = colors[[palette]], ...)
+  scale_color_manual(values = palettes[[palette]], ...)
 }
 
 
