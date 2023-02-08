@@ -1,10 +1,22 @@
 
 #' Fitting Tung Durrett models
 #'
+#' `fit_tung_durrett_models()` uses `stats::optim` to find optimal A and alpha
+#' whch maximizes SFS area under the powerlaw curve (*sampled* region of SFS and
+#' the range of VAF values below the maximum SFS value does not count) and
+#' minimizes negative error - where the curve is above the real SFS (*sampled*
+#' are does not count). Penalty for the negative error depends on the number of
+#' points with the negative error value. Penalty value is the sum of error values
+#' to the power of x, where x is the length of the vector of negative error values.
+#' This allows the powerlaw curve to detach from the SFS for 1 or two bins, but
+#' then the penalty rises extremely.
+#'
 #' @param object cevodata
 #' @param name name in the models' slot
+#' @param inits initial values for optimization
+#' @param control control param of stats::optim()
 #' @param verbose verbose?
-#' @param ... other arguments
+#' @param ... other arguments passed to stats::optim()
 #' @examples
 #' data("tcga_brca_test")
 #' cd <- tcga_brca_test |>
@@ -25,6 +37,8 @@ fit_tung_durrett_models <- function(object, ...) {
 #' @export
 fit_tung_durrett_models.cevodata <- function(object,
                                              name = "tung_durrett",
+                                             inits = list(A = 9, alpha = 1),
+                                             control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                              verbose = TRUE, ...) {
   msg("Fitting Tung-Durrett models...", verbose = verbose)
   sfs <- get_SFS(object, name = "SFS")
@@ -44,14 +58,18 @@ fit_tung_durrett_models.cevodata <- function(object,
       model = "tung_durrett",
       component = "powerlaw",
       opt = stats::optim(
-        par = c(5, 1),
+        par = unlist(inits),
         fn = td_objective_function,
         x = data$VAF,
-        y = data$y
+        y = data$y,
+        control = control,
+        ...
       ) |> list(),
       A = .data$opt$par[[1]] * round(.data$nbins),
       alpha = .data$opt$par[[2]],
-      val = -.data$opt$value,
+      convergence = .data$opt$convergence,
+      message = .data$opt$message,
+      value = -.data$opt$value,
       .groups = "drop"
     ) |>
     select(-"opt")

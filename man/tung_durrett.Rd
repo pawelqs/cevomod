@@ -8,19 +8,38 @@
 \usage{
 fit_tung_durrett_models(object, ...)
 
-\method{fit_tung_durrett_models}{cevodata}(object, name = "tung_durrett", verbose = TRUE, ...)
+\method{fit_tung_durrett_models}{cevodata}(
+  object,
+  name = "tung_durrett",
+  inits = list(A = 9, alpha = 1),
+  control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{object}{cevodata}
 
-\item{...}{other arguments}
+\item{...}{other arguments passed to stats::optim()}
 
 \item{name}{name in the models' slot}
+
+\item{inits}{initial values for optimization}
+
+\item{control}{control param of stats::optim()}
 
 \item{verbose}{verbose?}
 }
 \description{
-Fitting Tung Durrett models
+\code{fit_tung_durrett_models()} uses \code{stats::optim} to find optimal A and alpha
+whch maximizes SFS area under the powerlaw curve (\emph{sampled} region of SFS and
+the range of VAF values below the maximum SFS value does not count) and
+minimizes negative error - where the curve is above the real SFS (\emph{sampled}
+are does not count). Penalty for the negative error depends on the number of
+points with the negative error value. Penalty value is the sum of error values
+to the power of x, where x is the length of the vector of negative error values.
+This allows the powerlaw curve to detach from the SFS for 1 or two bins, but
+then the penalty rises extremely.
 }
 \examples{
 data("tcga_brca_test")
