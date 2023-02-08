@@ -1,6 +1,8 @@
 # cevomod 0.5.x
 
-* **v0.5.0** fitting Tung-Durrett models implemented
+* **v0.5.0** 
+  - fitting Tung-Durrett models implemented
+  - compare_models() implemented
 
 # cevomod 0.4.x
 
