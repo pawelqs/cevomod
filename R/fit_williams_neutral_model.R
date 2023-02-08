@@ -17,24 +17,24 @@
 #'   add_SNV_data(snvs) |>
 #'   calc_Mf_1f() |>
 #'   calc_SFS() |>
-#'   fit_neutral_models(rsq_treshold = 0.99)
+#'   fit_williams_neutral_models(rsq_treshold = 0.99)
 #'
 #' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
 #'   layer_lm_fits(cd)
-#' @name neutral_model
+#' @name williams_neutral_model
 NULL
 
 
-#' @rdname neutral_model
+#' @rdname williams_neutral_model
 #' @export
-fit_neutral_models <- function(object, ...) {
-  UseMethod("fit_neutral_models")
+fit_williams_neutral_models <- function(object, ...) {
+  UseMethod("fit_williams_neutral_models")
 }
 
 
-#' @describeIn neutral_model Fit Williams neutral models to the data
+#' @rdname williams_neutral_model
 #' @export
-fit_neutral_models.cevodata <- function(object,
+fit_williams_neutral_models.cevodata <- function(object,
                                         rsq_treshold = 0.98,
                                         name = "williams_neutral",
                                         verbose = TRUE, ...) {
@@ -112,26 +112,6 @@ tidy_lm <- function(x, y) {
 }
 
 
-#' @rdname neutral_model
-#' @export
-get_neutral_models <- function(object, ...) {
-  UseMethod("get_neutral_models")
-}
-
-
-#' @describeIn neutral_model Get neutral models
-#' @param best_only return only the best fits
-#' @export
-get_neutral_models <- function(object, best_only = TRUE, ...) {
-  models <- object$models$neutral_models
-  if (best_only) {
-    filter(models, .data$best)
-  } else {
-    models
-  }
-}
-
-
 #' Plot M(f) ~ 1/f fits
 #' @param object cevodata object
 #' @param ... other params
@@ -143,7 +123,7 @@ plot_Mf_1f_fits <- function(object, ...) {
 }
 
 
-#' @describeIn neutral_model Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
+#' @describeIn williams_neutral_model Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
 #'
 #' @param cd cevodata
 #' @param model_name modelname

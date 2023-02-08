@@ -2,7 +2,7 @@ data("tcga_brca_test")
 
 test_that("Comparing multiple models works", {
   object <- tcga_brca_test |>
-    fit_neutral_models(verbose = FALSE) |>
+    fit_williams_neutral_models(verbose = FALSE) |>
     fit_tung_durrett_models(verbose = FALSE)
   model_names <- c("williams_neutral", "tung_durrett")
   column_name <- "powerlaw_pred"

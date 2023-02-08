@@ -34,7 +34,7 @@ test_that("Testing td_objective_function", {
 
 # test_that("Testing tung-durret models on Shlush_AML and tcga_brca_test data", {
 #   object <- tcga_brca_test |>
-#     fit_neutral_models() |>
+#     fit_williams_neutral_models() |>
 #     fit_tung_durrett_models()
 #   model_names <- c("williams_neutral", "tung_durrett")
 #   column_name <- "powerlaw_pred"
@@ -43,7 +43,7 @@ test_that("Testing td_objective_function", {
 #   cd <- Shlush_AML |>
 #     calc_SFS() |>
 #     calc_Mf_1f() |>
-#     fit_neutral_models() |>
+#     fit_williams_neutral_models() |>
 #     fit_tung_durrett_models()
 #   compare_models(cd, model_names, column_name)
 # })
