@@ -118,3 +118,31 @@ geom_powerlaw <- function(A, alpha, mapping, ylim = 1000, color = "#54b4FA", ...
     ...
   )
 }
+
+
+#' Compare fits from many models
+#' @param object cevodata object
+#' @param model_names models to compare
+#' @param column_name residuals_* column to plot
+#' @param ... other arguments passed to plot_SFS()
+#' @export
+compare_models <- function(object, model_names, column_name, ...) {
+  ylimits <- get_SFS(object) |>
+    group_by(.data$sample_id) |>
+    summarise(ylim = 1.5 * max(.data$y))
+
+  resids <- model_names %>%
+    set_names(model_names) |>
+    map(~get_residuals(object, .x)) |>
+    bind_rows(.id = "model_name") |>
+    left_join(ylimits, by = "sample_id") |>
+    filter(!!sym(column_name) < .data$ylim, .data$VAF >= 0)
+
+  plot_SFS(object, geom = "bar", ...) +
+    geom_line(
+      aes(y = !!sym(column_name), color = .data$model_name, group = .data$model_name),
+      data = resids
+    ) +
+    facet_wrap(~.data$sample_id, scales = "free_y")
+}
+
