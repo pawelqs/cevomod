@@ -13,7 +13,8 @@
 #'
 #' @param object cevodata
 #' @param name name in the models' slot
-#' @param inits initial values for optimization
+#' @param pct_left drop pct of the lowest frequency mutations
+#' @param pct_right drop pct of the highest frequency mutations
 #' @param control control param of stats::optim()
 #' @param verbose verbose?
 #' @param ... other arguments passed to stats::optim()
@@ -37,12 +38,15 @@ fit_tung_durrett_models <- function(object, ...) {
 #' @export
 fit_tung_durrett_models.cevodata <- function(object,
                                              name = "tung_durrett",
-                                             inits = list(A = 9, alpha = 1),
+                                             pct_left = 0, pct_right = 0.98,
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                              verbose = TRUE, ...) {
   msg("Fitting Tung-Durrett models...", verbose = verbose)
+
   sfs <- get_SFS(object, name = "SFS")
-  bounds <- get_VAF_range(SNVs(object), pct_left = 0, pct_right = 0.98)
+  # bounds <- get_non_zero_SFS_range(sfs, y_treshold = 2, allowed_zero_bins = 2) |>
+  #   rename(lower_bound = "from", higher_bound = "to")
+  bounds <- get_VAF_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
   nbins <- get_sample_sequencing_depths(SNVs(object)) |>
     transmute(.data$sample_id, nbins = .data$median_DP)
 
@@ -51,14 +55,19 @@ fit_tung_durrett_models.cevodata <- function(object,
     filter(.data$VAF > .data$lower_bound, .data$VAF < .data$higher_bound) |>
     select("sample_id", "VAF", "y") |>
     nest_by(.data$sample_id) |>
-    left_join(nbins, by = "sample_id")
+    left_join(nbins, by = "sample_id") |>
+    expand_grid(
+      init_A = c(1, 2, 4, 8, 16, 32),
+      init_alpha = seq(0.8, 4, by = 0.2)
+    ) |>
+    rowwise("sample_id")
 
   models <- data |>
     summarise(
       model = "tung_durrett",
       component = "powerlaw",
       opt = stats::optim(
-        par = unlist(inits),
+        par = c(.data$init_A, .data$init_alpha),
         fn = td_objective_function,
         x = data$VAF,
         y = data$y,
@@ -72,7 +81,9 @@ fit_tung_durrett_models.cevodata <- function(object,
       value = -.data$opt$value,
       .groups = "drop"
     ) |>
-    select(-"opt")
+    select(-"opt") |>
+    evaluate_td_models() |>
+    filter(.data$best)
   class(models) <- c("cevo_powerlaw_models", class(models))
 
   object$models[[name]] <- models
@@ -95,7 +106,7 @@ td_objective_function <- function(params, x, y) {
   # Reward for number of mutations under the curve
   y2 <- pmin(y1, y)
   before_max <- seq_along(y) < which.max(y[x < 0.3]) # detects peak up to VAF = 0.3
-  y2[before_max | sampled_range] <- 0
+  y2[before_max | sampled_range | (x > 0.4)] <- 0
   mut_reward <- sum(y2)
 
   # Penalty for bins too low for the curve
@@ -113,4 +124,12 @@ td_objective_function <- function(params, x, y) {
 
   maxim <- mut_reward - too_high_penalty
   -maxim
+}
+
+
+evaluate_td_models <- function(tbl) {
+  tbl |>
+    group_by(.data$sample_id) |>
+    arrange(desc(.data$value), .by_group = TRUE) |>
+    mutate(best = row_number() == 1)
 }

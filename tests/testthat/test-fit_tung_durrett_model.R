@@ -5,7 +5,7 @@ test_that("fit_tung_durrett_models models have non-negative objective fun value"
   cd <- tcga_brca_test |>
     fit_tung_durrett_models(verbose = FALSE)
   td <- get_models(cd, "tung_durrett")
-  expect_true(all(td$value >= 0))
+  expect_true(all(td$value > 2000))
 })
 
 
@@ -28,22 +28,23 @@ test_that("Testing td_objective_function", {
   y <- dt$y
   params <- c(255.9222929 / 74, 2.912159)
   res <- -td_objective_function(params, x, y)
-  expect_true(res > 2500)
+  expect_true(res > 2000)
 })
 
 
 # test_that("Testing tung-durret models on Shlush_AML and tcga_brca_test data", {
-#   object <- tcga_brca_test |>
-#     fit_williams_neutral_models() |>
-#     fit_tung_durrett_models()
-#   model_names <- c("williams_neutral", "tung_durrett")
-#   column_name <- "powerlaw_pred"
-#   compare_models(object, model_names, column_name)
-#
-#   cd <- Shlush_AML |>
-#     calc_SFS() |>
-#     calc_Mf_1f() |>
-#     fit_williams_neutral_models() |>
-#     fit_tung_durrett_models()
-#   compare_models(cd, model_names, column_name)
+  # object <- tcga_brca_test |>
+  #   fit_williams_neutral_models() |>
+  #   fit_tung_durrett_models()
+  # model_names <- c("williams_neutral", "tung_durrett")
+  # column_name <- "powerlaw_pred"
+  # compare_models(object, model_names, column_name)
+  #
+  # cd <- Shlush_AML |>
+  #   calc_SFS() |>
+  #   calc_Mf_1f() |>
+  #   fit_williams_neutral_models() |>
+  #   fit_tung_durrett_models()
+  # compare_models(cd, model_names, column_name)
+  # cd |>  filter(sample_id == "AMLRO-9_Rx") |> compare_models(model_names, column_name)
 # })

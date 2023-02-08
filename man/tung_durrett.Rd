@@ -11,7 +11,8 @@ fit_tung_durrett_models(object, ...)
 \method{fit_tung_durrett_models}{cevodata}(
   object,
   name = "tung_durrett",
-  inits = list(A = 9, alpha = 1),
+  pct_left = 0,
+  pct_right = 0.98,
   control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
   verbose = TRUE,
   ...
@@ -24,7 +25,9 @@ fit_tung_durrett_models(object, ...)
 
 \item{name}{name in the models' slot}
 
-\item{inits}{initial values for optimization}
+\item{pct_left}{drop pct of the lowest frequency mutations}
+
+\item{pct_right}{drop pct of the highest frequency mutations}
 
 \item{control}{control param of stats::optim()}
 

@@ -136,6 +136,7 @@ compare_models <- function(object, model_names, column_name, ...) {
     map(~get_residuals(object, .x)) |>
     bind_rows(.id = "model_name") |>
     left_join(ylimits, by = "sample_id") |>
+    left_join(object$metadata, by = "sample_id") |>
     filter(!!sym(column_name) < .data$ylim, .data$VAF >= 0)
 
   plot_SFS(object, geom = "bar", ...) +
