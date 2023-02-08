@@ -149,3 +149,27 @@ get_SFS.cevodata <- function(object, model_name = "SFS", verbose = TRUE, ...) {
   }
   sfs
 }
+
+
+get_non_zero_SFS_range <- function(sfs, allowed_zero_bins = 1, y_treshold = 1) {
+  sfs |>
+    group_by(.data$sample_id) |>
+    mutate(
+      empty_bin = .data$y < y_treshold,
+      segment_number = segment(.data$empty_bin),
+      empty_low_VAF_range = .data$empty_bin & .data$segment_number == 0
+    ) |>
+    filter(!.data$empty_low_VAF_range) |>
+    group_by(.data$sample_id, .data$segment_number) |>
+    mutate(
+      segment_length = n(),
+      keep = !.data$empty_bin | (.data$empty_bin & (.data$segment_length <= allowed_zero_bins))
+    ) |>
+    group_by(.data$sample_id) |>
+    mutate(new_segments = segment(.data$keep)) |>
+    filter(.data$new_segments == 0) |>
+    summarise(
+      from = min(.data$VAF),
+      to = max(.data$VAF)
+    )
+}

@@ -29,3 +29,30 @@ test_that("plot_SFS() works", {
   })
   vdiffr::expect_doppelganger("tcga_brca_test_SFS", p)
 })
+
+
+test_that("get_non_zero_SFS_range works", {
+  SFS <- tibble(
+    sample_id = "S1",
+    VAF = 1:100,
+    y = 10
+  ) |>
+    mutate(
+      y = case_when(
+        VAF < 12 ~ 0,
+        VAF == 40 ~ 0,
+        VAF %in% c(54, 55) ~ 1,
+        VAF > 65 ~ 0,
+        TRUE ~ y
+      ),
+      VAF = VAF / 100
+    )
+  allowed_zero_bins <- 1
+  y_treshold <- 1
+  expected <- tibble(
+    sample_id = "S1",
+    from = 0.12,
+    to = 0.65
+  )
+  expect_identical(get_non_zero_SFS_range(SFS), expected)
+})
