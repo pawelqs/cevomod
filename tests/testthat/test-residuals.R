@@ -7,9 +7,9 @@ test_that("plot_sampling_rate returns correct ggplot object", {
 })
 
 
-test_that("plot_residuals_neutral_model returns correct ggplot object", {
-  p <- plot_residuals_neutral_model(tcga_brca_test)
-  vdiffr::expect_doppelganger("plot-resuduals-neutral-model", p)
+test_that("plot_residuals_powerlaw_model returns correct ggplot object", {
+  p <- plot_residuals_powerlaw_model(tcga_brca_test)
+  vdiffr::expect_doppelganger("plot-resuduals-powerlaw-model", p)
 })
 
 

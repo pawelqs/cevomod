@@ -1,6 +1,6 @@
 
-get_residuals <- function(cd, model = cd$active_model) {
-  slot_name <- paste0("residuals_", model)
+get_residuals <- function(cd, models_name = cd$active_model) {
+  slot_name <- paste0("residuals_", models_name)
   residuals <- cd$misc[[slot_name]]
   if (is.null(residuals)) {
     stop(slot_name, "slot empty. Fit apropriate model first!")
@@ -85,19 +85,20 @@ plot_sampling_rate.cevodata <- function(object, mapping = NULL, geom = geom_poin
 
 #' @rdname plot_residuals
 #' @export
-plot_residuals_neutral_model <- function(object, ...) {
-  UseMethod("plot_residuals_neutral_model")
+plot_residuals_powerlaw_model <- function(object, ...) {
+  UseMethod("plot_residuals_powerlaw_model")
 }
 
 
 #' @describeIn plot_residuals Plot residuals of the neutral model
 #' @export
-plot_residuals_neutral_model.cevodata <- function(object,
-                                                  mapping = NULL,
-                                                  geom = geom_point,
-                                                  fit_clones = TRUE,
-                                                  ...) {
-  residuals <- get_residuals(object) |>
+plot_residuals_powerlaw_model.cevodata <- function(object,
+                                                   models_name = active_models(object),
+                                                   mapping = NULL,
+                                                   geom = geom_point,
+                                                   fit_clones = TRUE,
+                                                   ...) {
+  residuals <- get_residuals(object, models_name) |>
     left_join(object$metadata, by = "sample_id") |>
     group_by(.data$sample_id) |>
     mutate(width = 0.9 / n())

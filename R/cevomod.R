@@ -33,7 +33,7 @@ run_cevomod <- function(object, ...) {
 
 #' @export
 run_cevomod.cevodata <- function(object, ...) {
-  object |>
+  object <- object |>
     calc_mutation_frequencies() |>
     calc_SFS() |>
     calc_cumulative_tails() |>

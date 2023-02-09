@@ -346,7 +346,7 @@ server <- function(input, output) {
   })
 
   output$neutral_model_resid_plot <- renderPlot({
-    plot_residuals_neutral_model(rv$cd) +
+    plot_residuals_powerlaw_model(rv$cd) +
       ggplot2::facet_wrap(~sample_id, scales = "free_y") +
       hide_legend()
   })

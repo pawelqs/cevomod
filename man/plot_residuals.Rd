@@ -4,8 +4,8 @@
 \alias{plot_residuals}
 \alias{plot_sampling_rate}
 \alias{plot_sampling_rate.cevodata}
-\alias{plot_residuals_neutral_model}
-\alias{plot_residuals_neutral_model.cevodata}
+\alias{plot_residuals_powerlaw_model}
+\alias{plot_residuals_powerlaw_model.cevodata}
 \alias{plot_residuals_full_model}
 \alias{plot_residuals_full_model.cevodata}
 \title{Plot model residuals}
@@ -14,9 +14,9 @@ plot_sampling_rate(object, ...)
 
 \method{plot_sampling_rate}{cevodata}(object, mapping = NULL, geom = geom_point, ...)
 
-plot_residuals_neutral_model(object, ...)
+plot_residuals_powerlaw_model(object, ...)
 
-\method{plot_residuals_neutral_model}{cevodata}(
+\method{plot_residuals_powerlaw_model}{cevodata}(
   object,
   mapping = NULL,
   geom = geom_point,
@@ -46,7 +46,7 @@ Plot model residuals
 \itemize{
 \item \code{plot_sampling_rate(cevodata)}: Plot sampling rate
 
-\item \code{plot_residuals_neutral_model(cevodata)}: Plot residuals of the neutral model
+\item \code{plot_residuals_powerlaw_model(cevodata)}: Plot residuals of the neutral model
 
 \item \code{plot_residuals_full_model(cevodata)}: Plot residuals of the full model
 
