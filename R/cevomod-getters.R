@@ -31,11 +31,14 @@ get_models.cevodata <- function(object,
                                 best_only = TRUE,
                                 ...) {
   models <- object$models[[which]]
+  models_class <- class(models)
   if (is.null(models)) {
     stop("Slot ", which, " is empty! Fit apropriate model first")
   }
   if (best_only && !is.null(models[["best"]])) {
-    filter(models, .data$best)
+    models <- filter(models, .data$best)
+    class(models) <- models_class
+    models
   } else {
     models
   }
