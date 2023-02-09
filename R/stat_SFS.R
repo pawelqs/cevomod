@@ -151,11 +151,14 @@ get_SFS.cevodata <- function(object, model_name = "SFS", verbose = TRUE, ...) {
 }
 
 
-get_non_zero_SFS_range <- function(sfs, allowed_zero_bins = 1, y_treshold = 1) {
+get_non_zero_SFS_range <- function(sfs,
+                                   allowed_zero_bins = 1,
+                                   y_treshold = 1,
+                                   y_threshold_pct = 0.01) {
   sfs |>
     group_by(.data$sample_id) |>
     mutate(
-      empty_bin = .data$y < y_treshold,
+      empty_bin = (.data$y < y_treshold) | (.data$y < max(.data$y) * y_threshold_pct),
       segment_number = segment(.data$empty_bin),
       empty_low_VAF_range = .data$empty_bin & .data$segment_number == 0
     ) |>
