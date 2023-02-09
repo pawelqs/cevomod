@@ -13,8 +13,9 @@
 #'
 #' @param object cevodata
 #' @param name name in the models' slot
-#' @param pct_left drop pct of the lowest frequency mutations
-#' @param pct_right drop pct of the highest frequency mutations
+#' @param pct_left drop pct of the lowest frequency mutations; currently not used
+#' @param pct_right drop pct of the highest frequency mutations; currently not used
+#' @param av_filter average filter values to be applied to VAF
 #' @param control control param of stats::optim()
 #' @param verbose verbose?
 #' @param ... other arguments passed to stats::optim()
@@ -39,31 +40,37 @@ fit_tung_durrett_models <- function(object, ...) {
 fit_tung_durrett_models.cevodata <- function(object,
                                              name = "tung_durrett",
                                              pct_left = 0, pct_right = 0.98,
+                                             av_filter = c(1/3, 1/3, 1/3),
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                              verbose = TRUE, ...) {
   msg("Fitting Tung-Durrett models...", verbose = verbose)
   start_time <- Sys.time()
 
   sfs <- get_SFS(object, name = "SFS")
-  # bounds <- get_non_zero_SFS_range(sfs, y_treshold = 2, allowed_zero_bins = 2) |>
-  #   rename(lower_bound = "from", higher_bound = "to")
-  bounds <- get_VAF_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
-  nbins <- get_sample_sequencing_depths(SNVs(object)) |>
-    transmute(.data$sample_id, nbins = .data$median_DP)
+  bounds <- get_non_zero_SFS_range(sfs, allowed_zero_bins = 2) |>
+    rename(lower_bound = "from", higher_bound = "to")
+  # bounds <- get_VAF_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
+  nbins <- summarise(sfs, nbins = n(), .by = "sample_id")
 
   data <- sfs |>
     left_join(bounds, by = "sample_id") |>
     filter(.data$VAF > .data$lower_bound, .data$VAF < .data$higher_bound) |>
     select("sample_id", "VAF", "y") |>
+    mutate(
+      y = .data$y |>
+        stats::filter(av_filter) |>
+        fill_na(0),
+      .by = "sample_id"
+    ) |>
     nest_by(.data$sample_id) |>
     left_join(nbins, by = "sample_id") |>
     expand_grid(
       init_A = c(1, 2, 4, 8, 16, 32),
       init_alpha = c(0.8, 1.2, 1.8, 2.5, 3.5)
-    ) |>
-    rowwise("sample_id")
+    )
 
   models <- data |>
+    rowwise("sample_id") |>
     summarise(
       model = "tung_durrett",
       component = "powerlaw",

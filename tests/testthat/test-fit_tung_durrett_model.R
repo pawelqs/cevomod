@@ -40,6 +40,7 @@ test_that("Testing td_objective_function", {
   # column_name <- "powerlaw_pred"
   # compare_models(object, model_names, column_name)
   #
+  # data("Shlush_AML", package = "cevoDatasets")
   # cd <- Shlush_AML |>
   #   calc_SFS() |>
   #   calc_Mf_1f() |>

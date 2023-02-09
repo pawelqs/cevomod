@@ -13,6 +13,7 @@ fit_tung_durrett_models(object, ...)
   name = "tung_durrett",
   pct_left = 0,
   pct_right = 0.98,
+  av_filter = c(1/3, 1/3, 1/3),
   control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
   verbose = TRUE,
   ...
@@ -25,9 +26,11 @@ fit_tung_durrett_models(object, ...)
 
 \item{name}{name in the models' slot}
 
-\item{pct_left}{drop pct of the lowest frequency mutations}
+\item{pct_left}{drop pct of the lowest frequency mutations; currently not used}
 
-\item{pct_right}{drop pct of the highest frequency mutations}
+\item{pct_right}{drop pct of the highest frequency mutations; currently not used}
+
+\item{av_filter}{average filter values to be applied to VAF}
 
 \item{control}{control param of stats::optim()}
 
