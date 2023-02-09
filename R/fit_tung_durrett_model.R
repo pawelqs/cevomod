@@ -42,6 +42,7 @@ fit_tung_durrett_models.cevodata <- function(object,
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                              verbose = TRUE, ...) {
   msg("Fitting Tung-Durrett models...", verbose = verbose)
+  start_time <- Sys.time()
 
   sfs <- get_SFS(object, name = "SFS")
   # bounds <- get_non_zero_SFS_range(sfs, y_treshold = 2, allowed_zero_bins = 2) |>
@@ -58,7 +59,7 @@ fit_tung_durrett_models.cevodata <- function(object,
     left_join(nbins, by = "sample_id") |>
     expand_grid(
       init_A = c(1, 2, 4, 8, 16, 32),
-      init_alpha = seq(0.8, 4, by = 0.2)
+      init_alpha = c(0.8, 1.2, 1.8, 2.5, 3.5)
     ) |>
     rowwise("sample_id")
 
@@ -85,6 +86,8 @@ fit_tung_durrett_models.cevodata <- function(object,
     evaluate_td_models() |>
     filter(.data$best)
   class(models) <- c("cevo_powerlaw_models", class(models))
+
+  msg("Models fitted in ", Sys.time() - start_time, " seconds", verbose = verbose)
 
   object$models[[name]] <- models
   object <- calc_powerlaw_model_residuals(object, "tung_durrett")
