@@ -53,6 +53,7 @@ calc_powerlaw_curve <- function(VAF, A, alpha, nbins) {
 #' @param object cevodata object
 #' @param mapping mapping elements to overwrite the default mapping
 #' @param geom geom to use
+#' @param models_name models_name
 #' @param fit_clones plot clonal fits?
 #' @param ... other parameters
 #' @name plot_residuals
@@ -158,7 +159,7 @@ plot_binomial_fits_vs_powerlaw_residuals_bars <- function(
         geom = geom_bar,
         fit_clones = TRUE,
         ...) {
-  residuals <- cevomod:::get_residuals(object, models_name)
+  residuals <- get_residuals(object, models_name)
   binomial_model_fitted <- !is.null(residuals[["binom_pred"]])
   if (!binomial_model_fitted) {
     stop("Fit subclones first!")

@@ -22,7 +22,7 @@ fit_subclones.cevodata <- function(object,
   msg("Fitting binomial models", verbose = verbose)
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
 
-  residuals <- get_residuals(object, model = powerlaw_model_name) |>
+  residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
     filter(.data$VAF >= 0 )
 
   sequencing_depths <- SNVs(object) |>

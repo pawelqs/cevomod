@@ -113,7 +113,7 @@ identify_non_neutral_tail_mutations.singlepatient_cevodata <- function(
 
 
 get_binomial_model_predictions <- function(object, sample_id, zero_interval = NULL) {
-  binom_predictions <- get_residuals(object, model = "binomial_models") |>
+  binom_predictions <- get_residuals(object, models_name = "binomial_models") |>
     filter(.data$sample_id == .env$sample_id) |>
     select("VAF_interval", "binom_pred") |>
     deframe()
@@ -498,7 +498,7 @@ selection_prob_mat_to_long_tiblle <- function(selection_probability_mat)  {
 
 
 get_single_sample_selection_probability <- function(object) {
-  binom_res <- get_residuals(object, model = "binomial_models") |>
+  binom_res <- get_residuals(object, models_name = "binomial_models") |>
     select("sample_id", "VAF_interval", "SFS", "binom_pred")
   metadata <- object$metadata[c("patient_id", "sample_id", "sample")]
 

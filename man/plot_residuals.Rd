@@ -48,6 +48,8 @@ plot_binomial_fits_vs_powerlaw_residuals_bars(
 
 \item{geom}{geom to use}
 
+\item{models_name}{models_name}
+
 \item{fit_clones}{plot clonal fits?}
 }
 \description{
