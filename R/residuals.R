@@ -147,3 +147,35 @@ plot_residuals_full_model.cevodata <- function(object,
     coord_cartesian(ylim = c(-1000, NA_integer_)) +
     theme_minimal()
 }
+
+
+#' @describeIn plot_residuals Plot binomial fits vs powerlaw residuals (barplot)
+#' @export
+plot_binomial_fits_vs_powerlaw_residuals_bars <- function(
+        object,
+        models_name = active_models(object),
+        mapping = NULL,
+        geom = geom_bar,
+        fit_clones = TRUE,
+        ...) {
+  residuals <- cevomod:::get_residuals(object, models_name)
+  binomial_model_fitted <- !is.null(residuals[["binom_pred"]])
+  if (!binomial_model_fitted) {
+    stop("Fit subclones first!")
+  }
+
+  dt <- residuals |>
+    select("sample_id", "VAF", resid = "powerlaw_resid_clones", pred = "binom_pred") |>
+    group_by(.data$sample_id) |>
+    mutate(width = 0.9 / n()) |>
+    pivot_longer(
+      -c("sample_id", "VAF", "width"),
+      names_to = "variable", values_to = "value"
+    ) |>
+    left_join(object$metadata, by = "sample_id")
+
+  ggplot(dt) +
+    aes(.data$VAF, .data$value, width = .data$width, fill = .data$variable) +
+    geom_bar(stat = "identity", position = "identity", alpha = 0.5) +
+    facet_wrap(~.data$sample_id, scales = "free")
+}
