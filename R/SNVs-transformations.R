@@ -162,3 +162,45 @@ get_SNVs_wider_intervals <- function(object, fill_na = NULL, bins = NULL) {
   attr(mutations, "sample_intervals") <- sample_intervals
   mutations
 }
+
+
+#' Filter SNVs by position: using regions tbl or bed file
+#' @param snvs snvs tbl with columns: sample_id, chrom, pos
+#' @param regions regions tbl with columns chrom, start, end
+#' @param bed_file bed file
+#' @export
+filter_SNVs_by_regions <- function(snvs, regions = NULL, bed_file = NULL) {
+  if (is.null(regions) && is.null(bed_file)) {
+    stop("Provide one of: regions, bed_file")
+  }
+
+  if (!is.null(bed_file)) {
+    # bed_file = "tests/testdata/regions.tsv" # for tests only
+    regions <- bed_file |>
+      read_tsv(col_types = "cii", col_names = c("chrom", "start", "end"))
+
+    # Unlike the coordinate system used by other standards such as GFF, the system
+    # used by the BED format is zero-based for the coordinate start and one-based
+    # for the coordinate end.
+    regions <- regions |>
+      mutate(start = .data$start + 1)
+  }
+
+  regions_gr <- regions |>
+    rename(seqnames = "chrom") |>
+    plyranges::as_granges()
+  snvs_gr <- snvs |>
+    mutate(
+      seqnames = .data$chrom,
+      start = .data$pos,
+      end = .data$pos,
+      .before = "sample_id"
+    ) |>
+    plyranges::as_granges()
+
+  filtered_snvs <- plyranges::filter_by_overlaps(snvs_gr, regions_gr) |>
+    as_tibble() |>
+    select(-("seqnames":"strand"))
+
+  filtered_snvs
+}
