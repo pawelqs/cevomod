@@ -185,6 +185,7 @@ filter_SNVs_by_regions <- function(snvs, regions = NULL, bed_file = NULL) {
     regions <- regions |>
       mutate(start = .data$start + 1)
   }
+  snv_classes <- class(snvs)
 
   regions_gr <- regions |>
     rename(seqnames = "chrom") |>
@@ -201,6 +202,7 @@ filter_SNVs_by_regions <- function(snvs, regions = NULL, bed_file = NULL) {
   filtered_snvs <- plyranges::filter_by_overlaps(snvs_gr, regions_gr) |>
     as_tibble() |>
     select(-("seqnames":"strand"))
+  class(filtered_snvs) <- snv_classes
 
   filtered_snvs
 }

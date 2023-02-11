@@ -4,10 +4,12 @@
 \alias{get_patient_mutation_burden}
 \title{Get tumor mutation burden}
 \usage{
-get_patient_mutation_burden(cd)
+get_patient_mutation_burden(object, snvs = default_SNVs(object))
 }
 \arguments{
-\item{cd}{cevodata object}
+\item{object}{cevodata object}
+
+\item{snvs}{snvs slot}
 }
 \description{
 Get tumor mutation burden

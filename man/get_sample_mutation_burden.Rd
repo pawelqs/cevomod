@@ -2,12 +2,22 @@
 % Please edit documentation in R/misc.R
 \name{get_sample_mutation_burden}
 \alias{get_sample_mutation_burden}
+\alias{get_sample_mutation_burden.cevodata}
+\alias{get_sample_mutation_burden.cevo_snvs}
 \title{Get sample mutation burden}
 \usage{
-get_sample_mutation_burden(cd)
+get_sample_mutation_burden(object, ...)
+
+\method{get_sample_mutation_burden}{cevodata}(object, snvs = default_SNVs(object), ...)
+
+\method{get_sample_mutation_burden}{cevo_snvs}(object, ...)
 }
 \arguments{
-\item{cd}{cevodata object}
+\item{object}{object}
+
+\item{...}{other arguments (currently nut used)}
+
+\item{snvs}{which SNVs to use}
 }
 \description{
 Get sample mutation burden
