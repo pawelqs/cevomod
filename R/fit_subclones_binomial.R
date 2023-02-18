@@ -32,7 +32,7 @@ fit_subclones.cevodata <- function(object,
   models <- residuals |>
     select("sample_id", "VAF", "powerlaw_resid_clones") |>
     nest_by(.data$sample_id) |>
-    summarise(fit_binomial_models(.data$data, N = N), .groups = "drop") |>
+    reframe(fit_binomial_models(.data$data, N = N)) |>
     mutate(model = "binomial_clones", .after = "sample_id") |>
     mutate(VAF = round(.data$cellularity, digits = 2)) |>
     left_join(sequencing_depths, by = c("sample_id", "VAF")) |>
@@ -47,7 +47,7 @@ fit_subclones.cevodata <- function(object,
     select("sample_id", "VAF_interval", "VAF") |>
     nest_by(.data$sample_id, .key = "VAFs") |>
     left_join(best_models, by = "sample_id") |>
-    summarise(get_binomial_predictions(.data$clones, .data$VAFs), .groups = "drop") |>
+    reframe(get_binomial_predictions(.data$clones, .data$VAFs)) |>
     select(-"VAF")
 
   residuals <- residuals |>
