@@ -1,6 +1,23 @@
 
-get_sample_sequencing_depths <- function(snvs, ...) {
-  sequencing_depths <- snvs |>
+#' Get sample sequencing depths
+#' @param object object
+#' @param ... other args
+#' @export
+get_sample_sequencing_depths <- function(object, ...) {
+  UseMethod("get_sample_sequencing_depths")
+}
+
+
+#' @export
+get_sample_sequencing_depths.cevodata <- function(object, ...) {
+  SNVs(object) |>
+    get_sample_sequencing_depths()
+}
+
+
+#' @export
+get_sample_sequencing_depths.cevo_snvs <- function(object, ...) {
+  sequencing_depths <- object |>
     group_by(.data$sample_id) |>
     summarise(
       mean_DP = mean(.data$DP, na.rm = TRUE),
