@@ -14,6 +14,15 @@ plot_models(object, ...)
   binomial_layer = FALSE,
   subclones = TRUE,
   final_fit = TRUE,
+  neutral_tail_alpha = 0.3,
+  neutral_tail_size = 0.5,
+  neutral_tail_fill = "white",
+  neutral_tail_color = "gray90",
+  binomial_layer_color = "black",
+  final_fit_color = "red",
+  final_fit_size = 1,
+  nrow = NULL,
+  ncol = NULL,
   ...
 )
 }

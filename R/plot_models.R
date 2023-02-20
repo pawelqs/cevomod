@@ -25,6 +25,14 @@ plot_models.cevodata <- function(object,
                                  binomial_layer = FALSE,
                                  subclones = TRUE,
                                  final_fit = TRUE,
+                                 neutral_tail_alpha = 0.3,
+                                 neutral_tail_size = 0.5,
+                                 neutral_tail_fill = "white",
+                                 neutral_tail_color = "gray90",
+                                 binomial_layer_color = "black",
+                                 final_fit_color = "red",
+                                 final_fit_size = 1,
+                                 nrow = NULL, ncol = NULL,
                                  ...) {
 
   models <- get_models(object, models_name)
@@ -36,7 +44,11 @@ plot_models.cevodata <- function(object,
     group_by(.data$sample_id) |>
     mutate(
       ylim = max(.data$SFS) * 1.2,
-      powerlaw_pred = if_else(.data$powerlaw_pred > .data$ylim, .data$ylim, .data$powerlaw_pred)
+      powerlaw_pred = case_when(
+        .data$powerlaw_pred > .data$ylim ~ Inf,
+        .data$VAF < 0 ~ Inf,
+        TRUE ~ .data$powerlaw_pred
+      )
     ) |>
     ungroup()
 
@@ -45,9 +57,9 @@ plot_models.cevodata <- function(object,
       geom_area(
         aes(.data$VAF, .data$powerlaw_pred),
         data = resid,
-        fill = "white", color = "gray90",
-        alpha = 0.3,
-        size = 0.5, show.legend = FALSE,
+        fill = neutral_tail_fill, color = neutral_tail_color,
+        alpha = neutral_tail_alpha,
+        size = neutral_tail_size, show.legend = FALSE,
         stat = "identity"
       )
     },
@@ -55,7 +67,7 @@ plot_models.cevodata <- function(object,
       geom_line(
         aes(.data$VAF, .data$binom_pred),
         data = resid,
-        size = 1, color = "black", linetype = "dashed"
+        size = 1, color = binomial_layer_color, linetype = "dashed"
       )
     },
     if (subclones && subclones_fitted) {
@@ -77,14 +89,14 @@ plot_models.cevodata <- function(object,
       geom_line(
         aes(.data$VAF, .data$model_pred),
         data = resid |> filter(.data$powerlaw_pred < .data$ylim),
-        size = 1, color = "red"
+        size = final_fit_size, color = final_fit_color
       )
     }
   )
 
   plot_SFS(object, geom = "bar", ...) +
     model_layers +
-    facet_wrap(~.data$sample_id, scales = "free_y")
+    facet_wrap(~.data$sample_id, scales = "free_y", nrow = nrow, ncol = ncol)
 }
 
 
