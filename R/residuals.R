@@ -16,8 +16,7 @@ calc_powerlaw_model_residuals <- function(object, models_name, ...) {
   powerlaw_models <- powerlaw_models |>
     select("sample_id", "A", "alpha", all_of(optional_cols))
   sfs <- get_SFS(object)
-  nbins <- get_sample_sequencing_depths(SNVs(object)) |>
-    transmute(.data$sample_id, nbins = .data$median_DP)
+  nbins <- summarise(sfs, nbins = n() - 1, .by = sample_id) # zero bin does not count
 
   residuals <- sfs |>
     select("sample_id", "VAF_interval", "VAF", SFS = "y") |>
