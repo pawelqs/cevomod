@@ -93,6 +93,10 @@ shuffle.tbl_df <- function(object, ...)  {
 }
 
 
+#' Fill na values in the object
+#' @param object object
+#' @param val value to fill the NAs
+#' @export
 fill_na <- function(object, val) {
   object[is.na(object)] <- val
   object
