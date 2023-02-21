@@ -13,17 +13,19 @@ fit_subclones <- function(object, ...) {
 #' @param N vector of numbers of clones to test
 #' @param powerlaw_model_name residual of which powerlaw model to use?
 #'   williams_neutral/tung_durrett
+#' @param upper_VAF_limit ignore variants with f higher than
 #' @param verbose verbose?
 #' @export
 fit_subclones.cevodata <- function(object,
                                    N = 1:3,
                                    powerlaw_model_name = active_models(object),
+                                   upper_VAF_limit = 0.75,
                                    verbose = TRUE, ...) {
   msg("Fitting binomial models", verbose = verbose)
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
 
   residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
-    filter(.data$VAF >= 0 )
+    filter(.data$VAF >= 0, .data$VAF < upper_VAF_limit)
 
   sequencing_depths <- SNVs(object) |>
     get_local_sequencing_depths() |>

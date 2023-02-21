@@ -11,6 +11,7 @@ fit_subclones(object, ...)
   object,
   N = 1:3,
   powerlaw_model_name = active_models(object),
+  upper_VAF_limit = 0.75,
   verbose = TRUE,
   ...
 )
@@ -24,6 +25,8 @@ fit_subclones(object, ...)
 
 \item{powerlaw_model_name}{residual of which powerlaw model to use?
 williams_neutral/tung_durrett}
+
+\item{upper_VAF_limit}{ignore variants with f higher than}
 
 \item{verbose}{verbose?}
 }
