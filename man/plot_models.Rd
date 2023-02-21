@@ -40,6 +40,24 @@ plot_models(object, ...)
 \item{subclones}{TRUE,}
 
 \item{final_fit}{TRUE,}
+
+\item{neutral_tail_alpha}{0.3}
+
+\item{neutral_tail_size}{0.5}
+
+\item{neutral_tail_fill}{"white"}
+
+\item{neutral_tail_color}{"gray90"}
+
+\item{binomial_layer_color}{"black"}
+
+\item{final_fit_color}{"red"}
+
+\item{final_fit_size}{1}
+
+\item{nrow}{passed to facet_wrap}
+
+\item{ncol}{passed to facet_wrap}
 }
 \description{
 Plot cevodata models

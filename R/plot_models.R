@@ -18,6 +18,15 @@ plot_models <- function(object, ...) {
 
 
 #' @rdname plot_models
+#' @param neutral_tail_alpha 0.3
+#' @param neutral_tail_size 0.5
+#' @param neutral_tail_fill "white"
+#' @param neutral_tail_color "gray90"
+#' @param binomial_layer_color "black"
+#' @param final_fit_color "red"
+#' @param final_fit_size 1
+#' @param nrow passed to facet_wrap
+#' @param ncol passed to facet_wrap
 #' @export
 plot_models.cevodata <- function(object,
                                  models_name = active_models(object),
