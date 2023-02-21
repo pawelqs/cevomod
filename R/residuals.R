@@ -1,4 +1,8 @@
 
+#' Get model residuals
+#' @param cd cevodata object
+#' @param models_name name of the models
+#' @export
 get_residuals <- function(cd, models_name = cd$active_model) {
   slot_name <- paste0("residuals_", models_name)
   residuals <- cd$misc[[slot_name]]
@@ -14,9 +18,10 @@ calc_powerlaw_model_residuals <- function(object, models_name, ...) {
   optional_cols <- c("from", "to", "b") |> intersect(colnames(powerlaw_models))
   from_to_cols_present <- all(c("from", "to") %in% optional_cols)
   powerlaw_models <- powerlaw_models |>
+    filter(!is.na(.data$A), !is.na(.data$alpha)) |>
     select("sample_id", "A", "alpha", all_of(optional_cols))
   sfs <- get_SFS(object)
-  nbins <- summarise(sfs, nbins = n() - 1, .by = sample_id) # zero bin does not count
+  nbins <- summarise(sfs, nbins = n() - 1, .by = "sample_id") # zero bin does not count
 
   residuals <- sfs |>
     select("sample_id", "VAF_interval", "VAF", SFS = "y") |>
