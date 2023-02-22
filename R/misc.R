@@ -52,7 +52,7 @@ get_patient_mutation_burden <- function(object, snvs = default_SNVs(object)) {
 count_mutations_by_component <- function(object, models_name = active_models(object), include_filtered = FALSE) {
   neutral_tail_counts <- count_neutral_tail_mutations(object, models_name)
   mut_counts <- object |>
-    get_models(models_name = models_name) |>
+    get_models(models_name) |>
     select("sample_id", "component", "N_mutations") |>
     left_join(neutral_tail_counts, by = c("sample_id", "component")) |>
     mutate(
