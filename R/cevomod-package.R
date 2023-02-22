@@ -11,6 +11,7 @@
 #' @import tibble
 #' @import tidyr
 #' @importFrom mclust mclustBIC
+#' @importFrom progress progress_bar
 #' @importFrom rlang :=
 #' @importFrom rlang .data
 #' @importFrom rlang .env

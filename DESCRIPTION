@@ -44,6 +44,7 @@ Imports:
     plyranges,
     PNWColors,
     prismatic,
+    progress,
     purrr,
     readr,
     rlang,

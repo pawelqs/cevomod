@@ -31,13 +31,14 @@ fit_subclones.cevodata <- function(object,
     get_local_sequencing_depths() |>
     transmute(.data$sample_id, .data$VAF, sequencing_DP = .data$median_DP)
 
+  pb <- if (verbose) progress_bar$new(total = n_distinct(residuals$sample_id)) else NULL
   models <- residuals |>
     select("sample_id", "VAF", "powerlaw_resid_clones") |>
     mutate(
       powerlaw_resid_clones = if_else(.data$VAF > upper_VAF_limit, 0, .data$powerlaw_resid_clones)
     ) |>
     nest_by(.data$sample_id) |>
-    reframe(fit_binomial_models(.data$data, N = N)) |>
+    reframe(fit_binomial_models(.data$data, N = N, pb = pb)) |>
     mutate(model = "binomial_clones", .after = "sample_id") |>
     mutate(VAF = round(.data$cellularity, digits = 2)) |>
     left_join(sequencing_depths, by = c("sample_id", "VAF")) |>
@@ -51,7 +52,7 @@ fit_subclones.cevodata <- function(object,
   clonal_predictions <- residuals |>
     select("sample_id", "VAF_interval", "VAF") |>
     nest_by(.data$sample_id, .key = "VAFs") |>
-    left_join(best_models, by = "sample_id") |>
+    inner_join(best_models, by = "sample_id") |>
     reframe(get_binomial_predictions(.data$clones, .data$VAFs)) |>
     select(-"VAF")
 
@@ -76,8 +77,10 @@ fit_subclones.cevodata <- function(object,
 }
 
 
-fit_binomial_models <- function(...) {
-  fit_binomial_models_Mclust(...)
+fit_binomial_models <- function(..., pb = NULL) {
+  fit <- fit_binomial_models_Mclust(...)
+  if (!is.null(pb)) pb$tick()
+  fit
 }
 
 

@@ -69,17 +69,17 @@ fit_tung_durrett_models.cevodata <- function(object,
       init_alpha = c(0.8, 1.2, 1.8, 2.5, 3.5)
     )
 
+  pb <- if (verbose) progress_bar$new(total = nrow(data)) else NULL
   models <- data |>
     rowwise("sample_id") |>
     summarise(
       model = "tung_durrett",
       component = "powerlaw",
-      opt = stats::optim(
-        par = c(.data$init_A, .data$init_alpha),
-        fn = td_objective_function,
-        x = data$VAF,
-        y = data$y,
+      opt = td_optim(
+        .data$init_A, .data$init_alpha,
+        .data$data,
         control = control,
+        pb = pb,
         ...
       ) |> list(),
       A = .data$opt$par[[1]] * round(.data$nbins),
@@ -100,6 +100,21 @@ fit_tung_durrett_models.cevodata <- function(object,
   object <- calc_powerlaw_model_residuals(object, "tung_durrett")
   object$active_models <- name
   object
+}
+
+
+td_optim <- function(init_A, init_alpha, data, control, pb = NULL, ...) {
+  res <- stats::optim(
+    par = c(init_A, init_alpha),
+    fn = td_objective_function,
+    x = data$VAF,
+    y = data$y,
+    control = control,
+    ...
+  )
+
+  if (!is.null(pb)) pb$tick()
+  res
 }
 
 

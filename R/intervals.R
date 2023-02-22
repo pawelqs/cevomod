@@ -48,7 +48,11 @@ cut_f <- function(tbl, breaks, column = "f") {
 get_interval_breaks <- function(object, bins = NULL, sample_id = NULL) {
   if (is.null(bins)) {
     bins_by_sample <- get_sample_sequencing_depths(object) |>
-      transmute(.data$sample_id, bins = round(.data$median_DP))
+      transmute(
+        .data$sample_id,
+        bins = round(.data$median_DP),
+        bins = if_else(.data$bins > 100, 100, bins)
+      )
   } else {
     bins_by_sample <- tibble(
       sample_id = unique(object$sample_id),

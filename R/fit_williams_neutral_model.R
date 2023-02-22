@@ -46,16 +46,15 @@ fit_williams_neutral_models.cevodata <- function(object,
     left_join(bounds, by = "sample_id") |>
     filter(.data$VAF > .data$lower_bound, .data$VAF < .data$higher_bound) |>
     select("sample_id", "VAF", "M(f)", "1/f") |>
-    nest(data = c("VAF", "M(f)", "1/f"))
+    nest_by(.data$sample_id)
 
+  pb <- if (verbose) progress_bar$new(total = nrow(data)) else NULL
   models <- data |>
-    mutate(
+    reframe(
       model = "williams",
       component = "Neutral tail",
-      fits = map(.data$data, fit_optimal_lm, rsq_treshold)
-    ) |>
-    select(-"data") |>
-    unnest("fits")
+      fit_optimal_lm(.data$data, rsq_treshold, pb)
+    )
   class(models) <- c("cevo_powerlaw_models", class(models))
 
   object$models[[name]] <- models
@@ -65,7 +64,7 @@ fit_williams_neutral_models.cevodata <- function(object,
 }
 
 
-fit_optimal_lm <- function(data, rsq_treshold = 0.98) {
+fit_optimal_lm <- function(data, rsq_treshold = 0.98, pb = NULL) {
   min_val <- min(data$VAF)
   max_val <- max(data$VAF)
   grid <- expand_grid(
@@ -76,6 +75,7 @@ fit_optimal_lm <- function(data, rsq_treshold = 0.98) {
     filter(near(.data$length, 0.05))
   grid$data <- pmap(grid, prepare_Mf_1f_data, data = data)
   grid$fits <- map(grid$data, ~tidy_lm(.x$`1/f`, .x$`M(f)`))
+  if (!is.null(pb)) pb$tick()
   grid |>
     select(-"data") |>
     unnest("fits") |>
