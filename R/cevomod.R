@@ -11,8 +11,8 @@ NULL
 #' @docType data
 NULL
 
-#' TCGA-BRCA SNVs dataset
-#' @name snvs_tcga_brca
+#' TCGA BRCA cevodata dataset
+#' @name tcga_brca
 #' @docType data
 NULL
 
