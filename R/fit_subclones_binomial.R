@@ -25,7 +25,7 @@ fit_subclones.cevodata <- function(object,
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
 
   residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
-    filter(.data$VAF >= 0, .data$VAF < upper_VAF_limit)
+    filter(.data$VAF >= 0)
 
   sequencing_depths <- SNVs(object) |>
     get_local_sequencing_depths() |>
@@ -33,6 +33,9 @@ fit_subclones.cevodata <- function(object,
 
   models <- residuals |>
     select("sample_id", "VAF", "powerlaw_resid_clones") |>
+    mutate(
+      powerlaw_resid_clones = if_else(.data$VAF > upper_VAF_limit, 0, .data$powerlaw_resid_clones)
+    ) |>
     nest_by(.data$sample_id) |>
     reframe(fit_binomial_models(.data$data, N = N)) |>
     mutate(model = "binomial_clones", .after = "sample_id") |>
