@@ -27,8 +27,11 @@ plot_mutations.cevodata <- function(object, genes = NULL, drivers = NULL, mark_g
                            y = "genes", shape = "impact",
                            filter_fun = guess_filter_fun(shape), ...) {
   genes_data <- SNVs(object) %>%
-    filter_SNVs(genes, drivers) %>%
-    filter_fun()
+    filter_SNVs(genes, drivers)
+
+  if (!is.null(filter_fun)) {
+    genes_data <- filter_fun(genes_data)
+  }
 
   mark_genes_data <-
     if (!is.null(mark_genes)) {
