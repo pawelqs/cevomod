@@ -156,5 +156,6 @@ evaluate_td_models <- function(tbl) {
   tbl |>
     group_by(.data$sample_id) |>
     arrange(desc(.data$value), .by_group = TRUE) |>
-    mutate(best = row_number() == 1)
+    mutate(best = row_number() == 1) |>
+    ungroup()
 }
