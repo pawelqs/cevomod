@@ -81,11 +81,12 @@ plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
 #'
 #' @param x tibble with calc_SFS() results
 #' @param mapping aes()
+#' @param alpha alpha
 #' @param ... futher passed to geom_()
 #' @param geom geom
 #' @return ggplot obj
 #' @export
-plot.cevo_SFS_tbl <- function(x, mapping = NULL, ..., geom = "bar") {
+plot.cevo_SFS_tbl <- function(x, mapping = NULL, alpha = 0.8, ..., geom = "bar") {
   default_mapping <- aes(.data$VAF, .data$y, group = .data$sample_id)
 
   if (geom == "bar") {
@@ -97,7 +98,7 @@ plot.cevo_SFS_tbl <- function(x, mapping = NULL, ..., geom = "bar") {
       join_aes(default_mapping, mapping) +
       geom_bar(
         join_aes(bar_mapping, mapping),
-        stat = "identity", alpha = 0.8, ...
+        stat = "identity", alpha = alpha, ...
       ) +
       facet_wrap(~.data$sample_id, scales = "free")
   } else if (geom == "line") {
