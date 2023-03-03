@@ -86,10 +86,12 @@ fit_binomial_models <- function(..., pb = NULL) {
 
 fit_binomial_models_Mclust <- function(residuals, N) {
   VAFs <- rep(residuals$VAF, times = floor(residuals$powerlaw_resid_clones))
-  if (length(VAFs) == 0) {
+  if (length(VAFs) <= 1) {
     return(empty_clones_tibble())
   }
-
+  if (sd(VAFs) == 0) {
+    N <- 1
+  }
   mclust_res <- N |>
     map(~ mclust::Mclust(VAFs, G = .x, verbose = FALSE)) |>
     discard(is.null)
