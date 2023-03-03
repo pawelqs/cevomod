@@ -4,7 +4,14 @@
 \alias{compare_models}
 \title{Compare fits from many models}
 \usage{
-compare_models(object, model_names, column_name, ...)
+compare_models(
+  object,
+  model_names,
+  column_name,
+  linetype = "solid",
+  linewidth = 1,
+  ...
+)
 }
 \arguments{
 \item{object}{cevodata object}
@@ -12,6 +19,10 @@ compare_models(object, model_names, column_name, ...)
 \item{model_names}{models to compare}
 
 \item{column_name}{residuals_* column to plot}
+
+\item{linetype}{solid}
+
+\item{linewidth}{1}
 
 \item{...}{other arguments passed to plot_SFS()}
 }

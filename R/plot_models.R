@@ -145,9 +145,12 @@ geom_powerlaw <- function(A, alpha, mapping, ylim = 1000, color = "#54b4FA", ...
 #' @param object cevodata object
 #' @param model_names models to compare
 #' @param column_name residuals_* column to plot
+#' @param linetype solid
+#' @param linewidth 1
 #' @param ... other arguments passed to plot_SFS()
 #' @export
-compare_models <- function(object, model_names, column_name, ...) {
+compare_models <- function(object, model_names, column_name,
+                           linetype = "solid", linewidth = 1, ...) {
   ylimits <- get_SFS(object) |>
     group_by(.data$sample_id) |>
     summarise(ylim = 1.5 * max(.data$y))
@@ -163,7 +166,8 @@ compare_models <- function(object, model_names, column_name, ...) {
   plot_SFS(object, geom = "bar", ...) +
     geom_line(
       aes(y = !!sym(column_name), color = .data$model_name, group = .data$model_name),
-      data = resids
+      data = resids,
+      linetype = linetype, linewidth = linewidth
     ) +
     facet_wrap(~.data$sample_id, scales = "free_y")
 }
