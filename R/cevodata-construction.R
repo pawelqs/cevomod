@@ -102,8 +102,7 @@ add_SNV_data.cevodata <- function(object, snvs, name = NULL, ...) {
     n <- length(object$SNVs)
     name <- if (n == 0) "snvs" else str_c("snvs", n)
   }
-  validate_SNVs(snvs)
-  class(snvs) <- c("cevo_snvs", "tbl_df", "tbl", "data.frame")
+  snvs <- as_cevo_snvs(snvs)
   object$SNVs[[name]] <- snvs
   default_SNVs(object) <- name
   meta <- snvs |>
@@ -112,18 +111,6 @@ add_SNV_data.cevodata <- function(object, snvs, name = NULL, ...) {
     as_tibble()
   object <- add_sample_data(object, meta)
   object
-}
-
-
-validate_SNVs <- function(snvs) {
-  required_cols <- c(
-    "sample_id", "chrom", "pos", "gene_symbol",
-    "ref", "alt", "ref_reads", "alt_reads", "VAF", "impact"
-  )
-  missing_cols <- setdiff(required_cols, names(snvs))
-  if (length(missing_cols)) {
-    stop(str_c("snvs object is missing the following columns:", str_c(missing_cols, collapse = ", ")))
-  }
 }
 
 
