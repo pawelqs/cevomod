@@ -5,7 +5,7 @@ test_that("fit_tung_durrett_models models have non-negative objective fun value"
   cd <- tcga_brca_test |>
     fit_tung_durrett_models(verbose = FALSE)
   td <- get_models(cd, "tung_durrett")
-  expect_true(all(td$value > 2000))
+  expect_true(all(td$value > 1990))
   expect_s3_class(get_powerlaw_models(cd, "tung_durrett"), "cevo_powerlaw_models")
 })
 

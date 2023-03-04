@@ -38,7 +38,7 @@ snvs <- mutations %>%
     consequence = Consequence,
     NCBI_Build
   )
-class(snvs) <- c("cevo_snvs", class(snvs))
+# class(snvs) <- c("cevo_snvs", class(snvs))
 
 # usethis::use_data(snvs_tcga_brca, overwrite = TRUE)
 
