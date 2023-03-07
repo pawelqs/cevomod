@@ -3,16 +3,16 @@
 print.cevodata <- function(x, ...) {
   summ <- summary(x)
   SNV_assays_str <- if (length(summ$SNV_assays) > 0) {
+    summ$SNV_assays[summ$SNV_assays == summ$active_SNVs] <- paste0(summ$active_SNVs, " (default)")
     summ$SNV_assays |>
-      str_c(collapse = ", ") |>
-      str_replace(summ$active_SNVs, str_c(summ$active_SNVs, " (default)"))
+      str_c(collapse = ", ")
   } else {
     "None"
   }
   CNV_assays_str <- if (length(summ$CNV_assays) > 0) {
+    summ$CNV_assays[summ$CNV_assays == summ$active_CNVs] <- paste0(summ$active_CNVs, " (default)")
     summ$CNV_assays |>
-      str_c(collapse = ", ") |>
-      str_replace(summ$active_CNVs, str_c(summ$active_CNVs, " (default)"))
+      str_c(collapse = ", ")
   } else {
     "None"
   }
