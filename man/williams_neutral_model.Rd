@@ -13,6 +13,8 @@ fit_williams_neutral_models(object, ...)
   object,
   rsq_treshold = 0.98,
   name = "williams_neutral",
+  pct_left = 0.05,
+  pct_right = 0.95,
   verbose = TRUE,
   ...
 )
@@ -27,6 +29,10 @@ layer_lm_fits(cd, model_name = "williams_neutral", ...)
 \item{rsq_treshold}{R-squared tresholds to keep model as neutral}
 
 \item{name}{name in the models' slot}
+
+\item{pct_left}{drop pct of the lowerst frequency variants to improve fit}
+
+\item{pct_right}{drop pct of the highest frequency variants to improve fit}
 
 \item{verbose}{verbose?}
 

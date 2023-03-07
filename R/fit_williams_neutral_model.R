@@ -33,14 +33,17 @@ fit_williams_neutral_models <- function(object, ...) {
 
 
 #' @rdname williams_neutral_model
+#' @param pct_left drop pct of the lowerst frequency variants to improve fit
+#' @param pct_right drop pct of the highest frequency variants to improve fit
 #' @export
 fit_williams_neutral_models.cevodata <- function(object,
                                         rsq_treshold = 0.98,
                                         name = "williams_neutral",
+                                        pct_left = 0.05, pct_right = 0.95,
                                         verbose = TRUE, ...) {
   msg("Fitting williams neutral models...", verbose = verbose)
   Mf_1f <- get_Mf_1f(object)
-  bounds <- get_VAF_range(SNVs(object))
+  bounds <- get_VAF_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
 
   data <- Mf_1f |>
     left_join(bounds, by = "sample_id") |>
@@ -106,7 +109,7 @@ tidy_lm <- function(x, y) {
   res <- tibble(
     a = fit$coefficients[["x"]],
     b = fit$coefficients[["(Intercept)"]],
-    rsquared = stats::cor(y, x) ^ 2
+    rsquared = if (var(y) == 0) NA_real_ else stats::cor(y, x) ^ 2
   )
   res
 }
