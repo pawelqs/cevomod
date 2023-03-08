@@ -120,3 +120,19 @@ segment <- function(vec) {
   x[1] <- 0
   cumsum(x)
 }
+
+
+#' Quick save to ~/.cevomod directory
+#' @param object object to save
+#' @export
+quick_save <- function(object) {
+  dir.create("~/.cevomod", showWarnings = FALSE)
+  write_rds(object, "~/.cevomod/object.Rds")
+}
+
+
+#' @describeIn quick_save Quick load of ~/.cevomod/object.Rds
+#' @export
+quick_load <- function() {
+  read_rds("~/.cevomod/object.Rds")
+}
