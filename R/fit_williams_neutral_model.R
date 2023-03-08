@@ -44,6 +44,8 @@ fit_williams_neutral_models.cevodata <- function(object,
   msg("Fitting williams neutral models...", verbose = verbose)
   Mf_1f <- get_Mf_1f(object)
   bounds <- get_VAF_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
+  # bounds <- get_non_zero_SFS_range(get_SFS(object), allowed_zero_bins = 2) |>
+  #   rename(lower_bound = "from", higher_bound = "to")
 
   data <- Mf_1f |>
     left_join(bounds, by = "sample_id") |>
