@@ -136,3 +136,20 @@ split_by.cevodata <- function(object, x, ...) {
 #   cli::cat_line("<cevo_splits> object. Splits:")
 #   cli::cat_line(paste0(names(x), collapse = ", "))
 # }
+
+
+#' Update cevodata object with values from another object
+#' @param object object to update
+#' @param object2 object to use
+#' @export
+update.cevodata <- function(object, object2, ...) {
+  sample_ids <- union(object$metadata$sample_id, object2$metadata$sample_id)
+  object <- object |>
+    filter(.data$sample_id %not in% object2$metadata$sample_id) |>
+    merge(object2)
+  object$metadata <- object$metadata |>
+    mutate(sample_id = parse_factor(.data$sample_id, levels = sample_ids)) |>
+    arrange(.data$sample_id) |>
+    mutate(across(sample_id, as.character))
+  object
+}
