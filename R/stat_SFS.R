@@ -73,6 +73,7 @@ plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
   # TODO: Fix 'width' warning
   object$models$SFS |>
     left_join(object$metadata, by = "sample_id") |>
+    mutate(sample_id = parse_factor(.data$sample_id, levels = object$metadata$sample_id)) |>
     plot(mapping = mapping, ..., geom = geom)
 }
 
