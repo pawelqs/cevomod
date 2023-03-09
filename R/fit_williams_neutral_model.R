@@ -111,7 +111,7 @@ tidy_lm <- function(x, y) {
   res <- tibble(
     a = fit$coefficients[["x"]],
     b = fit$coefficients[["(Intercept)"]],
-    rsquared = if (var(y) == 0) NA_real_ else stats::cor(y, x) ^ 2
+    rsquared = if (stats::var(y) == 0) NA_real_ else stats::cor(y, x) ^ 2
   )
   res
 }

@@ -10,6 +10,8 @@
 \item{object}{object to update}
 
 \item{object2}{object to use}
+
+\item{...}{other args, unused now}
 }
 \description{
 Update cevodata object with values from another object

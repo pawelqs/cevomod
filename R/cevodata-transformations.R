@@ -141,6 +141,7 @@ split_by.cevodata <- function(object, x, ...) {
 #' Update cevodata object with values from another object
 #' @param object object to update
 #' @param object2 object to use
+#' @param ... other args, unused now
 #' @export
 update.cevodata <- function(object, object2, ...) {
   sample_ids <- union(object$metadata$sample_id, object2$metadata$sample_id)
@@ -150,6 +151,6 @@ update.cevodata <- function(object, object2, ...) {
   object$metadata <- object$metadata |>
     mutate(sample_id = parse_factor(.data$sample_id, levels = sample_ids)) |>
     arrange(.data$sample_id) |>
-    mutate(across(sample_id, as.character))
+    mutate(across("sample_id", as.character))
   object
 }
