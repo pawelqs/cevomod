@@ -49,6 +49,10 @@ count_mutation_types <- function(snvs) {
 }
 
 
+#' @describeIn assays Get SNVs in the wide table form
+#' @param object cevodata object
+#' @param fill_na fill missing with this value
+#' @export
 get_SNVs_wider <- function(object, fill_na = NULL) {
   patients_to_samples <- object$metadata |>
     select("patient_id":"sample")
@@ -62,7 +66,7 @@ get_SNVs_wider <- function(object, fill_na = NULL) {
     pivot_wider(names_from = "sample", values_from = "VAF")
 
   if (!is.null(fill_na)) {
-    snvs[is.na(snvs)] <- 0
+    snvs[is.na(snvs)] <- fill_na
   }
   snvs
 }
