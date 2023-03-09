@@ -50,6 +50,7 @@ plot_models.cevodata <- function(object,
 
   resid <- get_residuals(object, models_name) |>
     left_join(object$metadata, by = "sample_id") |>
+    mutate(sample_id = parse_factor(.data$sample_id, levels = object$metadata$sample_id)) |>
     group_by(.data$sample_id) |>
     mutate(
       ylim = max(.data$SFS) * 1.2,
