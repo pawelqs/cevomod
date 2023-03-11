@@ -109,9 +109,10 @@ hide_legend <- function() {
 
 #' Rotate x axix labels
 #' @param angle angle
+#' @param vjust vjust
 #' @export
-rotate_x_labels <- function(angle = 90) {
-  theme(axis.text.x = element_text(angle = angle))
+rotate_x_labels <- function(angle = 90, vjust = 0.5) {
+  theme(axis.text.x = element_text(angle = 90, vjust = vjust))
 }
 
 

@@ -4,10 +4,12 @@
 \alias{rotate_x_labels}
 \title{Rotate x axix labels}
 \usage{
-rotate_x_labels(angle = 90)
+rotate_x_labels(angle = 90, vjust = 0.5)
 }
 \arguments{
 \item{angle}{angle}
+
+\item{vjust}{vjust}
 }
 \description{
 Rotate x axix labels
