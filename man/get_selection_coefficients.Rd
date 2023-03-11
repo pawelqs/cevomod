@@ -12,5 +12,8 @@ get_selection_coefficients(object, Nmax = 10^10)
 \item{Nmax}{Time when tumour is sampled (in tumour doublings)}
 }
 \description{
-Get subclonal selection coefficients Williams
+Use properties of subclone fit to calculate selection intensity, selection
+is defined as the relative growth rates of host tumour cell
+populations (\eqn{\lambda h}) vs subclone (\eqn{\lambda s}):
+\deqn{1+s=\lambda h / \lambda s}
 }
