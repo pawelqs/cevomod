@@ -53,6 +53,17 @@ require_packages <- function(...) {
 }
 
 
+require_columns <- function(tbl, ...) {
+  cols <- list(...) |>
+    unlist()
+  tbl_name <- deparse(substitute(tbl))
+  missing <- cols %not in% colnames(tbl)
+  if (sum(missing) > 0) {
+    stop("The following columns are missing in the ", tbl_name, ": ", str_c(cols[missing], collapse = ", "))
+  }
+}
+
+
 #' Run cevobrowser app
 #' @export
 run_browser <- function() {
