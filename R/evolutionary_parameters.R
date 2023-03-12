@@ -89,10 +89,9 @@ get_selection_coefficients <- function(object, ...) {
 
 #' @describeIn evo_params Get subclonal selection coefficients Williams
 #' @export
-get_selection_coefficients.cevodata <- function(
-          object,
-          models_name = "williams_neutral_subclones",
-          Nmax = 10^10, ...) {
+get_selection_coefficients.cevodata <- function(object,
+                                                models_name = "williams_neutral_subclones",
+                                                Nmax = 10^10, ...) {
   get_models(object, models_name) |>
     get_selection_coefficients()
 }
@@ -119,9 +118,8 @@ get_selection_coefficients.tbl_df <- function(object, Nmax = 10^10, ...) {
     nest(subclones = c("component", "N_mutations", "subclone_frequency", "emergence_time"))
 
   dt |>
-    rowwise("sample_id") |>
-    reframe(mobster_evolutionary_parameters(.data$subclones, .data$mu)) |>
-    left_join(mutation_rates, by = "sample_id")
+    rowwise("sample_id", "mutation_rate_williams") |>
+    reframe(mobster_evolutionary_parameters(.data$subclones))
 }
 
 
@@ -131,23 +129,26 @@ get_emergence_time <- function(N, mu) {
 }
 
 
-mobster_evolutionary_parameters <- function(subclones, mu, Nmax = 10^10) {
+mobster_evolutionary_parameters <- function(subclones, Nmax = 10^10) {
   nsubclones <- nrow(subclones)
 
-  subclones$selection <- if (nsubclones == 1) {
+  if (nsubclones == 1) {
     time_end <- log(Nmax * (1 - subclones$subclone_frequency)) / log(2)
-    selection(subclones$emergence_time, time_end, subclones$subclone_frequency)
+    s <- selection(subclones$emergence_time, time_end, subclones$subclone_frequency)
   } else if (nsubclones == 2) {
     if (are_subclones_nested(subclones)) { # pigeon hole principle
       largestsubclone <- max(subclones$subclone_frequency)
       time_end <- log(Nmax * (1 - largestsubclone)) / log(2)
-      selection2clonenested(subclones$emergence_time, time_end, subclones$subclone_frequency)
+      s <- selection2clonenested(subclones$emergence_time, time_end, subclones$subclone_frequency)
     }
     else {
       time_end <- log(Nmax * ( 1 - subclones$subclone_frequency[1] - subclones$subclone_frequency[2] )) / log(2)
-      selection2clone(subclones$emergence_time, time_end, subclones$subclone_frequency)
+      s <- selection2clone(subclones$emergence_time, time_end, subclones$subclone_frequency)
     }
   }
+
+  subclones$time_end <- time_end
+  subclones$selection <- s
   return(subclones)
 }
 
@@ -165,7 +166,6 @@ selection <- function(time, time_end, subclonefrequency) {
   x1 <- log(2) * time
   x2 <- log(subclonefrequency / (1 - subclonefrequency))
   x3 <- log(2) * (time_end - time)
-
   s <- ((x1 + x2) / x3)
   return(s)
 }
@@ -182,14 +182,12 @@ selection2clone <- function(times, time_end, frequencies) {
   subclonefrequency2 <- frequencies[2]
 
   x1 <- log(2) * time1
-  x2 <-
-    log(subclonefrequency1 / (1 - subclonefrequency1 - subclonefrequency2))
+  x2 <- log(subclonefrequency1 / (1 - subclonefrequency1 - subclonefrequency2))
   x3 <- log(2) * (time_end - time1)
   s1 <- ((x1 + x2) / x3)
 
   x1 <- log(2) * time2
-  x2 <-
-    log(subclonefrequency2 / (1 - subclonefrequency1 - subclonefrequency2))
+  x2 <- log(subclonefrequency2 / (1 - subclonefrequency1 - subclonefrequency2))
   x3 <- log(2) * (time_end - time2)
   s2 <- ((x1 + x2) / x3)
 
@@ -205,14 +203,12 @@ selection2clonenested <- function(times, time_end, frequencies) {
   subclonefrequency2 <- frequencies[2]
 
   x1 <- log(2) * time1
-  x2 <- log((subclonefrequency1 - subclonefrequency2)
-            / (1 - subclonefrequency1))
+  x2 <- log((subclonefrequency1 - subclonefrequency2) / (1 - subclonefrequency1))
   x3 <- log(2) * (time_end - time1) # I replaced time with time1, I am sure it was a typo; PK
   s1 <- ((x1 + x2) / x3)
 
   x1 <- log(2) * time2
-  x2 <- log((subclonefrequency2)
-            / (1 - subclonefrequency1))
+  x2 <- log((subclonefrequency2) / (1 - subclonefrequency1))
   x3 <- log(2) * (time_end - time2)
   s2 <- ((x1 + x2) / x3)
 

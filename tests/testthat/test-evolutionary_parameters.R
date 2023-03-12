@@ -16,8 +16,8 @@ test_that("mobster_evolutionary_parameters() works", {
     nest(subclones = c("component", "N_mutations", "subclone_frequency", "emergence_time"))
 
   res <- subclones |>
-    rowwise("sample_id") |>
-    reframe(mobster_evolutionary_parameters(subclones, mu))
+    rowwise("sample_id", "mutation_rate_williams") |>
+    reframe(mobster_evolutionary_parameters(subclones))
   # write_tsv(res, "tests/testdata/expected_mobster_evolutionary_parameters.tsv")
   expected <- read_tsv("../testdata/expected_mobster_evolutionary_parameters.tsv", show_col_types = FALSE)
   expect_equal(res, expected)
