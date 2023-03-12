@@ -1,12 +1,30 @@
 
 
+#' Get evolutionary parameters from the model
+#'
+#' Code of those functions is only re-formatted code from MOBSTER R package
+#' by Caravagna, Williams et al. https://github.com/caravagnalab/mobster
+#'
+#' @param object cevodata object or models tibble
+#' @param ... other arguments
+#' @param models_name models_name
+#' @name evo_params
+NULL
+
+
 ## ------------------------ Mutation rates by Williams ------------------------
 
-#' Get mutation rates by Williams
-#' @param object cevodata object  with fitted cevomod models
-#' @param models_name models_name
+#' @describeIn evo_params Get mutation rates by Williams
+#' Use ...
 #' @export
-get_mutation_rates <- function(object, models_name = "williams_neutral") {
+get_mutation_rates <- function(object, ...) {
+  UseMethod("get_mutation_rates")
+}
+
+
+#' @describeIn evo_params Get mutation rates by Williams
+#' @export
+get_mutation_rates.cevodata <- function(object, models_name = "williams_neutral", ...) {
   mutation_rates <- get_models(object, models_name) |>
     filter(.data$component == "Neutral tail") |>
     transmute(
@@ -36,29 +54,57 @@ get_mutation_rates <- function(object, models_name = "williams_neutral") {
 }
 
 
+#' @describeIn evo_params Get mutation rates by Williams
+#' @export
+get_mutation_rates.tbl_df <- function(object, ...) {
+  require_columns(object, "sample_id", "component", "A")
+  mutation_rates <- object |>
+    filter(.data$component == "Neutral tail") |>
+    transmute(
+      .data$sample_id,
+      mutation_rate_williams = .data$A
+    )
+  mutation_rates
+}
+
 
 ## --------------------- Selection coefs by Williams --------------------------
 # Code below is re-formatted code from MOBSTER R package
 # by Caravagna, Williams et al. https://github.com/caravagnalab/mobster
 
 
-#' Get subclonal selection coefficients Williams
+#' @describeIn evo_params Get subclonal selection coefficients Williams
 #'
 #' Use properties of subclone fit to calculate selection intensity, selection
 #' is defined as the relative growth rates of host tumour cell
 #' populations (\eqn{\lambda h}) vs subclone (\eqn{\lambda s}):
 #' \deqn{1+s=\lambda h / \lambda s}
 #'
-#' @param object cevodata object
-#' @param models_name model to use
 #' @param Nmax Time when tumour is sampled (in tumour doublings)
 #' @export
-get_selection_coefficients <- function(object,
-                                       models_name = "williams_neutral_subclones",
-                                       Nmax = 10^10) {
-  mutation_rates <- get_mutation_rates(object, models_name)
+get_selection_coefficients <- function(object, ...) {
+  UseMethod("get_selection_coefficients")
+}
 
-  subclones <- get_models(object, models_name) |>
+
+#' @describeIn evo_params Get subclonal selection coefficients Williams
+#' @export
+get_selection_coefficients.cevodata <- function(
+          object,
+          models_name = "williams_neutral_subclones",
+          Nmax = 10^10, ...) {
+  get_models(object, models_name) |>
+    get_selection_coefficients()
+}
+
+
+#' @describeIn evo_params Get subclonal selection coefficients Williams
+#' @export
+get_selection_coefficients.tbl_df <- function(object, Nmax = 10^10, ...) {
+  require_columns(object, "sample_id", "component", "A", "N_mutations", "cellularity")
+  mutation_rates <- get_mutation_rates(object)
+
+  subclones <- object |>
     filter(str_detect(.data$component, "Subclone")) |>
     drop_na_columns() |>
     select("sample_id", "component", "N_mutations", "cellularity") |>
@@ -74,7 +120,8 @@ get_selection_coefficients <- function(object,
 
   dt |>
     rowwise("sample_id") |>
-    reframe(mobster_evolutionary_parameters(.data$subclones, .data$mu))
+    reframe(mobster_evolutionary_parameters(.data$subclones, .data$mu)) |>
+    left_join(mutation_rates, by = "sample_id")
 }
 
 
