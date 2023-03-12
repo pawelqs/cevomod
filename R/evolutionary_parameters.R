@@ -8,6 +8,7 @@
 #' @export
 get_mutation_rates <- function(object, models_name = "williams_neutral") {
   mutation_rates <- get_models(object, models_name) |>
+    filter(.data$component == "Neutral tail") |>
     transmute(
       .data$sample_id,
       mutation_rate_williams = .data$A
@@ -49,12 +50,15 @@ get_mutation_rates <- function(object, models_name = "williams_neutral") {
 #' \deqn{1+s=\lambda h / \lambda s}
 #'
 #' @param object cevodata object
+#' @param models_name model to use
 #' @param Nmax Time when tumour is sampled (in tumour doublings)
 #' @export
-get_selection_coefficients <- function(object, Nmax = 10^10) {
-  mutation_rates <- get_mutation_rates(object)
+get_selection_coefficients <- function(object,
+                                       models_name = "williams_neutral_subclones",
+                                       Nmax = 10^10) {
+  mutation_rates <- get_mutation_rates(object, models_name)
 
-  subclones <- get_models(object, "williams_neutral_subclones") |>
+  subclones <- get_models(object, models_name) |>
     filter(str_detect(.data$component, "Subclone")) |>
     drop_na_columns() |>
     select("sample_id", "component", "N_mutations", "cellularity") |>
@@ -70,7 +74,7 @@ get_selection_coefficients <- function(object, Nmax = 10^10) {
 
   dt |>
     rowwise("sample_id") |>
-    reframe(mobster_evolutionary_parameters(subclones, mu))
+    reframe(mobster_evolutionary_parameters(.data$subclones, .data$mu))
 }
 
 

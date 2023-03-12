@@ -4,10 +4,16 @@
 \alias{get_selection_coefficients}
 \title{Get subclonal selection coefficients Williams}
 \usage{
-get_selection_coefficients(object, Nmax = 10^10)
+get_selection_coefficients(
+  object,
+  models_name = "williams_neutral_subclones",
+  Nmax = 10^10
+)
 }
 \arguments{
 \item{object}{cevodata object}
+
+\item{models_name}{model to use}
 
 \item{Nmax}{Time when tumour is sampled (in tumour doublings)}
 }
