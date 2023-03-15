@@ -40,8 +40,13 @@ calc_SFS.cevodata <- function(object, bins = NULL, ...) {
 #' @describeIn sfs Calculate SFS
 #' @export
 calc_SFS.cevo_snvs <- function(object, bins = NULL, ...) {
-  snvs <- cut_f_intervals(object, bins = bins) |>
-    filter(.data$VAF > 0)
+  if (is.null(object[["VAF_interval"]]) | !is.null(bins)) {
+    snvs <- cut_f_intervals(object, bins = bins) |>
+      filter(.data$VAF > 0)
+  } else {
+    snvs <- object |>
+      filter(.data$VAF > 0)
+  }
   intervals <- attributes(snvs)$intervals
   res <- snvs |>
     group_by(.data$sample_id, .data$VAF_interval) |>

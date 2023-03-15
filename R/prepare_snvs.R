@@ -1,9 +1,16 @@
 
 
 
-prepare_SNVs <- function(snvs, bins = NULL) {
-  snvs <- cut_f_intervals(object, bins = bins) |>
-    filter(.data$VAF > 0)
+#' Prepare SNVs for analyses
+#' @param object cevodata obj
+#' @param which which SNVs to use
+#' @param bins number of VAF interval bins
+#' @export
+prepare_SNVs <- function(object, which = default_SNVs(object), bins = NULL) {
+  snvs <- SNVs(object, which) |>
+    cut_f_intervals(bins = bins)
+  object |>
+    add_SNV_data(snvs, name = default_SNVs(object))
 }
 
 

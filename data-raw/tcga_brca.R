@@ -96,7 +96,16 @@ top_mutated_patients <- TMB %>%
 
 tcga_brca_test <- tcga_brca |>
   filter(sample_id %in% top_mutated_patients) |>
-  run_cevomod()
+  calc_mutation_frequencies() |>
+  prepare_SNVs() |>
+  calc_SFS() |>
+  calc_cumulative_tails() |>
+  calc_Mf_1f() |>
+  fit_williams_neutral_models() |>
+  fit_subclones() |>
+  fit_tung_durrett_models() |>
+  fit_subclones()
+tcga_brca_test$active_models <- "williams_neutral_subclones"
 
 
 usethis::use_data(tcga_brca, overwrite = TRUE)
