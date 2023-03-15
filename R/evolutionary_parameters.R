@@ -125,7 +125,7 @@ get_selection_coefficients.tbl_df <- function(object, Nmax = 10^10, ...) {
 
 # Emergence time is negative, when N is not big enough, eg. comparable with mu
 get_emergence_time <- function(N, mu) {
-  (N / mu) / (2 * log(2)) - (-digamma(1) / log(2))
+  (N / mu) / (2 * log(2))# - (-digamma(1) / log(2))
 }
 
 
