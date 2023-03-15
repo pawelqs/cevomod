@@ -54,6 +54,7 @@ count_mutations_by_component <- function(object, models_name = active_models(obj
   mut_counts <- object |>
     get_models(models_name) |>
     select("sample_id", "component", "N_mutations") |>
+    mutate(component = str_replace(.data$component, "powerlaw", "Neutral tail")) |>
     left_join(neutral_tail_counts, by = c("sample_id", "component")) |>
     mutate(
       N_mutations = if_else(.data$component == "Neutral tail", .data$N, .data$N_mutations)
