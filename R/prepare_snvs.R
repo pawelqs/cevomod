@@ -1,4 +1,13 @@
 
+
+
+prepare_SNVs <- function(snvs, bins = NULL) {
+  snvs <- cut_f_intervals(object, bins = bins) |>
+    filter(.data$VAF > 0)
+}
+
+
+
 #' Calc mutation frequencies
 #'
 #' Currently no method is implemented and this function only initializes

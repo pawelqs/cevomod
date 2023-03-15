@@ -53,14 +53,6 @@ validate_SNVs <- function(snvs) {
 ## ---------------------------- Misc functions --------------------------------
 
 
-
-
-prepare_SNVs <- function(object, bins = NULL) {
-  snvs <- cut_f_intervals(object, bins = bins) |>
-    filter(.data$VAF > 0)
-}
-
-
 #' Annotate mutation context and types for mutation signatures analysis
 #' @param snvs snvs tbl
 #' @param bsgenome BSGenome object
