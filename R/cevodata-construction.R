@@ -74,23 +74,6 @@ set_cancer_type.cevodata <- function(object, cancer_type, ...) {
 
 #' @rdname assays
 #' @export
-SNVs <- function(object, ...) {
-  UseMethod("SNVs")
-}
-
-#' @return tibble
-#' @describeIn assays Get SNVs from cevodata dataset
-#' @export
-SNVs.cevodata <- function(object, which = object$active_SNVs, ...) {
-  if (which %not in% names(object$SNVs)) {
-    stop(str_c(which, " does not exist in object$SNVs"))
-  }
-  object$SNVs[[which]]
-}
-
-
-#' @rdname assays
-#' @export
 add_SNV_data <- function(object, ...) {
   UseMethod("add_SNV_data")
 }
@@ -111,22 +94,6 @@ add_SNV_data.cevodata <- function(object, snvs, name = NULL, ...) {
     as_tibble()
   object <- add_sample_data(object, meta)
   object
-}
-
-
-#' @rdname assays
-#' @export
-CNVs <- function(object, ...) {
-  UseMethod("CNVs")
-}
-
-#' @describeIn assays Get CNVs from cevodata dataset
-#' @export
-CNVs.cevodata <- function(object, which = object$active_CNVs, ...) {
-  if (which %not in% names(object$CNVs)) {
-    stop(str_c(which, " does not exist in object$CNVs"))
-  }
-  object$CNVs[[which]]
 }
 
 
@@ -230,25 +197,6 @@ default_CNVs.cevodata <- function(object, ...) {
   }
   object$active_CNVs <- value
   object
-}
-
-
-#' Get names of CNV variables
-#' @param object object
-#' @param ... other arguments
-#' @export
-get_CNVs_var_names <- function(object, ...) {
-  UseMethod("get_CNVs_var_names")
-}
-
-#' @describeIn get_CNVs_var_names Get CNV variable names from cevodata object
-#' @param which CNV assay to use
-#' @export
-get_CNVs_var_names.cevodata <- function(object, which = default_CNVs(object), ...) {
-  cnvs_metadata <- CNVs(object, which = which) |>
-    select(-"sample_id", -"chrom", -"start", -"end") |>
-    drop_na_columns()
-  colnames(cnvs_metadata)
 }
 
 
