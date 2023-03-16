@@ -2,25 +2,22 @@
 #' Fit subclonal distributions to neutral model residuals
 #'
 #' @param object object
-#' @param ... other arguments
-#' @export
-fit_subclones <- function(object, ...) {
-  UseMethod("fit_subclones")
-}
-
-
-#' @rdname fit_subclones
 #' @param N vector of numbers of clones to test
 #' @param powerlaw_model_name residual of which powerlaw model to use?
 #'   williams_neutral/tung_durrett
 #' @param upper_VAF_limit ignore variants with f higher than
 #' @param verbose verbose?
+#' @name fit_subclones
+NULL
+
+
+#' @rdname fit_subclones
 #' @export
-fit_subclones.cevodata <- function(object,
-                                   N = 1:3,
-                                   powerlaw_model_name = active_models(object),
-                                   upper_VAF_limit = 0.75,
-                                   verbose = TRUE, ...) {
+fit_subclones <- function(object,
+                          N = 1:3,
+                          powerlaw_model_name = active_models(object),
+                          upper_VAF_limit = 0.75,
+                          verbose = TRUE, ...) {
   msg("Fitting binomial models", verbose = verbose)
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
 

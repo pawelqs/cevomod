@@ -1,4 +1,10 @@
 
+object <- tcga_brca_test
+N <- 1:3
+powerlaw_model_name <- "williams_neutral"
+upper_VAF_limit <- 0.75
+verbose <- TRUE
+
 fit_binomial_models_cols <- c("N", "component", "cellularity", "N_mutations", "BIC")
 
 test_that("fit_binomial_models() works with very few remaining mutations", {
