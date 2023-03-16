@@ -7,6 +7,7 @@
 * **v0.5.0** 
   - fitting Tung-Durrett models implemented
   - compare_models() implemented
+  - Full Williams code for esitmation of selection coefficients included
 
 # cevomod 0.4.x
 
