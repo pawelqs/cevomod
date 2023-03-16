@@ -1,3 +1,7 @@
+# cevomod 0.6.x
+
+* **v0.6.0**  fitting subclones using BMix
+
 # cevomod 0.5.x
 
 * **v0.5.0** 
