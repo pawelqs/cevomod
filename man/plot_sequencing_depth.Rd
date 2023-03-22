@@ -3,18 +3,26 @@
 \name{plot_sequencing_depth}
 \alias{plot_sequencing_depth}
 \alias{plot_sequencing_depth.cevodata}
+\alias{plot_sequencing_depth.cevo_snvs}
 \title{Plot sequencing depth of cevodata}
 \usage{
 plot_sequencing_depth(object, ...)
 
-\method{plot_sequencing_depth}{cevodata}(object, mapping = NULL, geom = geom_boxplot, ...)
+\method{plot_sequencing_depth}{cevodata}(
+  object,
+  snvs_name = default_SNVs(object),
+  geom = geom_boxplot,
+  ...
+)
+
+\method{plot_sequencing_depth}{cevo_snvs}(object, geom = geom_boxplot, ...)
 }
 \arguments{
-\item{object}{cevodata}
+\item{object}{cevodata or cevo_snvs}
 
 \item{...}{params passed to geom}
 
-\item{mapping}{customize mapping}
+\item{snvs_name}{name of the SNVs table}
 
 \item{geom}{change geom}
 }
@@ -24,5 +32,7 @@ Plot sequencing depth of cevodata
 \section{Methods (by class)}{
 \itemize{
 \item \code{plot_sequencing_depth(cevodata)}: Plot sequencing data of mutations in cevodata
+
+\item \code{plot_sequencing_depth(cevo_snvs)}: Plot sequencing data of mutations in cevodata
 
 }}

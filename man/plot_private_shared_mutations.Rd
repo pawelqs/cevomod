@@ -7,14 +7,12 @@
 \usage{
 plot_private_shared_mutations(object, ...)
 
-\method{plot_private_shared_mutations}{cevodata}(object, mapping = NULL, geom = geom_bar, ...)
+\method{plot_private_shared_mutations}{cevodata}(object, geom = geom_bar, ...)
 }
 \arguments{
 \item{object}{cevodata}
 
 \item{...}{other params}
-
-\item{mapping}{customize mapping}
 
 \item{geom}{change geom}
 }
