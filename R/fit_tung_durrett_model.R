@@ -13,8 +13,6 @@
 #'
 #' @param object cevodata
 #' @param name name in the models' slot
-#' @param pct_left drop pct of the lowest frequency mutations; currently not used
-#' @param pct_right drop pct of the highest frequency mutations; currently not used
 #' @param av_filter average filter values to be applied to VAF
 #' @param control control param of stats::optim()
 #' @param verbose verbose?
@@ -36,10 +34,14 @@ fit_tung_durrett_models <- function(object, ...) {
 
 
 #' @rdname tung_durrett
+#' @inheritParams get_non_zero_SFS_range
 #' @export
 fit_tung_durrett_models.cevodata <- function(object,
                                              name = "tung_durrett",
-                                             pct_left = 0, pct_right = 0.98,
+                                             # pct_left = 0, pct_right = 0.98,
+                                             allowed_zero_bins = 2,
+                                             y_treshold = 1,
+                                             y_threshold_pct = 0.01,
                                              av_filter = c(1/3, 1/3, 1/3),
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                              verbose = TRUE, ...) {
@@ -47,7 +49,12 @@ fit_tung_durrett_models.cevodata <- function(object,
   start_time <- Sys.time()
 
   sfs <- get_SFS(object, name = "SFS")
-  bounds <- get_non_zero_SFS_range(sfs, allowed_zero_bins = 2) |>
+  bounds <- sfs |>
+    get_non_zero_SFS_range(
+      allowed_zero_bins = allowed_zero_bins,
+      y_treshold = y_treshold,
+      y_threshold_pct = y_threshold_pct
+    ) |>
     rename(lower_bound = "from", higher_bound = "to")
   # bounds <- get_VAF_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
   nbins <- summarise(sfs, nbins = n(), .by = "sample_id")

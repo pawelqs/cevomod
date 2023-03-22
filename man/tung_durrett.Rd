@@ -11,8 +11,9 @@ fit_tung_durrett_models(object, ...)
 \method{fit_tung_durrett_models}{cevodata}(
   object,
   name = "tung_durrett",
-  pct_left = 0,
-  pct_right = 0.98,
+  allowed_zero_bins = 2,
+  y_treshold = 1,
+  y_threshold_pct = 0.01,
   av_filter = c(1/3, 1/3, 1/3),
   control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
   verbose = TRUE,
@@ -26,9 +27,12 @@ fit_tung_durrett_models(object, ...)
 
 \item{name}{name in the models' slot}
 
-\item{pct_left}{drop pct of the lowest frequency mutations; currently not used}
+\item{allowed_zero_bins}{number of allowed empty bins in the interval}
 
-\item{pct_right}{drop pct of the highest frequency mutations; currently not used}
+\item{y_treshold}{bins with less mutations will be considered empty}
+
+\item{y_threshold_pct}{bins that have less mutations than this param times the
+height of the higherst peak will be considered empty}
 
 \item{av_filter}{average filter values to be applied to VAF}
 

@@ -17,7 +17,7 @@ fit_subclones <- function(object,
                           N = 1:3,
                           powerlaw_model_name = active_models(object),
                           upper_VAF_limit = 0.75,
-                          verbose = TRUE, ...) {
+                          verbose = TRUE) {
   msg("Fitting binomial models", verbose = verbose)
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
 

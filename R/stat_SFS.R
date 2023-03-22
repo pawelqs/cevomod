@@ -158,6 +158,13 @@ get_SFS.cevodata <- function(object, model_name = "SFS", verbose = TRUE, ...) {
 }
 
 
+#' Get range of non empty SFS bins
+#' @param sfs SFS
+#' @param allowed_zero_bins number of allowed empty bins in the interval
+#' @param y_treshold bins with less mutations will be considered empty
+#' @param y_threshold_pct bins that have less mutations than this param times the
+#'   height of the higherst peak will be considered empty
+#' @keywords internal
 get_non_zero_SFS_range <- function(sfs,
                                    allowed_zero_bins = 1,
                                    y_treshold = 1,

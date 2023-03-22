@@ -20,8 +20,7 @@ fit_subclones(
   N = 1:3,
   powerlaw_model_name = active_models(object),
   upper_VAF_limit = 0.75,
-  verbose = TRUE,
-  ...
+  verbose = TRUE
 )
 }
 \arguments{
