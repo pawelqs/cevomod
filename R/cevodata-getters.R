@@ -205,6 +205,26 @@ active_models <- function(object, ...) {
 }
 
 
+#' Fill N_mutations column for powerlaw models
+#' @param models tibble from get_models()
+#' @param cd cevodata object
+#' @param models_name models name
+#' @export
+fix_powerlaw_N_mutations <- function(models, cd, models_name) {
+  mut_counts <- count_mutations_by_component(cd, models_name, include_filtered = TRUE)
+  areas_under_curves <- mut_counts |>
+    filter(.data$component %in% c("Neutral tail", "Filtered mutations")) |>
+    summarise(
+      component = "powerlaw",
+      area_under_curve = sum(.data$N_mutations),
+      .by = "sample_id"
+    )
+  models |>
+    left_join(areas_under_curves, by = c("sample_id", "component")) |>
+    mutate(N_mutations = if_else(.data$component == "powerlaw", .data$area_under_curve, .data$N_mutations))
+}
+
+
 ## ---------------------------------- Other -----------------------------------
 
 #' @rdname assays
