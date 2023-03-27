@@ -35,6 +35,8 @@ fit_tung_durrett_models <- function(object, ...) {
 
 #' @rdname tung_durrett
 #' @inheritParams get_non_zero_SFS_range
+#' @param peak_detection_upper_limit upper VAF value up to which the main peak is searched
+#' @param reward_upper_limit mutations under the curve up to this limit will be rewarded
 #' @export
 fit_tung_durrett_models.cevodata <- function(object,
                                              name = "tung_durrett",
@@ -43,6 +45,8 @@ fit_tung_durrett_models.cevodata <- function(object,
                                              y_treshold = 1,
                                              y_threshold_pct = 0.01,
                                              av_filter = c(1/3, 1/3, 1/3),
+                                             peak_detection_upper_limit = 0.3,
+                                             reward_upper_limit = 0.4,
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                              verbose = TRUE, ...) {
   msg("Fitting Tung-Durrett models...", verbose = verbose)
@@ -85,6 +89,8 @@ fit_tung_durrett_models.cevodata <- function(object,
       opt = td_optim(
         .data$init_A, .data$init_alpha,
         .data$data,
+        peak_detection_upper_limit = peak_detection_upper_limit,
+        reward_upper_limit = reward_upper_limit,
         control = control,
         pb = pb,
         ...
@@ -110,12 +116,17 @@ fit_tung_durrett_models.cevodata <- function(object,
 }
 
 
-td_optim <- function(init_A, init_alpha, data, control, pb = NULL, ...) {
+td_optim <- function(init_A, init_alpha, data,
+                     peak_detection_upper_limit = 0.3,
+                     reward_upper_limit = 0.4,
+                     control, pb = NULL, ...) {
   res <- stats::optim(
     par = c(init_A, init_alpha),
     fn = td_objective_function,
     x = data$VAF,
     y = data$y,
+    peak_detection_upper_limit = peak_detection_upper_limit,
+    reward_upper_limit = reward_upper_limit,
     control = control,
     ...
   )
@@ -125,7 +136,10 @@ td_optim <- function(init_A, init_alpha, data, control, pb = NULL, ...) {
 }
 
 
-td_objective_function <- function(params, x, y) {
+td_objective_function <- function(params, x, y,
+                                  peak_detection_upper_limit = 0.3,
+                                  reward_upper_limit = 0.4
+                                  ) {
   A <- params[[1]]
   alpha <- params[[2]]
   y1 <- A * 1/(x ^ alpha)
@@ -137,8 +151,8 @@ td_objective_function <- function(params, x, y) {
 
   # Reward for number of mutations under the curve
   y2 <- pmin(y1, y)
-  before_max <- seq_along(y) < which.max(y[x < 0.3]) # detects peak up to VAF = 0.3
-  y2[before_max | sampled_range | (x > 0.4)] <- 0
+  before_max <- seq_along(y) < which.max(y[x < peak_detection_upper_limit]) # detects peak up to VAF = 0.3
+  y2[before_max | sampled_range | (x > reward_upper_limit)] <- 0
   mut_reward <- sum(y2)
 
   # Penalty for bins too low for the curve
