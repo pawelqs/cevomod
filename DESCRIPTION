@@ -1,6 +1,6 @@
 Package: cevomod
 Title: Cancer Evolution Models
-Version: 0.6.0
+Version: 1.0.0
 Authors@R: 
     person("Paweł", "Kuś", , "kpawel2210@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4367-9821"))
@@ -57,5 +57,8 @@ Imports:
     yardstick
 Depends: 
     R (>= 2.10)
+Remotes: 
+    caravagnalab/mobster,
+    caravagnalab/BMix
 LazyData: true
 URL: https://pawelqs.github.io/cevomod/
