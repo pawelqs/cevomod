@@ -4,20 +4,22 @@
 \alias{plot_residuals}
 \alias{plot_sampling_rate}
 \alias{plot_sampling_rate.cevodata}
-\alias{plot_residuals_neutral_model}
-\alias{plot_residuals_neutral_model.cevodata}
+\alias{plot_residuals_powerlaw_model}
+\alias{plot_residuals_powerlaw_model.cevodata}
 \alias{plot_residuals_full_model}
 \alias{plot_residuals_full_model.cevodata}
+\alias{plot_binomial_fits_vs_powerlaw_residuals_bars}
 \title{Plot model residuals}
 \usage{
 plot_sampling_rate(object, ...)
 
 \method{plot_sampling_rate}{cevodata}(object, mapping = NULL, geom = geom_point, ...)
 
-plot_residuals_neutral_model(object, ...)
+plot_residuals_powerlaw_model(object, ...)
 
-\method{plot_residuals_neutral_model}{cevodata}(
+\method{plot_residuals_powerlaw_model}{cevodata}(
   object,
+  models_name = active_models(object),
   mapping = NULL,
   geom = geom_point,
   fit_clones = TRUE,
@@ -27,6 +29,15 @@ plot_residuals_neutral_model(object, ...)
 plot_residuals_full_model(object, ...)
 
 \method{plot_residuals_full_model}{cevodata}(object, mapping = NULL, geom = geom_point, ...)
+
+plot_binomial_fits_vs_powerlaw_residuals_bars(
+  object,
+  models_name = active_models(object),
+  mapping = NULL,
+  geom = geom_bar,
+  fit_clones = TRUE,
+  ...
+)
 }
 \arguments{
 \item{object}{cevodata object}
@@ -37,6 +48,8 @@ plot_residuals_full_model(object, ...)
 
 \item{geom}{geom to use}
 
+\item{models_name}{models_name}
+
 \item{fit_clones}{plot clonal fits?}
 }
 \description{
@@ -46,8 +59,10 @@ Plot model residuals
 \itemize{
 \item \code{plot_sampling_rate(cevodata)}: Plot sampling rate
 
-\item \code{plot_residuals_neutral_model(cevodata)}: Plot residuals of the neutral model
+\item \code{plot_residuals_powerlaw_model(cevodata)}: Plot residuals of the neutral model
 
 \item \code{plot_residuals_full_model(cevodata)}: Plot residuals of the full model
+
+\item \code{plot_binomial_fits_vs_powerlaw_residuals_bars()}: Plot binomial fits vs powerlaw residuals (barplot)
 
 }}

@@ -36,27 +36,6 @@ list_continuous_palettes <- function(packages = c("gameofthrones", "harrypotter"
 }
 
 
-#' Use PNWColors palette
-#' @param palette palette name
-#' @param direction 1/-1
-#' @param dynamic TRUE/FALSE
-#' @param ... additional arguments to pass to discrete_scale
-#' @export
-scale_color_pnw <- function(palette = "Sunset", direction = 1,
-                           dynamic = FALSE, ...) {
-  palette <- str_c("PNWColors::", palette)
-  scale_color_paletteer_d(palette, direction, dynamic, ...)
-}
-
-
-#' @inherit scale_color_pnw
-#' @export
-scale_fill_pnw <- function(palette = "Sunset", direction = 1,
-                            dynamic = FALSE, ...) {
-  palette <- str_c("PNWColors::", palette)
-  scale_fill_paletteer_d(palette, direction, dynamic, ...)
-}
-
 
 #' Show palettes
 #'
@@ -81,7 +60,7 @@ print_palettes <- function(packages = c("PNWColors", "nord"), n = 10) {
   })
 
   palettes %>%
-    select(.data$pal_name, .data$colors) %>%
+    select("pal_name", "colors") %>%
     deframe() %>%
     iwalk(pretty_color_print, pad_width = 25)
 }
@@ -119,10 +98,95 @@ theme_ellie <- function(n = 6) {
 }
 
 
-# ggplot2::discrete_scale("color", "ellie", )
+# ----------------------------- Theme presettings ----------------------------
 
-#' Remove color scale
+#' Hide legend
 #' @export
 hide_legend <- function() {
   theme(legend.position = "none")
+}
+
+
+#' Rotate x axix labels
+#' @param angle angle
+#' @param vjust vjust
+#' @export
+rotate_x_labels <- function(angle = 90, vjust = 0.5) {
+  theme(axis.text.x = element_text(angle = 90, vjust = vjust))
+}
+
+
+#' Hide facet labels
+#' @export
+hide_facet_labels <- function() {
+  theme(
+    strip.background = element_blank(),
+    strip.text.x = element_blank()
+  )
+}
+
+
+# ---------------------------- color scales ------------------------------------
+
+#' Some colors
+#' @export
+# colors <-
+colors <- structure(
+  list(
+    blue = "#1A6384",
+    red = "#5B1414"
+  ),
+  class = c("cevo_colors", "list")
+)
+
+
+#' @export
+print.cevo_colors <- function(x, ...) {
+  iwalk(x, ~cli::cat_line(.y, background_col = .x))
+}
+
+
+palettes <- list(
+  starfleet = c("#5B1414", "#AD722C", "#1A6384")
+)
+
+
+# ggplot2::discrete_scale("color", "ellie", )
+
+
+#' Different color pallettes
+#' @param palette palette name
+#' @param ... other arguments passed to scale_*_manual()
+#' @export
+scale_fill_cevomod <- function(palette = "starfleet", ...) {
+  scale_fill_manual(values = palettes[[palette]], ...)
+}
+
+
+#' @rdname scale_fill_cevomod
+#' @export
+scale_color_cevomod <- function(palette = "starfleet", ...) {
+  scale_color_manual(values = palettes[[palette]], ...)
+}
+
+
+#' Use PNWColors palette
+#' @param palette palette name
+#' @param direction 1/-1
+#' @param dynamic TRUE/FALSE
+#' @param ... additional arguments to pass to discrete_scale
+#' @export
+scale_color_pnw <- function(palette = "Sunset", direction = 1,
+                            dynamic = FALSE, ...) {
+  palette <- str_c("PNWColors::", palette)
+  scale_color_paletteer_d(palette, direction, dynamic, ...)
+}
+
+
+#' @inherit scale_color_pnw
+#' @export
+scale_fill_pnw <- function(palette = "Sunset", direction = 1,
+                           dynamic = FALSE, ...) {
+  palette <- str_c("PNWColors::", palette)
+  scale_fill_paletteer_d(palette, direction, dynamic, ...)
 }

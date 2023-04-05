@@ -1,11 +1,31 @@
-# cevomod 0.3.0
+# cevomod 0.6.x
 
-* Residuals plotting done
-* shiny app for browsing results implemented
+* **v0.6.0**  fitting subclones using BMix
+
+# cevomod 0.5.x
+
+* **v0.5.0** 
+  - fitting Tung-Durrett models implemented
+  - compare_models() implemented
+  - Full Williams code for esitmation of selection coefficients included
+
+# cevomod 0.4.x
+
+* **v0.4.0** calculation of mutation rates and selection coefficients by Williams
+  implemented
+
+# cevomod 0.3.x
+
+* **v0.3.0**
+  - Residuals plotting done
+  - shiny app for browsing results implemented
+* **v0.3.5** experimental models joining
+
 
 # cevomod 0.2.0
 
 * Binomial model fitting and plotting v1
+
 
 # cevomod 0.1.0
 

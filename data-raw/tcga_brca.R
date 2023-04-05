@@ -6,12 +6,16 @@
 # Fix the path below
 
 library(tidyverse)
+set.seed(1234)
 
-mutations <- read_tsv("/mnt/dane/data/brca_tcga_pan_can_atlas_2018/data_mutations.txt")
+
+## ---------------------------------- SNVs ------------------------------------
+
+mutations <- read_tsv("/mnt/dane/data/cbioportal/brca_tcga_pan_can_atlas_2018/data_mutations.txt")
 glimpse(mutations)
 
 
-snvs_tcga_brca <- mutations %>%
+snvs <- mutations %>%
   left_join(variant_classification) %>%
   transmute(
     sample_id = Tumor_Sample_Barcode,
@@ -27,31 +31,21 @@ snvs_tcga_brca <- mutations %>%
     ref_counts_normal = n_ref_count,
     alt_counts_normal = n_alt_count,
     variant_class = VARIANT_CLASS,
-    variant_type =  Variant_Type,
+    variant_type = Variant_Type,
     Variant_Classification,
     variant_classification,
     impact = IMPACT,
     consequence = Consequence,
     NCBI_Build
   )
-class(snvs_tcga_brca) <- c("cevo_SNVs_tbl", class(snvs_tcga_brca))
+# class(snvs) <- c("cevo_snvs", class(snvs))
 
 # usethis::use_data(snvs_tcga_brca, overwrite = TRUE)
 
-top_mutated_patients <- snvs_tcga_brca %>%
-  group_by(sample_id) %>%
-  count() %>%
-  arrange(desc(n)) %>%
-  pull(sample_id) %>%
-  head(5)
+## -------------------------------- CNVs --------------------------------------
 
-snvs_test <- snvs_tcga_brca %>%
-  filter(sample_id %in% top_mutated_patients)
-class(snvs_tcga_brca) <- c("cevo_SNVs_tbl", class(snvs_test))
-
-
-cna_hg19 <- read_tsv("/mnt/dane/data/brca_tcga_pan_can_atlas_2018/data_cna_hg19.seg")
-cnvs_tcga_brca <- cna_hg19 |>
+cna_hg19 <- read_tsv("/mnt/dane/data/cbioportal/brca_tcga_pan_can_atlas_2018/data_cna_hg19.seg")
+cnvs <- cna_hg19 |>
   transmute(
     sample_id = ID,
     chrom,
@@ -65,20 +59,56 @@ cnvs_tcga_brca <- cna_hg19 |>
     seg_mean = seg.mean
   )
 
-# usethis::use_data(cnvs_tcga_brca, overwrite = TRUE)
-cnvs_test <- cnvs_tcga_brca %>%
-  filter(sample_id %in% top_mutated_patients)
+## ---------------------------------- meta ------------------------------------
 
 samples_data <- tibble(
-  sample_id = unique(snvs_test$sample_id),
+  sample_id = unique(snvs$sample_id),
   patient_id = sample_id,
   sample = "tumor"
 )
 
-tcga_brca_test <- init_cevodata("TCGA BRCA test data", genome = "hg37") |>
-  add_SNV_data(snvs_test, name = "TCGA") |>
-  add_CNV_data(cnvs_test, data = "TCGA") |>
-  add_sample_data(samples_data) |>
-  run_cevomod()
+TMB <- snvs %>%
+  group_by(sample_id) %>%
+  summarise(TMB = n()) %>%
+  arrange(desc(TMB))
 
+TMB |>
+  mutate(
+    sample_id = parse_factor(sample_id, levels = sample_id),
+    sample_index = row_number()
+  ) |>
+  ggplot(aes(sample_index, TMB)) +
+  geom_bar(stat = "identity")
+
+## -------------------------------- cevodata ----------------------------------
+
+tcga_brca <- init_cevodata("TCGA-BRCA data", genome = "hg37") |>
+  add_SNV_data(snvs, name = "TCGA") |>
+  add_CNV_data(cnvs, name = "TCGA") |>
+  add_sample_data(samples_data) |>
+  add_sample_data(TMB) |>
+  filter(TMB > 200)
+
+top_mutated_patients <- TMB %>%
+  pull(sample_id) %>%
+  head(5) |>
+  setdiff(c("TCGA-BH-A18G-01"))
+
+tcga_brca_test <- tcga_brca |>
+  filter(sample_id %in% top_mutated_patients) |>
+  calc_mutation_frequencies() |>
+  prepare_SNVs() |>
+  calc_SFS() |>
+  calc_cumulative_tails() |>
+  calc_Mf_1f() |>
+  fit_williams_neutral_models() |>
+  fit_subclones() |>
+  fit_tung_durrett_models() |>
+  fit_subclones()
+tcga_brca_test$active_models <- "williams_neutral_subclones"
+
+
+usethis::use_data(tcga_brca, overwrite = TRUE)
 usethis::use_data(tcga_brca_test, overwrite = TRUE)
+
+

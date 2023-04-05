@@ -12,7 +12,7 @@ stat_cumulative_tail(
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE,
-  digits = 2,
+  bins = 100,
   ...
 )
 }
@@ -58,7 +58,7 @@ rather than combining with them. This is most useful for helper functions
 that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 
-\item{digits}{cumulative tail calculation avurracy}
+\item{bins}{number of bins}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
@@ -106,12 +106,13 @@ This geom treats each axis differently and, thus, can thus have two orientations
 \section{Computed variables}{
 
 
-\describe{
-\item{\code{count}}{number of points in bin}
-\item{\code{density}}{density of points in bin, scaled to integrate to 1}
-\item{\code{ncount}}{count, scaled to maximum of 1}
-\item{\code{ndensity}}{density, scaled to maximum of 1}
-\item{\code{width}}{widths of bins}
+These are calculated by the 'stat' part of layers and can be accessed with \link[ggplot2:aes_eval]{delayed evaluation}.
+\itemize{
+\item \code{after_stat(count)}\cr number of points in bin.
+\item \code{after_stat(density)}\cr density of points in bin, scaled to integrate to 1.
+\item \code{after_stat(ncount)}\cr count, scaled to a maximum of 1.
+\item \code{after_stat(ndensity)}\cr density, scaled to a maximum of 1.
+\item \code{after_stat(width)}\cr widths of bins.
 }
 
 }

@@ -29,23 +29,42 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(cevomod)
+#> 
+#> Attaching package: 'cevomod'
+#> The following object is masked from 'package:stats':
+#> 
+#>     filter
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-#> ✔ ggplot2 3.3.6     ✔ purrr   0.3.4
-#> ✔ tibble  3.1.8     ✔ dplyr   1.0.9
-#> ✔ tidyr   1.2.0     ✔ stringr 1.4.1
-#> ✔ readr   2.1.2     ✔ forcats 0.5.2
+#> ── Attaching packages
+#> ───────────────────────────────────────
+#> tidyverse 1.3.2 ──
+#> ✔ ggplot2 3.4.0.9000     ✔ purrr   0.3.5     
+#> ✔ tibble  3.1.8          ✔ dplyr   1.0.10    
+#> ✔ tidyr   1.2.0          ✔ stringr 1.5.0     
+#> ✔ readr   2.1.2          ✔ forcats 0.5.2     
 #> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-#> ✖ dplyr::filter() masks stats::filter()
+#> ✖ dplyr::filter() masks cevomod::filter(), stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 data("tcga_brca_test")
 
-SNVs(tcga_brca_test) |> 
-  ggplot(aes(VAF, fill = sample_id, color = sample_id)) +
-  stat_SFS(geom = "bar") +
-  layer_mutations(drivers = "BRCA", color = "black", shape = "impact") +
-  facet_wrap(~sample_id, scales = "free_y") +
-  theme_ellie(n = n_distinct(SNVs(tcga_brca_test)$sample_id))
+cd <- run_cevomod(tcga_brca_test)
 ```
 
-<img src="man/figures/README-example-1.png" width="100%" />
+``` r
+plot_models(cd) +
+  layer_mutations(cd, drivers = "BRCA")
+#> Warning in geom_bar(aes(fill = .data$sample_id, width = .data$width), stat =
+#> "identity", : Ignoring unknown aesthetics: width
+#> Warning in ggrepel::geom_label_repel(aes(x = .data$VAF, shape
+#> = .data[[shape]], : Ignoring unknown aesthetics: shape
+#> Warning: ggrepel: 15 unlabeled data points (too many overlaps). Consider
+#> increasing max.overlaps
+#> Warning: ggrepel: 8 unlabeled data points (too many overlaps). Consider
+#> increasing max.overlaps
+#> Warning: ggrepel: 19 unlabeled data points (too many overlaps). Consider
+#> increasing max.overlaps
+#> Warning: ggrepel: 16 unlabeled data points (too many overlaps). Consider
+#> increasing max.overlaps
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />

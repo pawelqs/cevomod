@@ -4,19 +4,24 @@
 \alias{Mf_1f}
 \alias{calc_Mf_1f}
 \alias{calc_Mf_1f.cevodata}
-\alias{calc_Mf_1f.tbl_df}
+\alias{calc_Mf_1f.cevo_snvs}
 \alias{plot_Mf_1f}
+\alias{plot_Mf_1f.cevodata}
+\alias{get_Mf_1f}
+\alias{get_Mf_1f.cevodata}
 \title{William's M(f) ~ 1/f statistics}
 \usage{
 calc_Mf_1f(object, ...)
 
-\method{calc_Mf_1f}{cevodata}(object, digits = 2, ...)
+\method{calc_Mf_1f}{cevodata}(object, bins = 100, verbose = TRUE, ...)
 
-\method{calc_Mf_1f}{tbl_df}(object, digits = 2, ...)
+\method{calc_Mf_1f}{cevo_snvs}(object, bins = 100, verbose = TRUE, ...)
 
-plot_Mf_1f(
+plot_Mf_1f(object, ...)
+
+\method{plot_Mf_1f}{cevodata}(
   object,
-  digits = 2,
+  bins = NULL,
   from = 0.1,
   to = 0.25,
   scale = TRUE,
@@ -24,22 +29,18 @@ plot_Mf_1f(
   ...
 )
 
-plot_Mf_1f(
-  object,
-  digits = 2,
-  from = 0.1,
-  to = 0.25,
-  scale = TRUE,
-  geom = "point",
-  ...
-)
+get_Mf_1f(object, ...)
+
+\method{get_Mf_1f}{cevodata}(object, model_name = "Mf_1f", verbose = TRUE, ...)
 }
 \arguments{
 \item{object}{SNVs tibble object}
 
 \item{...}{other arguments}
 
-\item{digits}{resolution of the cumulative tails calculation}
+\item{bins}{resolution of the cumulative tails calculation}
+
+\item{verbose}{verbose?}
 
 \item{from}{min VAF to plot}
 
@@ -48,6 +49,8 @@ plot_Mf_1f(
 \item{scale}{scale data?}
 
 \item{geom}{ggplot geom to use, eg. geom_line()}
+
+\item{model_name}{name of slot with Mf_1f statistics}
 }
 \value{
 ggplot obj
@@ -62,11 +65,17 @@ Creates  cevodata$models$Mf_1f tbl with the groupping variables and:
 }
 \section{Functions}{
 \itemize{
+\item \code{calc_Mf_1f()}: Calculate Williams M(f) ~ 1/f
+
 \item \code{calc_Mf_1f(cevodata)}: Calculate Williams M(f) ~ 1/f
 
-\item \code{calc_Mf_1f(tbl_df)}: Calculate Williams M(f) ~ 1/f
+\item \code{calc_Mf_1f(cevo_snvs)}: Calculate Williams M(f) ~ 1/f
 
-\item \code{plot_Mf_1f()}: Plot M(f) ~ 1/f
+\item \code{plot_Mf_1f(cevodata)}: Plot M(f) ~ 1/f
+
+\item \code{get_Mf_1f()}: Get Mf_1f
+
+\item \code{get_Mf_1f(cevodata)}: Get Mf_1f
 
 }}
 \examples{

@@ -6,7 +6,8 @@
 \usage{
 init_cevodata(
   name,
-  genome = NULL,
+  genome = "unknown",
+  cancer = "unknown",
   snvs = NULL,
   snvs_name = NULL,
   cnvs = NULL,
@@ -17,6 +18,8 @@ init_cevodata(
 \item{name}{dataset name}
 
 \item{genome}{genome version}
+
+\item{cancer}{cancer type from \code{driver_genes} tbl}
 
 \item{snvs}{tibble with SNVs}
 

@@ -1,11 +1,12 @@
 
 #' Plot cevodata models
 #' @param object cevodata object
+#' @param models_name models name
 #' @param neutral_tail TRUE,
 #' @param binomial_layer FALSE,
 #' @param subclones TRUE,
 #' @param final_fit TRUE,
-#' @param ... other arguments
+#' @param ... other arguments passed to plot_SFS()
 #' @name plot_models
 
 
@@ -17,52 +18,66 @@ plot_models <- function(object, ...) {
 
 
 #' @rdname plot_models
+#' @param neutral_tail_alpha 0.3
+#' @param neutral_tail_size 0.5
+#' @param neutral_tail_fill "white"
+#' @param neutral_tail_color "gray90"
+#' @param binomial_layer_color "black"
+#' @param final_fit_color "red"
+#' @param final_fit_size 1
+#' @param nrow passed to facet_wrap
+#' @param ncol passed to facet_wrap
 #' @export
 plot_models.cevodata <- function(object,
+                                 models_name = active_models(object),
                                  neutral_tail = TRUE,
                                  binomial_layer = FALSE,
                                  subclones = TRUE,
                                  final_fit = TRUE,
+                                 neutral_tail_alpha = 0.3,
+                                 neutral_tail_size = 0.5,
+                                 neutral_tail_fill = "white",
+                                 neutral_tail_color = "gray90",
+                                 binomial_layer_color = "black",
+                                 final_fit_color = "red",
+                                 final_fit_size = 1,
+                                 nrow = NULL, ncol = NULL,
                                  ...) {
 
-  neutral_lm_fitted <- !is.null(object$models[["neutral_models"]])
-  subclones_fitted <- !is.null(object$models[["binomial_models"]])
+  models <- get_models(object, models_name)
+  neutral_lm_fitted <- "alpha" %in% names(models)
+  subclones_fitted <- "cellularity" %in% names(models)
 
-  neutral_models <- get_neutral_models(object) |>
-    select(.data$sample_id, .data$from, .data$to)
-
-  resid <- get_residuals(object) |>
-    left_join(neutral_models, by = "sample_id") |>
+  resid <- get_residuals(object, models_name) |>
+    left_join(object$metadata, by = "sample_id") |>
+    mutate(sample_id = parse_factor(.data$sample_id, levels = object$metadata$sample_id)) |>
     group_by(.data$sample_id) |>
     mutate(
       ylim = max(.data$SFS) * 1.2,
-      neutral_pred = if_else(.data$neutral_pred > .data$ylim, .data$ylim, .data$neutral_pred)
+      powerlaw_pred = case_when(
+        .data$powerlaw_pred > .data$ylim ~ Inf,
+        .data$VAF < 0 ~ Inf,
+        TRUE ~ .data$powerlaw_pred
+      )
     ) |>
-    ungroup() |>
-    mutate(neutr = .data$VAF >= .data$from & .data$VAF <= .data$to)
+    ungroup()
 
   model_layers <- list(
     if (neutral_tail && neutral_lm_fitted) {
       geom_area(
-        aes(.data$VAF, .data$neutral_pred),
-        data = resid, # |> filter(.data$neutral_pred < .data$ylim),
-        fill = "white", color = "gray90",
-        alpha = 0.3,
-        size = 0.5, show.legend = FALSE
+        aes(.data$VAF, .data$powerlaw_pred),
+        data = resid,
+        fill = neutral_tail_fill, color = neutral_tail_color,
+        alpha = neutral_tail_alpha,
+        size = neutral_tail_size, show.legend = FALSE,
+        stat = "identity"
       )
     },
-    # if (neutral_tail && neutral_lm_fitted) {
-    #   geom_line(
-    #     aes(.data$VAF, .data$neutral_pred),
-    #     data = resid |> filter(.data$neutr, .data$neutral_pred < .data$ylim),
-    #     size = 1, show.legend = FALSE
-    #   )
-    # },
     if (binomial_layer && subclones_fitted) {
       geom_line(
         aes(.data$VAF, .data$binom_pred),
         data = resid,
-        size = 1, color = "black", linetype = "dashed"
+        size = 1, color = binomial_layer_color, linetype = "dashed"
       )
     },
     if (subclones && subclones_fitted) {
@@ -83,24 +98,78 @@ plot_models.cevodata <- function(object,
     if (final_fit && neutral_lm_fitted && subclones_fitted) {
       geom_line(
         aes(.data$VAF, .data$model_pred),
-        data = resid |> filter(.data$neutral_pred < .data$ylim),
-        size = 1, color = "red"
+        data = resid |> filter(.data$powerlaw_pred < .data$ylim),
+        size = final_fit_size, color = final_fit_color
       )
     }
   )
 
-  plot_SFS(object, geom = "bar") +
+  plot_SFS(object, geom = "bar", ...) +
     model_layers +
-    facet_wrap(~.data$sample_id, scales = "free_y")
+    facet_wrap(~.data$sample_id, scales = "free_y", nrow = nrow, ncol = ncol)
 }
 
 
 plot_clones <- function(clones) {
   clones |>
     get_binomial_predictions() |>
-    select(-.data$binom_pred) |>
+    select(-"binom_pred") |>
     pivot_longer(-.data$VAF) |>
     ggplot(aes(.data$VAF, .data$value, group = .data$name)) +
     geom_point()
+}
+
+
+#' Plot power-law curve
+#' @param A A
+#' @param alpha power
+#' @param mapping mapping, x is required
+#' @param ylim max y allowed
+#' @param color color
+#' @param ... other arguments passed to geom_line
+#' @export
+geom_powerlaw <- function(A, alpha, mapping, ylim = 1000, color = "#54b4FA", ...) {
+  . <- NULL
+  geom_line(
+    join_aes(aes(.data$VAF, .data$y), mapping),
+    data = . %>%
+      mutate(y = A * 1 / .data$VAF ^ alpha) %>%
+      filter(.data$y <= ylim, .data$y > 0),
+    linewidth = 1.5,
+    color = color,
+    ...
+  )
+}
+
+
+#' Compare fits from many models
+#' @param object cevodata object
+#' @param model_names models to compare
+#' @param column_name residuals_* column to plot
+#' @param linetype solid
+#' @param linewidth 1
+#' @param ... other arguments passed to plot_SFS()
+#' @export
+compare_models <- function(object, model_names, column_name,
+                           linetype = "solid", linewidth = 1, ...) {
+  ylimits <- get_SFS(object) |>
+    group_by(.data$sample_id) |>
+    summarise(ylim = 1.5 * max(.data$y))
+
+  resids <- model_names %>%
+    set_names(model_names) |>
+    map(~get_residuals(object, .x)) |>
+    bind_rows(.id = "model_name") |>
+    left_join(ylimits, by = "sample_id") |>
+    left_join(object$metadata, by = "sample_id") |>
+    filter(!!sym(column_name) < .data$ylim, .data$VAF >= 0)
+
+  plot_SFS(object, geom = "bar", ...) +
+    geom_line(
+      aes(y = !!sym(column_name), color = .data$model_name, group = .data$model_name),
+      data = resids,
+      linetype = linetype, linewidth = linewidth
+    ) +
+    facet_wrap(~.data$sample_id, scales = "free_y")
 }
 

@@ -11,8 +11,8 @@ NULL
 #' @docType data
 NULL
 
-#' TCGA-BRCA SNVs dataset
-#' @name snvs_tcga_brca
+#' TCGA BRCA cevodata dataset
+#' @name tcga_brca
 #' @docType data
 NULL
 
@@ -33,12 +33,17 @@ run_cevomod <- function(object, ...) {
 
 #' @export
 run_cevomod.cevodata <- function(object, ...) {
-  object |>
+  object <- object |>
+    calc_mutation_frequencies() |>
     calc_SFS() |>
     calc_cumulative_tails() |>
     calc_Mf_1f() |>
-    fit_neutral_models() |>
+    fit_williams_neutral_models() |>
+    fit_subclones() |>
+    fit_tung_durrett_models() |>
     fit_subclones()
+  object$active_models <- "williams_neutral_subclones"
+  object
 }
 
 

@@ -1,6 +1,54 @@
 
-get_residuals <- function(cd, model = cd$active_model) {
-  cd$residuals[[model]]
+#' Get model residuals
+#' @param cd cevodata object
+#' @param models_name name of the models
+#' @export
+get_residuals <- function(cd, models_name = cd$active_model) {
+  slot_name <- paste0("residuals_", models_name)
+  residuals <- cd$misc[[slot_name]]
+  if (is.null(residuals)) {
+    stop(slot_name, "slot empty. Fit apropriate model first!")
+  }
+  residuals
+}
+
+
+calc_powerlaw_model_residuals <- function(object, models_name, ...) {
+  powerlaw_models <- get_models(object, models_name)
+  optional_cols <- c("from", "to", "b") |> intersect(colnames(powerlaw_models))
+  from_to_cols_present <- all(c("from", "to") %in% optional_cols)
+  powerlaw_models <- powerlaw_models |>
+    filter(!is.na(.data$A), !is.na(.data$alpha)) |>
+    select("sample_id", "A", "alpha", all_of(optional_cols))
+  sfs <- get_SFS(object)
+  nbins <- summarise(sfs, nbins = n() - 1, .by = "sample_id") # zero bin does not count
+
+  residuals <- sfs |>
+    select("sample_id", "VAF_interval", "VAF", SFS = "y") |>
+    inner_join(powerlaw_models, by = "sample_id") |>
+    left_join(nbins, by = "sample_id") |>
+    mutate(
+      neutr = if (from_to_cols_present) {
+        .data$VAF >= .data$from & .data$VAF <= .data$to
+        } else NA,
+    ) |>
+    mutate(
+      powerlaw_pred = calc_powerlaw_curve(.data$VAF, .data$A, .data$alpha, .data$nbins),
+      powerlaw_resid = .data$powerlaw_pred - .data$SFS,
+      powerlaw_resid_clones = if_else(.data$powerlaw_resid > 0, 0, -.data$powerlaw_resid),
+      sampling_rate = .data$powerlaw_resid / .data$powerlaw_pred,
+      model_resid = .data$powerlaw_resid,
+    ) |>
+    select(-("nbins":"alpha"))
+
+  slot_name <- paste0("residuals_", models_name)
+  object$misc[[slot_name]] <- residuals
+  object
+}
+
+
+calc_powerlaw_curve <- function(VAF, A, alpha, nbins) {
+  if_else(VAF < 0, 0, (A / nbins) / VAF^alpha)
 }
 
 
@@ -9,9 +57,11 @@ get_residuals <- function(cd, model = cd$active_model) {
 #' @param object cevodata object
 #' @param mapping mapping elements to overwrite the default mapping
 #' @param geom geom to use
+#' @param models_name models_name
 #' @param fit_clones plot clonal fits?
 #' @param ... other parameters
 #' @name plot_residuals
+NULL
 
 
 #' @rdname plot_residuals
@@ -25,7 +75,8 @@ plot_sampling_rate <- function(object, ...) {
 #' @export
 plot_sampling_rate.cevodata <- function(object, mapping = NULL, geom = geom_point, ...) {
   residuals <- get_residuals(object) |>
-    left_join(object$metadata, by = "sample_id")
+    left_join(object$metadata, by = "sample_id") |>
+    filter(.data$VAF >= 0)
   default_mapping <- aes(.data$VAF, .data$sampling_rate, color = .data$sample_id)
   final_mapping <- join_aes(default_mapping, mapping)
   ggplot(residuals) +
@@ -39,25 +90,28 @@ plot_sampling_rate.cevodata <- function(object, mapping = NULL, geom = geom_poin
 
 #' @rdname plot_residuals
 #' @export
-plot_residuals_neutral_model <- function(object, ...) {
-  UseMethod("plot_residuals_neutral_model")
+plot_residuals_powerlaw_model <- function(object, ...) {
+  UseMethod("plot_residuals_powerlaw_model")
 }
 
 
 #' @describeIn plot_residuals Plot residuals of the neutral model
 #' @export
-plot_residuals_neutral_model.cevodata <- function(object,
-                                                  mapping = NULL,
-                                                  geom = geom_point,
-                                                  fit_clones = TRUE,
-                                                  ...) {
-  residuals <- get_residuals(object) |>
-    left_join(object$metadata, by = "sample_id")
+plot_residuals_powerlaw_model.cevodata <- function(object,
+                                                   models_name = active_models(object),
+                                                   mapping = NULL,
+                                                   geom = geom_point,
+                                                   fit_clones = TRUE,
+                                                   ...) {
+  residuals <- get_residuals(object, models_name) |>
+    left_join(object$metadata, by = "sample_id") |>
+    group_by(.data$sample_id) |>
+    mutate(width = 0.9 / n())
   binomial_model_fitted <- !is.null(residuals[["binom_pred"]])
-  default_mapping <- aes(.data$VAF, .data$neutral_resid_clones, color = .data$sample_id)
+  default_mapping <- aes(.data$VAF, .data$powerlaw_resid_clones, group = .data$sample_id, width = .data$width)
   final_mapping <- join_aes(default_mapping, mapping)
   clones_fit <- if (fit_clones && binomial_model_fitted) {
-    fit_mapping <- aes(.data$VAF, .data$binom_pred, color = .data$sample_id, group = .data$sample_id)
+    fit_mapping <- aes(.data$VAF, .data$binom_pred, group = .data$sample_id)
     final_fit_mapping <- join_aes(fit_mapping, mapping)
     geom_line(final_fit_mapping, color = "black")
   }
@@ -97,4 +151,36 @@ plot_residuals_full_model.cevodata <- function(object,
     labs(y = "Residuals") +
     coord_cartesian(ylim = c(-1000, NA_integer_)) +
     theme_minimal()
+}
+
+
+#' @describeIn plot_residuals Plot binomial fits vs powerlaw residuals (barplot)
+#' @export
+plot_binomial_fits_vs_powerlaw_residuals_bars <- function(
+        object,
+        models_name = active_models(object),
+        mapping = NULL,
+        geom = geom_bar,
+        fit_clones = TRUE,
+        ...) {
+  residuals <- get_residuals(object, models_name)
+  binomial_model_fitted <- !is.null(residuals[["binom_pred"]])
+  if (!binomial_model_fitted) {
+    stop("Fit subclones first!")
+  }
+
+  dt <- residuals |>
+    select("sample_id", "VAF", resid = "powerlaw_resid_clones", pred = "binom_pred") |>
+    group_by(.data$sample_id) |>
+    mutate(width = 0.9 / n()) |>
+    pivot_longer(
+      -c("sample_id", "VAF", "width"),
+      names_to = "variable", values_to = "value"
+    ) |>
+    left_join(object$metadata, by = "sample_id")
+
+  ggplot(dt) +
+    aes(.data$VAF, .data$value, width = .data$width, fill = .data$variable) +
+    geom_bar(stat = "identity", position = "identity", alpha = 0.5) +
+    facet_wrap(~.data$sample_id, scales = "free")
 }

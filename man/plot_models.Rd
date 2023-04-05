@@ -9,17 +9,29 @@ plot_models(object, ...)
 
 \method{plot_models}{cevodata}(
   object,
+  models_name = active_models(object),
   neutral_tail = TRUE,
   binomial_layer = FALSE,
   subclones = TRUE,
   final_fit = TRUE,
+  neutral_tail_alpha = 0.3,
+  neutral_tail_size = 0.5,
+  neutral_tail_fill = "white",
+  neutral_tail_color = "gray90",
+  binomial_layer_color = "black",
+  final_fit_color = "red",
+  final_fit_size = 1,
+  nrow = NULL,
+  ncol = NULL,
   ...
 )
 }
 \arguments{
 \item{object}{cevodata object}
 
-\item{...}{other arguments}
+\item{...}{other arguments passed to plot_SFS()}
+
+\item{models_name}{models name}
 
 \item{neutral_tail}{TRUE,}
 
@@ -28,6 +40,24 @@ plot_models(object, ...)
 \item{subclones}{TRUE,}
 
 \item{final_fit}{TRUE,}
+
+\item{neutral_tail_alpha}{0.3}
+
+\item{neutral_tail_size}{0.5}
+
+\item{neutral_tail_fill}{"white"}
+
+\item{neutral_tail_color}{"gray90"}
+
+\item{binomial_layer_color}{"black"}
+
+\item{final_fit_color}{"red"}
+
+\item{final_fit_size}{1}
+
+\item{nrow}{passed to facet_wrap}
+
+\item{ncol}{passed to facet_wrap}
 }
 \description{
 Plot cevodata models

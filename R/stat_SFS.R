@@ -7,27 +7,21 @@
 #'   - y_scaled with y values scaled to the range 0-1
 #'
 #' @param object SNVs tibble object
-#' @param digits resolution of the cumulative tails calculation
+#' @param bins resolution of the cumulative tails calculation
 #' @param geom geom
-#' @param alpha alpha
 #' @param ... other arguments
 #' @examples
 #' data("tcga_brca_test")
-#' tcga_brca_test |>
-#'   calc_SFS()
 #'
 #' tcga_brca_test |>
-#'   plot_SFS() +
-#'   layer_mutations(drivers = "BRCA")
-#'
-#' SNVs(tcga_brca_test) |>
-#'   dplyr::group_by(sample_id) |>
 #'   calc_SFS() |>
-#'   plot()
+#'   plot_SFS() +
+#'   layer_mutations(tcga_brca_test, drivers = "BRCA")
 #' @name sfs
+NULL
 
 
-#' @rdname sfs
+#' @describeIn sfs Calculate SFS
 #' @export
 calc_SFS <- function(object, ...) {
   UseMethod("calc_SFS")
@@ -36,74 +30,89 @@ calc_SFS <- function(object, ...) {
 
 #' @describeIn sfs Calculate SFS
 #' @export
-calc_SFS.cevodata <- function(object, digits = 2, ...) {
+calc_SFS.cevodata <- function(object, bins = NULL, ...) {
   object$models[["SFS"]] <- SNVs(object) |>
-    group_by(.data$sample_id) |>
-    calc_SFS(digits = 2) |>
-    ungroup()
+    calc_SFS(bins = bins)
   object
 }
 
 
 #' @describeIn sfs Calculate SFS
 #' @export
-calc_SFS.tbl_df <- function(object, digits = 2, ...) {
-  group_variables <- group_vars(object)
-  res <- object %>%
-    mutate(VAF = round(.data$VAF, digits = digits)) %>%
-    group_by(.data$VAF, .add = TRUE) %>%
-    summarise(y = n(), .groups = "drop_last") %>%
-    arrange(.data$VAF, .by_group = TRUE) %>%
-    complete_missing_VAF_levels(fill = list(y = 0)) %>%
-    mutate(y_scaled = round(.data$y / sum(.data$y), digits = 4))
+calc_SFS.cevo_snvs <- function(object, bins = NULL, ...) {
+  if (is.null(object[["VAF_interval"]]) | !is.null(bins)) {
+    snvs <- cut_f_intervals(object, bins = bins) |>
+      filter(.data$VAF > 0)
+  } else {
+    snvs <- object |>
+      filter(.data$VAF > 0)
+  }
+  intervals <- attributes(snvs)$intervals
+  res <- snvs |>
+    group_by(.data$sample_id, .data$VAF_interval) |>
+    summarise(y = n(), .groups = "drop_last") |>
+    complete_missing_VAF_intervals(intervals) |>
+    replace_na(list(y = 0)) |>
+    mutate(VAF = get_interval_centers(.data$VAF_interval), .after = "VAF_interval") |>
+    mutate(y_scaled = round(.data$y / sum(.data$y), digits = 4)) |>
+    ungroup()
   class(res) <- c("cevo_SFS_tbl", class(res))
   res
 }
 
 
-#' @rdname sfs
+#' @describeIn sfs Plot SFS
 #' @export
 plot_SFS <- function(object, ...) {
   UseMethod("plot_SFS")
 }
 
 
-#' Plot SFS
-#'
-#' @param x tibble with calc_SFS() results
-#' @param y_scaled logical
-#' @param ... futher passed to geom_()
-#' @return ggplot obj
+#' @describeIn sfs Plot SFS
+#' @param mapping aes()
 #' @export
-plot.cevo_SFS_tbl <- function(x, y_scaled = FALSE, ...) {
-  group_variables <- group_vars(x)
-  y <- if (y_scaled) "y_scaled" else "y"
-  n_colors <- n_distinct(x[group_variables[[1]]])
-
-  ggplot(x) +
-    aes(.data$VAF, !!sym(y), color = !!sym(group_variables[[1]]), ...) +
-    geom_line() +
-    theme_ellie(n_colors) +
-    labs(
-      title = "SFS",
-      y = "count"
-    )
+plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
+  if (is.null(object$models$SFS)) {
+    object <- calc_SFS(object)
+  }
+  # TODO: Fix 'width' warning
+  object$models$SFS |>
+    left_join(object$metadata, by = "sample_id") |>
+    mutate(sample_id = parse_factor(.data$sample_id, levels = object$metadata$sample_id)) |>
+    plot(mapping = mapping, ..., geom = geom)
 }
 
 
-#' @describeIn sfs Plot SFS
+#' Plot SFS
+#'
+#' @param x tibble with calc_SFS() results
+#' @param mapping aes()
+#' @param alpha alpha
+#' @param ... futher passed to geom_()
+#' @param geom geom
+#' @return ggplot obj
 #' @export
-plot_SFS.cevodata <- function(object, ..., geom = "line", alpha = if (geom == "bar") 0.8 else 1) {
-  dt <- SNVs(object) |>
-    filter(.data$VAF > 0.00001) |>
-    left_join(object$metadata, by = "sample_id")
-  ggplot(dt, aes(.data$VAF, color = .data$sample_id, fill = .data$sample_id)) +
-    stat_SFS(..., geom = geom, alpha = alpha) +
-    theme_ellie(n = n_distinct(dt$sample_id)) +
-    labs(
-      title = "SFS",
-      y = "count"
-    )
+plot.cevo_SFS_tbl <- function(x, mapping = NULL, alpha = 0.8, ..., geom = "bar") {
+  default_mapping <- aes(.data$VAF, .data$y, group = .data$sample_id)
+
+  if (geom == "bar") {
+    x <- x |>
+      group_by(.data$sample_id) |>
+      mutate(width = 0.9 / n())
+    bar_mapping <- aes(width = .data$width)
+    p <- ggplot(x) +
+      join_aes(default_mapping, mapping) +
+      geom_bar(
+        join_aes(bar_mapping, mapping),
+        stat = "identity", alpha = alpha, ...
+      ) +
+      facet_wrap(~.data$sample_id, scales = "free")
+  } else if (geom == "line") {
+    p <- ggplot(x, join_aes(default_mapping, mapping)) +
+      geom_line(...)
+  }
+
+  p + labs(title = "SFS", y = "count")
 }
 
 
@@ -121,4 +130,63 @@ plot_SFS.cevodata <- function(object, ..., geom = "line", alpha = if (geom == "b
 stat_SFS <- function(mapping = NULL, data = NULL,
                      binwidth = 0.01, geom = "line", position = "identity", ...) {
   stat_bin(mapping = mapping, data = data, binwidth = binwidth, geom = geom, position = position, ...)
+}
+
+
+#' @describeIn sfs Get SFS
+#' @export
+get_SFS <- function(object, ...) {
+  UseMethod("get_SFS")
+}
+
+
+#' @describeIn sfs Get SFS
+#' @param model_name name of slot with SFS statistics
+#' @param verbose verbose?
+#' @export
+get_SFS.cevodata <- function(object, model_name = "SFS", verbose = TRUE, ...) {
+  sfs <- object$models[[model_name]]
+  if (is.null(sfs)) {
+    msg(
+      "SFS's not calculated yet. Calculating with sample DP as number of bins",
+      verbose = verbose
+    )
+    object <- calc_SFS(object)
+    sfs <- object$models[[model_name]]
+  }
+  sfs
+}
+
+
+#' Get range of non empty SFS bins
+#' @param sfs SFS
+#' @param allowed_zero_bins number of allowed empty bins in the interval
+#' @param y_treshold bins with less mutations will be considered empty
+#' @param y_threshold_pct bins that have less mutations than this param times the
+#'   height of the higherst peak will be considered empty
+#' @keywords internal
+get_non_zero_SFS_range <- function(sfs,
+                                   allowed_zero_bins = 1,
+                                   y_treshold = 1,
+                                   y_threshold_pct = 0.01) {
+  sfs |>
+    group_by(.data$sample_id) |>
+    mutate(
+      empty_bin = (.data$y < y_treshold) | (.data$y < max(.data$y) * y_threshold_pct),
+      segment_number = segment(.data$empty_bin),
+      empty_low_VAF_range = .data$empty_bin & .data$segment_number == 0
+    ) |>
+    filter(!.data$empty_low_VAF_range) |>
+    group_by(.data$sample_id, .data$segment_number) |>
+    mutate(
+      segment_length = n(),
+      keep = !.data$empty_bin | (.data$empty_bin & (.data$segment_length <= allowed_zero_bins))
+    ) |>
+    group_by(.data$sample_id) |>
+    mutate(new_segments = segment(.data$keep)) |>
+    filter(.data$new_segments == 0) |>
+    summarise(
+      from = min(.data$VAF),
+      to = max(.data$VAF)
+    )
 }

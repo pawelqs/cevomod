@@ -2,10 +2,10 @@
 % Please edit documentation in R/colors_and_themes.R
 \name{hide_legend}
 \alias{hide_legend}
-\title{Remove color scale}
+\title{Hide legend}
 \usage{
 hide_legend()
 }
 \description{
-Remove color scale
+Hide legend
 }

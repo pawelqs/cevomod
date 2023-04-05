@@ -4,31 +4,41 @@
 \alias{sfs}
 \alias{calc_SFS}
 \alias{calc_SFS.cevodata}
-\alias{calc_SFS.tbl_df}
+\alias{calc_SFS.cevo_snvs}
 \alias{plot_SFS}
 \alias{plot_SFS.cevodata}
+\alias{get_SFS}
+\alias{get_SFS.cevodata}
 \title{Site Frequency Spectra}
 \usage{
 calc_SFS(object, ...)
 
-\method{calc_SFS}{cevodata}(object, digits = 2, ...)
+\method{calc_SFS}{cevodata}(object, bins = NULL, ...)
 
-\method{calc_SFS}{tbl_df}(object, digits = 2, ...)
+\method{calc_SFS}{cevo_snvs}(object, bins = NULL, ...)
 
 plot_SFS(object, ...)
 
-\method{plot_SFS}{cevodata}(object, ..., geom = "line", alpha = if (geom == "bar") 0.8 else 1)
+\method{plot_SFS}{cevodata}(object, mapping = NULL, ..., geom = "bar")
+
+get_SFS(object, ...)
+
+\method{get_SFS}{cevodata}(object, model_name = "SFS", verbose = TRUE, ...)
 }
 \arguments{
 \item{object}{SNVs tibble object}
 
 \item{...}{other arguments}
 
-\item{digits}{resolution of the cumulative tails calculation}
+\item{bins}{resolution of the cumulative tails calculation}
+
+\item{mapping}{aes()}
 
 \item{geom}{geom}
 
-\item{alpha}{alpha}
+\item{model_name}{name of slot with SFS statistics}
+
+\item{verbose}{verbose?}
 }
 \description{
 Creates  cevodata$models$SFS with the groupping variables and:
@@ -40,24 +50,26 @@ Creates  cevodata$models$SFS with the groupping variables and:
 }
 \section{Functions}{
 \itemize{
+\item \code{calc_SFS()}: Calculate SFS
+
 \item \code{calc_SFS(cevodata)}: Calculate SFS
 
-\item \code{calc_SFS(tbl_df)}: Calculate SFS
+\item \code{calc_SFS(cevo_snvs)}: Calculate SFS
+
+\item \code{plot_SFS()}: Plot SFS
 
 \item \code{plot_SFS(cevodata)}: Plot SFS
+
+\item \code{get_SFS()}: Get SFS
+
+\item \code{get_SFS(cevodata)}: Get SFS
 
 }}
 \examples{
 data("tcga_brca_test")
-tcga_brca_test |>
-  calc_SFS()
 
 tcga_brca_test |>
-  plot_SFS() +
-  layer_mutations(drivers = "BRCA")
-
-SNVs(tcga_brca_test) |>
-  dplyr::group_by(sample_id) |>
   calc_SFS() |>
-  plot()
+  plot_SFS() +
+  layer_mutations(tcga_brca_test, drivers = "BRCA")
 }

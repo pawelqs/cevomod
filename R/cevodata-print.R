@@ -3,16 +3,16 @@
 print.cevodata <- function(x, ...) {
   summ <- summary(x)
   SNV_assays_str <- if (length(summ$SNV_assays) > 0) {
+    summ$SNV_assays[summ$SNV_assays == summ$active_SNVs] <- paste0(summ$active_SNVs, " (default)")
     summ$SNV_assays |>
-      str_c(collapse = ", ") |>
-      str_replace(summ$active_SNVs, str_c(summ$active_SNVs, " (default)"))
+      str_c(collapse = ", ")
   } else {
     "None"
   }
   CNV_assays_str <- if (length(summ$CNV_assays) > 0) {
+    summ$CNV_assays[summ$CNV_assays == summ$active_CNVs] <- paste0(summ$active_CNVs, " (default)")
     summ$CNV_assays |>
-      str_c(collapse = ", ") |>
-      str_replace(summ$active_CNVs, str_c(summ$active_CNVs, " (default)"))
+      str_c(collapse = ", ")
   } else {
     "None"
   }
@@ -23,14 +23,7 @@ print.cevodata <- function(x, ...) {
   cli::cat_line("CNV assays: ", CNV_assays_str)
   cli::cat_line(summ$metadata_str)
   cli::cat_line(summ$SNVs_str)
-  if (x$active_SNVs != "") {
-    cli::cat_line("SNVs:")
-    print(x$SNVs[[x$active_SNVs]])
-  }
-  if (x$active_CNVs != "") {
-    cli::cat_line("CNVs:")
-    print(x$CNVs[[x$active_CNVs]])
-  }
+  cli::cat_line("Active models: ", x$active_models)
 }
 
 
@@ -60,7 +53,7 @@ summarize_metadata <- function(object) {
 
   samples_per_patient <- if (patient_id_present) {
     meta |>
-      select(.data$patient_id, .data$sample_id) |>
+      select("patient_id", "sample_id") |>
       unique() |>
       group_by(.data$patient_id) |>
       count()
@@ -119,7 +112,7 @@ summarize_SNVs <- function(object) {
   if (patient_id_present) {
     mutations_per_patient <- SNVs(object) |>
       left_join(object$metadata, by = "sample_id") |>
-      select(.data$patient_id, .data$chrom:.data$alt) |>
+      select("patient_id", "chrom":"alt") |>
       unique() |>
       group_by(.data$patient_id) |>
       count()
