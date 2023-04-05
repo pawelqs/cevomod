@@ -1,0 +1,10 @@
+pandoc: 2.19.2
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  get_started: get_started.html
+last_built: 2023-04-05T10:58Z
+urls:
+  reference: https://pawelqs.github.io/cevomod/reference
+  article: https://pawelqs.github.io/cevomod/articles
+
