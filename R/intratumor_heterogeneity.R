@@ -52,6 +52,7 @@ estimate_ITH.cevodata <- function(object, ...) {
     filter(.data$alt_reads > 0) |>
     left_join(object$metadata, by = "sample_id") |>
     select("patient_id", "sample", "mutation_id") |>
+    mutate(sample = as.character(.data$sample)) |>
     nest_by(.data$patient_id)
   ITH <- dt |>
     summarise(calc_Jaccard_index(.data$data), .groups = "drop") |>
