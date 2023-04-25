@@ -31,7 +31,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="index.html">cevomod</a>
 
@@ -51,6 +51,9 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="articles/get_started.html">Get Started</a>
+    <a class="dropdown-item" href="articles/cevodata_class.html">cevodata class</a>
+    <a class="dropdown-item" href="articles/fitting_models.html">Fitting models</a>
+    <a class="dropdown-item" href="articles/visualizations.html">Visualizations</a>
   </div>
 </li>
 <li class="nav-item">
@@ -74,8 +77,11 @@
 </h1>
 </div>
 <!-- badges: start -->
+<!--[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) -->
 
-<p>The goal of cevomod is to …</p>
+<p><em>cevomod</em> is a package that implements methods for analyzing cancer evolution from the Next Generation Sequencing data.</p>
+<p>The modeling approach implemented in <em>cevomod</em> was inspired by the <a href="https://caravagnalab.github.io/mobster/index.html" class="external-link">MOBSTER</a> package, which models the distribution of Variant Allele Frequencies in the sample with a mixture of power-law-shaped and binomial distributions. However, MOBSTER fails to recognize the power-law component (the so-called neutral tail) in Whole Exome Sequencing data or data with insufficient sequencing coverage. cevomod implements methods that can fit the model to the data with significant loss of neutral tail variants.</p>
+<p><img src="reference/figures/introduction_figure.svg"></p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -85,49 +91,20 @@
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"pawelqs/cevomod"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="help-and-support">Help and support<a class="anchor" aria-label="anchor" href="#help-and-support"></a>
 </h2>
-<p>This is a basic example which shows you how to solve a common problem:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pawelqs.github.io/cevomod/">cevomod</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'cevomod'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; ── Attaching packages</span></span>
-<span><span class="co">#&gt; ───────────────────────────────────────</span></span>
-<span><span class="co">#&gt; tidyverse 1.3.2 ──</span></span>
-<span><span class="co">#&gt; ✔ ggplot2 3.4.0.9000     ✔ purrr   0.3.5     </span></span>
-<span><span class="co">#&gt; ✔ tibble  3.1.8          ✔ dplyr   1.0.10    </span></span>
-<span><span class="co">#&gt; ✔ tidyr   1.2.0          ✔ stringr 1.5.0     </span></span>
-<span><span class="co">#&gt; ✔ readr   2.1.2          ✔ forcats 0.5.2     </span></span>
-<span><span class="co">#&gt; ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──</span></span>
-<span><span class="co">#&gt; ✖ dplyr::filter() masks cevomod::filter(), stats::filter()</span></span>
-<span><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"tcga_brca_test"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_cevomod.html">run_cevomod</a></span><span class="op">(</span><span class="va">tcga_brca_test</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_models.html">plot_models</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="reference/mutation_plots.html">layer_mutations</a></span><span class="op">(</span><span class="va">cd</span>, drivers <span class="op">=</span> <span class="st">"BRCA"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in geom_bar(aes(fill = .data$sample_id, width = .data$width), stat =</span></span>
-<span><span class="co">#&gt; "identity", : Ignoring unknown aesthetics: width</span></span>
-<span><span class="co">#&gt; Warning in ggrepel::geom_label_repel(aes(x = .data$VAF, shape</span></span>
-<span><span class="co">#&gt; = .data[[shape]], : Ignoring unknown aesthetics: shape</span></span>
-<span><span class="co">#&gt; Warning: ggrepel: 15 unlabeled data points (too many overlaps). Consider</span></span>
-<span><span class="co">#&gt; increasing max.overlaps</span></span>
-<span><span class="co">#&gt; Warning: ggrepel: 8 unlabeled data points (too many overlaps). Consider</span></span>
-<span><span class="co">#&gt; increasing max.overlaps</span></span>
-<span><span class="co">#&gt; Warning: ggrepel: 19 unlabeled data points (too many overlaps). Consider</span></span>
-<span><span class="co">#&gt; increasing max.overlaps</span></span>
-<span><span class="co">#&gt; Warning: ggrepel: 16 unlabeled data points (too many overlaps). Consider</span></span>
-<span><span class="co">#&gt; increasing max.overlaps</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
+<p><a href="https://github.com/pawelqs/cevomod/issues" class="external-link">GitHub Issues</a></p>
 </div>
 </div>
-  </main><aside class="col-md-3"><div class="license">
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/pawelqs/cevomod" class="external-link">Source Code</a></li>
+<li><a href="https://github.com/pawelqs/cevomod/issues" class="external-link">Bug Reports</a></li>
+</ul>
+</div>
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
@@ -153,7 +130,6 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://github.com/pawelqs/cevomod/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/pawelqs/cevomod/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://github.com/pawelqs/cevomod/actions/workflows/test-coverage.yaml" class="external-link"><img src="https://github.com/pawelqs/cevomod/actions/workflows/test-coverage.yaml/badge.svg" alt="test-coverage"></a></li>
 </ul>

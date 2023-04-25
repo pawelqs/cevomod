@@ -2,8 +2,11 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
+  cevodata_class: cevodata_class.html
+  fitting_models: fitting_models.html
   get_started: get_started.html
-last_built: 2023-04-14T10:47Z
+  visualizations: visualizations.html
+last_built: 2023-04-25T16:36Z
 urls:
   reference: https://pawelqs.github.io/cevomod/reference
   article: https://pawelqs.github.io/cevomod/articles
