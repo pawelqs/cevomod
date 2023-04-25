@@ -10,6 +10,13 @@
 
 Cancer Evolutionary Models. Set of methods facilitating the analysis of Cancer Evolution. Developped for my PhD.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://pawelqs.github.io/cevomod/}
+}
+
+}
 \author{
 \strong{Maintainer}: Paweł Kuś \email{kpawel2210@gmail.com} (\href{https://orcid.org/0000-0002-4367-9821}{ORCID})
 
