@@ -1,4 +1,23 @@
 url: https://pawelqs.github.io/cevomod/
 template:
   bootstrap: 5
+  bootswatch: flatly
+  bslib:
+    pkgdown-nav-height: 100px
 
+home:
+  links:
+  - text: Source Code
+    href: https://github.com/pawelqs/cevomod
+  - text: Bug Reports
+    href: https://github.com/pawelqs/cevomod/issues
+
+
+articles:
+- title: Tutorials
+  navbar: ~
+  contents:
+  - get_started
+  - cevodata_class
+  - fitting_models
+  - visualizations
