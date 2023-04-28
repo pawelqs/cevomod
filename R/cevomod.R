@@ -21,6 +21,11 @@ NULL
 #' @docType data
 NULL
 
+#' 4 test samples
+#' @name test_data
+#' @docType data
+NULL
+
 
 #' Run cevodata pipeline
 #' @param object cevodata object
