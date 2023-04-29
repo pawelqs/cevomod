@@ -7,6 +7,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+# cevodata class
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -14,8 +16,147 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(cevomod)
+
+Basic data structure used by `cevomod` is the `cevodata` `S3` class. It is designed to store the data on the entire cohort of samples (SNVs, CNVs, metadata, models) in a single object. Keeping the data on many samples in a specific object rather than in a list of single-sample objects facilitates conducting larger studies of cohorts of samples. `cevomod` internally iterates over the samples if needed, and uses vectorized R functions where possible, which is much faster than classic loop-based approach. Implemented visualization methods are cohort-oriented as well, and allow the user to easily compare the results between samples and groups of samples.
+
+All the data in the `cevodata` object are stored in tidyverse tibbles. Main components of the `cevodata` object are:
+
+
+- metadata `<tibble>` that associates sample IDs to patient IDs and contains all the metadata on patients (such as sex, age, or molecular subtype of the tumor) and samples (such as purity estimations),
+- SNVs - stores tibbles of SNVs and Indels. Multiple tibbles with alternative lists of variants can be stored (different variant callers, data filtration settinggs ect.),
+- CNVs - stores tibbles of CNVs. Multiple tibbles with alternative lists of variants can be stored,
+- models - `stores models fitted by `cevomod`, but also some intermediate results such as: VAF spectra, $M(f) ~ 1/f$ statistics and cumulative tails counts,
+- misc - `<list>` of tibbles used by cevomod to store for e.g. the model residuals 
+
+
+
+# Construction
+
+The user interface of cevomod was inspired by the tidyverse R packages ecosystem and is pipe-oriented. Most functions accept the cevodata as the first argument and return modified cevodata. This convention allows building pipelines, for e.g., to compose the cevodata object by adding new data components step by step. Let's create an example `cevodata` object. We will use the `test_data` dataset.
+
+
+```{r}
+suppressPackageStartupMessages({
+  library(cevomod)
+  library(tidyverse)
+})
+
+theme_set(theme_minimal())
 ```
 
-Page under construction
+## SNVs
+
+
+`test_data` contains SNVs for 4 artificial samples. SNVs() function can be used to get the SNVs tibble from the cevodata object. `snvs` contains 11 columns describing the 16,000 variants in 4 samples:
+
+```{r}
+snvs <- SNVs(test_data)
+glimpse(snvs)
+```
+
+
+Let's see what is the sequencing depth of these variants.
+
+```{r}
+ggplot(snvs, aes(sample_id, DP, fill = sample_id))+
+  geom_boxplot() +
+  scale_y_log10()
+```
+
+
+Variants with the lowest sequencing depth have the least accurate VAF values. To reduce the noise, one might want to filter out some low-frequency variants. Let's remove the variants with sequencing depth less than 20.
+
+```{r}
+filtered_snvs <- snvs |> 
+  filter(DP >= 20)
+```
+
+
+Now let's create a`cevodata` and add both versions of SNV data:  
+
+```{r}
+cd <- init_cevodata(name = "Training cevodata", cancer = "BRCA") |>
+    add_SNV_data(filtered_snvs, name = "filtered_snvs") |> 
+    add_SNV_data(snvs, name = "all_Mutect_snvs")
+
+cd
+```
+
+We can see that both SNV sets were added and that the last one added is the default one. This can be changed using `default_SNVs()` function:
+
+```{r}
+default_SNVs(cd) <- "filtered_snvs"
+cd
+```
+
+In the same way, one can use the `add_CNV_data()` and `default_CNVs()` functions to add the list(s) of CNVs to the `cevodata`.
+
+
+
+## Metadata
+
+Metadata tibble contains only the sample IDs now.
+
+```{r}
+cd$metadata
+```
+
+Lets add some more information:
+
+```{r}
+sample_data <- tibble(
+  sample_id = c("Sample 1", "Sample 2", "Sample 3", "Sample 4"),
+  patient_id = c("P1", "P2", "P3", "P4"),
+  molecular_subtype = c("Lumianl A", "Luminal B", "Luminal A", "TNBC")
+)
+
+patient_data <- tibble(
+  patient_id = c("P1", "P2", "P3", "P4"),
+  sex = c("male", "male", "female", "male")
+)
+
+cd <- cd |> 
+  add_sample_data(sample_data) |> 
+  add_patient_data(patient_data)
+```
+
+
+```{r}
+cd$metadata
+```
+
+# Transformations
+
+3 cevodata transforming functions have been implemented:
+
+1. `filter()` can be used to subset the cevodata using any metadata columns in a tidyverse manner
+
+```{r}
+cd |> 
+  filter(sex == "female")
+```
+
+2. split_by() to split cevodata by any metadata column
+
+```{r}
+splits <- cd |> 
+  split_by("sex")
+
+splits
+```
+
+3. merge() to merge 2 objects into one
+
+```{r}
+merge(splits$male, splits$female)
+```
+
+
+Transforming functions are usefull for investigating the particular samples, for examples when one wants to quickly see the VAF spectrum of one sample only:
+
+```{r}
+cd |> 
+  filter(sample_id == "Sample 2") |> 
+  plot_SFS()
+```
+
