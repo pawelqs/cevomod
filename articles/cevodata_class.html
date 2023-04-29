@@ -83,15 +83,238 @@
 
     
     
+<div class="section level2">
+<h2 id="cevodata-class">cevodata class<a class="anchor" aria-label="anchor" href="#cevodata-class"></a>
+</h2>
+<p>The basic data structure used by <code>cevomod</code> is the
+<code>cevodata</code> <code>S3</code> class. It is designed to store the
+data for the entire cohort of samples (SNVs, CNVs, metadata, models) in
+a single object. Storing the data for many samples in a single object,
+rather than in a list of single-sample objects, makes it easier to
+perform studies on larger cohorts of samples. cevomod internally
+iterates over the samples as needed, using vectorized R functions where
+possible, which is much faster than the classical loop-based approach.
+The visualization methods implemented are also cohort-oriented, allowing
+the user to easily compare results between samples and groups of
+samples.</p>
+<p>All data in the
+<code>cevodata' object is stored in tidyverse tibbles. The main components of the</code>cevodata`
+object are</p>
+<ul>
+<li>metadata - tibble that associates sample IDs with patient IDs and
+contains all metadata about patients (such as sex, age, or molecular
+subtype of tumor) and samples (such as purity estimates),</li>
+<li>SNVs - stores tibbles of SNVs and indels. Multiple tibbles can be
+stored with alternative lists of variants (different variant callers,
+data filtering settings, etc.),</li>
+<li>CNVs - stores tibbles of CNVs. Multiple tibbles can be stored with
+alternative lists of variants,</li>
+<li>models - stores models fitted by <code>cevomod</code>, but also some
+intermediate results such as VAF spectra, <span class="math inline">\(M(f) ~ 1/f\)</span> statistics, and cumulative
+tails counts,</li>
+<li>misc - list of tibbles used by cevomod to store e.g. the model
+residuals.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="construction">Construction<a class="anchor" aria-label="anchor" href="#construction"></a>
+</h2>
+<p>The user interface of cevomod was inspired by the tidyverse R
+packages ecosystem and is pipe-oriented. Most functions accept the
+cevodata as the first argument and return modified cevodata. This
+convention allows building pipelines, for e.g., to compose the cevodata
+object by adding new data components step by step. Let’s create an
+example <code>cevodata</code> object. We will use the
+<code>test_data</code> dataset.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pawelqs.github.io/cevomod/">cevomod</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pawelqs.github.io/cevomod/">cevomod</a></span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="snvs">SNVs<a class="anchor" aria-label="anchor" href="#snvs"></a>
+</h3>
+<p><code>test_data</code> contains SNVs for 4 artificial samples. SNVs()
+function can be used to get the SNVs tibble from the cevodata object.
+<code>snvs</code> contains 11 columns describing the 16,000 variants in
+4 samples:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">snvs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assays.html">SNVs</a></span><span class="op">(</span><span class="va">test_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">snvs</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Rows: 16,000</span></span>
+<span><span class="co">#&gt; Columns: 11</span></span>
+<span><span class="co">#&gt; $ sample_id   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Sample 1", "Sample 1", "Sample 1", "Sample 1", "Sample 1"…</span></span>
+<span><span class="co">#&gt; $ chrom       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "chr1", "c…</span></span>
+<span><span class="co">#&gt; $ pos         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,…</span></span>
+<span><span class="co">#&gt; $ gene_symbol <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span></span>
+<span><span class="co">#&gt; $ ref         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span></span>
+<span><span class="co">#&gt; $ alt         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span></span>
+<span><span class="co">#&gt; $ ref_reads   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 61, 37, 35, 54, 25, 24, 21, 22, 65, 25, 31, 30, 58, 13, 23…</span></span>
+<span><span class="co">#&gt; $ alt_reads   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 29, 28, 3, 27, 31, 1, 24, 1, 6, 18, 33, 1, 1, 39, 30, 1…</span></span>
+<span><span class="co">#&gt; $ VAF         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0.031, 0.441, 0.446, 0.068, 0.519, 0.562, 0.082, 0.521, 0.…</span></span>
+<span><span class="co">#&gt; $ impact      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "MODIFIER", "MODIFIER", "MODIFIER", "MODIFIER", "MODIFIER"…</span></span>
+<span><span class="co">#&gt; $ DP          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 62, 66, 63, 57, 52, 55, 22, 46, 66, 31, 49, 63, 59, 14, 62…</span></span></code></pre></div>
+<p>Let’s see what the sequencing depth of these variants is.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">snvs</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">sample_id</span>, <span class="va">DP</span>, fill <span class="op">=</span> <span class="va">sample_id</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html" class="external-link">geom_boxplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cevodata_class_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p>Variants with the lowest sequencing depth have the least accurate VAF
+values. One might want to filter out low-frequency variants to reduce
+the noise. Let’s remove the variants with a sequencing depth of less
+than 20.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">filtered_snvs</span> <span class="op">&lt;-</span> <span class="va">snvs</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">DP</span> <span class="op">&gt;=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
+<p>Now let’s create a <code>cevodata</code> and add both versions of SNV
+data:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/init_cevodata.html">init_cevodata</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Training cevodata"</span>, cancer <span class="op">=</span> <span class="st">"BRCA"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="../reference/assays.html">add_SNV_data</a></span><span class="op">(</span><span class="va">filtered_snvs</span>, name <span class="op">=</span> <span class="st">"filtered_snvs"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="../reference/assays.html">add_SNV_data</a></span><span class="op">(</span><span class="va">snvs</span>, name <span class="op">=</span> <span class="st">"all_Mutect_snvs"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cd</span></span>
+<span><span class="co">#&gt; <span style="color: #5F8700;">&lt;cevodata&gt; dataset: Training cevodata</span></span></span>
+<span><span class="co">#&gt; <span style="color: #87AF5F;">Genome: unknown</span></span></span>
+<span><span class="co">#&gt; SNV assays: filtered_snvs, all_Mutect_snvs (default)</span></span>
+<span><span class="co">#&gt; CNV assays: None</span></span>
+<span><span class="co">#&gt; 4 samples</span></span>
+<span><span class="co">#&gt; 16000 mutations total, 4000 +/- 0 mutations per sample</span></span>
+<span><span class="co">#&gt; Active models:</span></span></code></pre></div>
+<p>We can see that both SNV sets were added and that the last one added
+is the default one. This can be changed using
+<code><a href="../reference/active_assays.html">default_SNVs()</a></code> function:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/active_assays.html">default_SNVs</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"filtered_snvs"</span></span>
+<span><span class="va">cd</span></span>
+<span><span class="co">#&gt; <span style="color: #5F8700;">&lt;cevodata&gt; dataset: Training cevodata</span></span></span>
+<span><span class="co">#&gt; <span style="color: #87AF5F;">Genome: unknown</span></span></span>
+<span><span class="co">#&gt; SNV assays: filtered_snvs (default), all_Mutect_snvs</span></span>
+<span><span class="co">#&gt; CNV assays: None</span></span>
+<span><span class="co">#&gt; 4 samples</span></span>
+<span><span class="co">#&gt; 15053 mutations total, 3763 +/- 155 mutations per sample</span></span>
+<span><span class="co">#&gt; Active models:</span></span></code></pre></div>
+<p>In the same way, one can use the <code><a href="../reference/assays.html">add_CNV_data()</a></code> and
+<code><a href="../reference/active_assays.html">default_CNVs()</a></code> functions to add the list(s) of CNVs to the
+<code>cevodata</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="metadata">Metadata<a class="anchor" aria-label="anchor" href="#metadata"></a>
+</h3>
+<p>Metadata tibble contains only the sample IDs now.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cd</span><span class="op">$</span><span class="va">metadata</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 1</span></span></span>
+<span><span class="co">#&gt;   sample_id</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 2 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 3 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4</span></span></code></pre></div>
+<p>Lets add some more information:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sample_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  sample_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sample 1"</span>, <span class="st">"Sample 2"</span>, <span class="st">"Sample 3"</span>, <span class="st">"Sample 4"</span><span class="op">)</span>,</span>
+<span>  patient_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P1"</span>, <span class="st">"P2"</span>, <span class="st">"P3"</span>, <span class="st">"P4"</span><span class="op">)</span>,</span>
+<span>  molecular_subtype <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Lumianl A"</span>, <span class="st">"Luminal B"</span>, <span class="st">"Luminal A"</span>, <span class="st">"TNBC"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">patient_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  patient_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"P1"</span>, <span class="st">"P2"</span>, <span class="st">"P3"</span>, <span class="st">"P4"</span><span class="op">)</span>,</span>
+<span>  sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"male"</span>, <span class="st">"male"</span>, <span class="st">"female"</span>, <span class="st">"male"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="va">cd</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/cevo_metadata.html">add_sample_data</a></span><span class="op">(</span><span class="va">sample_data</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/cevo_metadata.html">add_patient_data</a></span><span class="op">(</span><span class="va">patient_data</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cd</span><span class="op">$</span><span class="va">metadata</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 4</span></span></span>
+<span><span class="co">#&gt;   sample_id patient_id molecular_subtype sex   </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  P1         Lumianl A         male  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 2  P2         Luminal B         male  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 3  P3         Luminal A         female</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4  P4         TNBC              male</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="transformations">Transformations<a class="anchor" aria-label="anchor" href="#transformations"></a>
+</h2>
+<p>3 cevodata transforming functions have been implemented:</p>
+<ol style="list-style-type: decimal">
+<li>
+<code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter()</a></code> can be used to subset the cevodata using any
+metadata columns in a tidyverse manner</li>
+</ol>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sex</span> <span class="op">==</span> <span class="st">"female"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #5F8700;">&lt;cevodata&gt; dataset: Training cevodata</span></span></span>
+<span><span class="co">#&gt; <span style="color: #87AF5F;">Genome: unknown</span></span></span>
+<span><span class="co">#&gt; SNV assays: filtered_snvs (default), all_Mutect_snvs</span></span>
+<span><span class="co">#&gt; CNV assays: None</span></span>
+<span><span class="co">#&gt; 1 cases, 1 samples, 1 sample per case</span></span>
+<span><span class="co">#&gt; NA</span></span>
+<span><span class="co">#&gt; Active models:</span></span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>split_by() to split cevodata by any metadata column</li>
+</ol>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">splits</span> <span class="op">&lt;-</span> <span class="va">cd</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/split_by.html">split_by</a></span><span class="op">(</span><span class="st">"sex"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">splits</span></span>
+<span><span class="co">#&gt; $male</span></span>
+<span><span class="co">#&gt; <span style="color: #5F8700;">&lt;cevodata&gt; dataset: Training cevodata</span></span></span>
+<span><span class="co">#&gt; <span style="color: #87AF5F;">Genome: unknown</span></span></span>
+<span><span class="co">#&gt; SNV assays: filtered_snvs (default), all_Mutect_snvs</span></span>
+<span><span class="co">#&gt; CNV assays: None</span></span>
+<span><span class="co">#&gt; 3 cases, 3 samples, 1 sample per case</span></span>
+<span><span class="co">#&gt; 11433 mutations total, 3811 +/- 150 mutations per case</span></span>
+<span><span class="co">#&gt; Active models: </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'cevomod'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; $female</span></span>
+<span><span class="co">#&gt; <span style="color: #5F8700;">&lt;cevodata&gt; dataset: Training cevodata</span></span></span>
+<span><span class="co">#&gt; <span style="color: #87AF5F;">Genome: unknown</span></span></span>
+<span><span class="co">#&gt; SNV assays: filtered_snvs (default), all_Mutect_snvs</span></span>
+<span><span class="co">#&gt; CNV assays: None</span></span>
+<span><span class="co">#&gt; 1 cases, 1 samples, 1 sample per case</span></span>
+<span><span class="co">#&gt; NA</span></span>
+<span><span class="co">#&gt; Active models: </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter</span></span></code></pre></div>
-<p>Page under construction</p>
-  </main>
+<span><span class="co">#&gt; attr(,"class")</span></span>
+<span><span class="co">#&gt; [1] "cevo_splits" "list"</span></span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>merge() to merge 2 objects into one</li>
+</ol>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">splits</span><span class="op">$</span><span class="va">male</span>, <span class="va">splits</span><span class="op">$</span><span class="va">female</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Setting active SNVs to filtered_snvs</span></span>
+<span><span class="co">#&gt; Setting active CNVs to</span></span>
+<span><span class="co">#&gt; <span style="color: #5F8700;">&lt;cevodata&gt; dataset: Merged datasets</span></span></span>
+<span><span class="co">#&gt; <span style="color: #87AF5F;">Genome: unknown</span></span></span>
+<span><span class="co">#&gt; SNV assays: filtered_snvs (default), all_Mutect_snvs</span></span>
+<span><span class="co">#&gt; CNV assays: None</span></span>
+<span><span class="co">#&gt; 4 cases, 4 samples, 1 sample per case</span></span>
+<span><span class="co">#&gt; 15053 mutations total, 3763 +/- 155 mutations per case</span></span>
+<span><span class="co">#&gt; Active models:</span></span></code></pre></div>
+<p>Transforming functions are helpful in investigating particular
+samples, for example, when one wants to see the VAF spectrum of one
+sample only quickly:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op">==</span> <span class="st">"Sample 2"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/sfs.html">plot_SFS</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in geom_bar(join_aes(bar_mapping, mapping), stat = "identity", alpha =</span></span>
+<span><span class="co">#&gt; alpha, : Ignoring unknown aesthetics: <span style="color: #00BB00;">width</span></span></span></code></pre></div>
+<p><img src="cevodata_class_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
