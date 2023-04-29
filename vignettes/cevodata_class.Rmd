@@ -17,16 +17,16 @@ knitr::opts_chunk$set(
 ```
 
 
-Basic data structure used by `cevomod` is the `cevodata` `S3` class. It is designed to store the data on the entire cohort of samples (SNVs, CNVs, metadata, models) in a single object. Keeping the data on many samples in a specific object rather than in a list of single-sample objects facilitates conducting larger studies of cohorts of samples. `cevomod` internally iterates over the samples if needed, and uses vectorized R functions where possible, which is much faster than classic loop-based approach. Implemented visualization methods are cohort-oriented as well, and allow the user to easily compare the results between samples and groups of samples.
+The basic data structure used by `cevomod` is the `cevodata` `S3` class. It is designed to store the data for the entire cohort of samples (SNVs, CNVs, metadata, models) in a single object. Storing the data for many samples in a single object, rather than in a list of single-sample objects, makes it easier to perform studies on larger cohorts of samples. cevomod internally iterates over the samples as needed, using vectorized R functions where possible, which is much faster than the classical loop-based approach. The visualization methods implemented are also cohort-oriented, allowing the user to easily compare results between samples and groups of samples.
 
-All the data in the `cevodata` object are stored in tidyverse tibbles. Main components of the `cevodata` object are:
+All data in the `cevodata' object is stored in tidyverse tibbles. The main components of the `cevodata` object are
 
 
-- metadata `<tibble>` that associates sample IDs to patient IDs and contains all the metadata on patients (such as sex, age, or molecular subtype of the tumor) and samples (such as purity estimations),
-- SNVs - stores tibbles of SNVs and Indels. Multiple tibbles with alternative lists of variants can be stored (different variant callers, data filtration settinggs ect.),
-- CNVs - stores tibbles of CNVs. Multiple tibbles with alternative lists of variants can be stored,
-- models - `stores models fitted by `cevomod`, but also some intermediate results such as: VAF spectra, $M(f) ~ 1/f$ statistics and cumulative tails counts,
-- misc - `<list>` of tibbles used by cevomod to store for e.g. the model residuals 
+- metadata - tibble that associates sample IDs with patient IDs and contains all metadata about patients (such as sex, age, or molecular subtype of tumor) and samples (such as purity estimates),
+- SNVs - stores tibbles of SNVs and indels. Multiple tibbles can be stored with alternative lists of variants (different variant callers, data filtering settings, etc.),
+- CNVs - stores tibbles of CNVs. Multiple tibbles can be stored with alternative lists of variants,
+- models - stores models fitted by `cevomod`, but also some intermediate results such as VAF spectra, $M(f) ~ 1/f$ statistics, and cumulative tails counts,
+- misc - list of tibbles used by cevomod to store e.g. the model residuals. 
 
 
 
@@ -55,7 +55,7 @@ glimpse(snvs)
 ```
 
 
-Let's see what is the sequencing depth of these variants.
+Let's see what the sequencing depth of these variants is.
 
 ```{r}
 ggplot(snvs, aes(sample_id, DP, fill = sample_id))+
@@ -64,7 +64,7 @@ ggplot(snvs, aes(sample_id, DP, fill = sample_id))+
 ```
 
 
-Variants with the lowest sequencing depth have the least accurate VAF values. To reduce the noise, one might want to filter out some low-frequency variants. Let's remove the variants with sequencing depth less than 20.
+Variants with the lowest sequencing depth have the least accurate VAF values. One might want to filter out low-frequency variants to reduce the noise. Let's remove the variants with a sequencing depth of less than 20.
 
 ```{r}
 filtered_snvs <- snvs |> 
@@ -72,7 +72,7 @@ filtered_snvs <- snvs |>
 ```
 
 
-Now let's create a`cevodata` and add both versions of SNV data:  
+Now let's create a `cevodata` and add both versions of SNV data:  
 
 ```{r}
 cd <- init_cevodata(name = "Training cevodata", cancer = "BRCA") |>
@@ -152,7 +152,7 @@ merge(splits$male, splits$female)
 ```
 
 
-Transforming functions are usefull for investigating the particular samples, for examples when one wants to quickly see the VAF spectrum of one sample only:
+Transforming functions are helpful in investigating particular samples, for example, when one wants to see the VAF spectrum of one sample only quickly:
 
 ```{r}
 cd |> 
