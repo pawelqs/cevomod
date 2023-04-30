@@ -10,7 +10,7 @@ prepare_SNVs <- function(object, which = default_SNVs(object), bins = NULL) {
   snvs <- SNVs(object, which) |>
     cut_f_intervals(bins = bins)
   object |>
-    add_SNV_data(snvs, name = default_SNVs(object))
+    add_SNV_data(snvs, name = which)
 }
 
 
