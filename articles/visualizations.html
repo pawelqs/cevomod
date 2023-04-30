@@ -84,14 +84,55 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pawelqs.github.io/cevomod/">cevomod</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'cevomod'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># library(cevomod)</span></span>
+<span><span class="co"># library(tidyverse)</span></span></code></pre></div>
 <p>Page under construction</p>
-  </main>
+<div class="section level2">
+<h2 id="cumulative-tails">Cumulative tails<a class="anchor" aria-label="anchor" href="#cumulative-tails"></a>
+</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># tcga_brca_test %&gt;%</span></span>
+<span><span class="co">#   plot_cumulative_tails(size = 0.5, scale_y = FALSE)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="sfs-with-mut-annotation">SFS with mut annotation<a class="anchor" aria-label="anchor" href="#sfs-with-mut-annotation"></a>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># plot_SFS(tcga_brca_test, geom = "line") +</span></span>
+<span><span class="co">#   layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "variant_classification")</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># plot_SFS(tcga_brca_test) +</span></span>
+<span><span class="co">#   layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "impact")</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="snvs-plots">SNVs plots<a class="anchor" aria-label="anchor" href="#snvs-plots"></a>
+</h2>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># p1 &lt;- tcga_brca_test %&gt;%</span></span>
+<span><span class="co">#   plot_mutations(drivers = "BRCA", shape = "variant_classification")</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># p2 &lt;- tcga_brca_test %&gt;%</span></span>
+<span><span class="co">#   plot_mutations(</span></span>
+<span><span class="co">#     genes = c("TP53", "BRCA1", "KMT2C", "ERBB2"),</span></span>
+<span><span class="co">#     mark_genes = c("TP53", "BRCA1", "ERBB2"),</span></span>
+<span><span class="co">#     y = "samples",</span></span>
+<span><span class="co">#     shape = "impact")</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># p1 / p2 + plot_layout(heights = c(3, 1))</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="mf-1f">M(f) ~ 1/f<a class="anchor" aria-label="anchor" href="#mf-1f"></a>
+</h2>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># tcga_brca_test %&gt;%</span></span>
+<span><span class="co">#   plot_Mf_1f() +</span></span>
+<span><span class="co">#   scale_color_brewer(palette = "Dark2")</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># tcga_brca_test %&gt;%</span></span>
+<span><span class="co">#   plot_Mf_1f(from = 0.05, to = 0.5, scale = FALSE)</span></span></code></pre></div>
+</div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
