@@ -7,6 +7,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+# cevodata
+
+**Page under construction**
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -14,84 +18,135 @@ knitr::opts_chunk$set(
 )
 ```
 
+The main data structure used by cevomod is the cevodata S3 class. The easiest way to prepare the object is to create an empty object using the `init_cevodata()` constructor and populating the object with the data using the `add_*_data()` methods.
 
-Page under construction
-
+Let's use the list of SNV variants and the metadata from the small attached artificial dataset `test_data`
 
 ```{r setup}
-library(cevomod)
-library(patchwork)
-library(tidyverse)
-data("tcga_brca_test")
+suppressPackageStartupMessages({
+  library(cevomod)
+  library(tidyverse)
+})
+
+snvs <- SNVs(test_data)
+sample_data <- test_data$metadata
 ```
-
-
-# Cumulative tails
-
-```{r, fig.width=7, fig.height=5}
-tcga_brca_test %>%
-  plot_cumulative_tails(size = 0.5, scale_y = FALSE)
-```
-
-# SFS with mut annotation
-
-```{r, fig.width=7, fig.height=4}
-plot_SFS(tcga_brca_test, geom = "line") +
-  layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "variant_classification")
-
-plot_SFS(tcga_brca_test) +
-  layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "impact")
-```
-
-# SNVs plots
-
-```{r, fig.width=7, fig.height=5}
-p1 <- tcga_brca_test %>%
-  plot_mutations(drivers = "BRCA", shape = "variant_classification")
-
-p2 <- tcga_brca_test %>%
-  plot_mutations(
-    genes = c("TP53", "BRCA1", "KMT2C", "ERBB2"),
-    mark_genes = c("TP53", "BRCA1", "ERBB2"),
-    y = "samples",
-    shape = "impact")
-
-p1 / p2 + plot_layout(heights = c(3, 1))
-```
-
-# M(f) ~ 1/f
 
 ```{r}
-tcga_brca_test %>%
-  plot_Mf_1f() +
-  scale_color_brewer(palette = "Dark2")
-
-tcga_brca_test %>%
-  plot_Mf_1f(from = 0.05, to = 0.5, scale = FALSE)
+snvs
 ```
-
-# Fit neutral models
 
 ```{r}
-cd <- tcga_brca_test |> 
-  calc_Mf_1f() |> 
-  calc_SFS() |> 
-  fit_williams_neutral_models(rsq_treshold = 0.99)
+sample_data
 ```
 
+Most of the cevomod functions are pipe-oriented, so we can create and populate the object through the small pipeline:
 
 ```{r}
-plot(cd$models$Mf_1f, from = 0.05, to = 0.3, scale = FALSE) +
-  layer_lm_fits(cd) +
-  scale_color_pnw()
+cd <- init_cevodata(name = "Demo data") |> 
+  add_SNV_data(snvs, name = "snvs") |> 
+  add_sample_data(sample_data)
+
+cd
 ```
 
+`name` can be any string that is informative for the user.
+
+
+# VAF spectra
+
+cevomod models are fitted to the Variant Allele Frequency Spectra of the samples. Spectra can be displayed with `plot_SFS()` function (SFS - *Site Frequency Spectrum*). Most of the cevomod plotting functions return a ggplot object which can be easily modified. Additional aestetics can be added with the `aes()` function. Since the `metadata` is left-joined to the plot data, the metadata columns can be directly used in the `eas()` call. 
 
 ```{r}
-fake_VAFs <- generate_neutral_snvs(mut_rate = 10, sample_below = 0.05, resolution = 0.001)
-fake_VAFs
+plot_SFS(cd) +
+  aes(fill = sex) +
+  scale_fill_manual(values = c(male = "#DD4124", female = "#00496F")) +
+  labs(title = "Variant Allele Frequency Spectrum")
 ```
 
 
+# Preparation
+
+Before the the models are fitted, we need to run the `prepare_SNVs()` function. In this step VAF values are binarized, and the `VAF_interval` column is added. By default, the number of bins equals the median sequencing coverage of variants in the sample. It allows to reduce the aliasing noise in the samples with low-sequencing depth, and allow to analyze the samples with the deeper coverage with a greater resolution. The desired number of bins can also be specified manually, using the `bins` argument.
+
+```{r}
+cd <- cd |> 
+  prepare_SNVs()
+
+SNVs(cd) |> 
+  glimpse()
+```
+
+# Model fitting
+
+When the SNVs are prepared, the models can be fitted with the `fit_*()` functions. Full model consist of the power-law component and one or more binomial components, which are fitted sequentially.
+
+In this example, we first fit the power-law model with the exponent equal to 2, and then the mixture of binomial models.
+
+```{r}
+cd <- cd |> 
+  fit_williams_neutral_models() |> 
+  fit_subclones()
+
+cd
+```
+
+The fitted models can be listed with:
+
+```{r}
+get_model_names(cd)
+```
+
+and the last fitted model is the active one:
+
+```{r}
+cd$active_models
+```
+
+Models can be viewed with the `get_models()` function:
+
+```{r}
+get_models(cd, which = "williams_neutral")
+```
+
+The active model is returned if the `which` argument is left empty:
+
+```{r}
+get_models(cd)
+```
+
+The tibble lists all parameters of all modeled samples. Bino
+
+
+
+# Plot models
+
+The fitted models can be visualized with the `plot_models()` function:
+
+```{r}
+plot_models(cd) +
+  aes(fill = sex) +
+  scale_fill_manual(values = c(male = "#DD4124", female = "#00496F")) +
+  labs(title = "Variant Allele Frequency Spectrum")
+```
+
+Model fitted to the Sample 2 is very inacurrate. The slope of the distribution is too step to be approximated with the power-law exponent of 2. This sample should not be fitted the model with the fixed power-law component. For the rest of samples we can use the equations provided by [Williams et al.](https://www.nature.com/articles/s41588-018-0128-6) to estimate the evolutionary parameters of the subclones.
+
+
+
+# Evolutionary parameters
+
+The evolutionary parameters are estimated for the subclonal components of the models. The binomial components with the highest frequency are called Clones and no parameters are estimated for them.
+
+```{r}
+get_models(cd) |> 
+  filter(str_detect(component, "Subclone"))
+```
+
+For the model with the power-law exponent equal to 2,  have proposed an equations to estimate the evolutionary parameters such as 
+
+```{r}
+get_selection_coefficients(cd)
+```
 
 

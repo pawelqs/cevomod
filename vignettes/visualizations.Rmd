@@ -15,7 +15,55 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(cevomod)
+# library(cevomod)
+# library(tidyverse)
 ```
 
 Page under construction
+
+
+
+# Cumulative tails
+
+```{r, fig.width=7, fig.height=5}
+# tcga_brca_test %>%
+#   plot_cumulative_tails(size = 0.5, scale_y = FALSE)
+```
+
+# SFS with mut annotation
+
+```{r, fig.width=7, fig.height=4}
+# plot_SFS(tcga_brca_test, geom = "line") +
+#   layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "variant_classification")
+# 
+# plot_SFS(tcga_brca_test) +
+#   layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "impact")
+```
+
+# SNVs plots
+
+```{r, fig.width=7, fig.height=5}
+# p1 <- tcga_brca_test %>%
+#   plot_mutations(drivers = "BRCA", shape = "variant_classification")
+# 
+# p2 <- tcga_brca_test %>%
+#   plot_mutations(
+#     genes = c("TP53", "BRCA1", "KMT2C", "ERBB2"),
+#     mark_genes = c("TP53", "BRCA1", "ERBB2"),
+#     y = "samples",
+#     shape = "impact")
+# 
+# p1 / p2 + plot_layout(heights = c(3, 1))
+```
+
+# M(f) ~ 1/f
+
+```{r}
+# tcga_brca_test %>%
+#   plot_Mf_1f() +
+#   scale_color_brewer(palette = "Dark2")
+# 
+# tcga_brca_test %>%
+#   plot_Mf_1f(from = 0.05, to = 0.5, scale = FALSE)
+```
+
