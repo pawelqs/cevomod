@@ -199,6 +199,12 @@
     <loc>https://pawelqs.github.io/cevomod/reference/plot_sequencing_depth.html</loc>
   </url>
   <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/powerlaw_fixed_model.html</loc>
+  </url>
+  <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/powerlaw_optim.html</loc>
+  </url>
+  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/prepare_SNVs.html</loc>
   </url>
   <url>
@@ -259,9 +265,6 @@
     <loc>https://pawelqs.github.io/cevomod/reference/theme_ellie.html</loc>
   </url>
   <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/tung_durrett.html</loc>
-  </url>
-  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/update.cevodata.html</loc>
   </url>
   <url>
@@ -269,8 +272,5 @@
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/variant_classification_filter.html</loc>
-  </url>
-  <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/williams_neutral_model.html</loc>
   </url>
 </urlset>
