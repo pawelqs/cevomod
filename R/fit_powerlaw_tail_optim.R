@@ -49,7 +49,7 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
                                              reward_upper_limit = 0.4,
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                              verbose = TRUE, ...) {
-  msg("Fitting Tung-Durrett models...", verbose = verbose)
+  msg("Fitting optimized power-law models...", verbose = verbose)
   start_time <- Sys.time()
 
   sfs <- get_SFS(object, name = "SFS")
@@ -85,7 +85,7 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
     rowwise("sample_id") |>
     summarise(
       model = name,
-      component = "powerlaw",
+      component = "powerlaw tail",
       opt = td_optim(
         .data$init_A, .data$init_alpha,
         .data$data,

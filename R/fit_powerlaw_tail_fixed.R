@@ -1,7 +1,19 @@
 
 #' Fitting neutral models
 #'
-#' Creates  cevodata$models$neutral_model
+#' Fits a *neutral* model with the power-law exponent equal:
+#' \deqn{y(f) = \frac{\mu}{\beta n} \frac{1}{f^2}}
+#' where
+#' \eqn{ \frac{\mu}{\beta}} is the mutation rate per effective cell division, and
+#' \The power-law exponent of this
+#' model equals 2, as expencted by
+#' [Williams et al. (2018)](https://doi.org/10.1038/ng.3489) and
+#' [Durrett (2013)](https://doi.org/10.1214/11-aap824).
+#' This model is valid under assumptions of exponential population growth,
+#' constant mutation rate, and absence of selectively advantageous micro-clones
+#' desctibed by Tung and Durrett (2021). Using equations described in
+#' [Williams et al. (2018)](https://doi.org/10.1038/s41588-018-0128-6)
+#' evolutionary parameters of detected subclones can be calculated.
 #'
 #' @param object SNVs tibble object
 #' @param rsq_treshold R-squared tresholds to keep model as neutral
@@ -56,7 +68,7 @@ fit_powerlaw_tail_fixed.cevodata <- function(object,
   pb <- if (verbose) progress_bar$new(total = nrow(data)) else NULL
   models <- data |>
     reframe(
-      model = "williams",
+      model = "powerlaw_fixed",
       component = "Neutral tail",
       fit_optimal_lm(.data$data, rsq_treshold, pb)
     )
