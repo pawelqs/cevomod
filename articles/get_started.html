@@ -87,10 +87,10 @@
 <h2 id="cevodata">cevodata<a class="anchor" aria-label="anchor" href="#cevodata"></a>
 </h2>
 <p><strong>Page under construction</strong></p>
-<p>The main data structure used by cevomod is the cevodata S3 class. The
+<p>The main data structure used by cevomod is the S3 class cevodata. The
 easiest way to prepare the object is to create an empty object using the
-<code><a href="../reference/init_cevodata.html">init_cevodata()</a></code> constructor and populating the object with
-the data using the <code>add_*_data()</code> methods.</p>
+<code><a href="../reference/init_cevodata.html">init_cevodata()</a></code> constructor and populate it with data using
+the <code>add_*_data()</code> methods.</p>
 <p>Let’s use the list of SNV variants and the metadata from the small
 attached artificial dataset <code>test_data</code></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -150,10 +150,10 @@ user.</p>
 <h2 id="vaf-spectra">VAF spectra<a class="anchor" aria-label="anchor" href="#vaf-spectra"></a>
 </h2>
 <p>cevomod models are fitted to the Variant Allele Frequency Spectra of
-the samples. Spectra can be displayed with <code><a href="../reference/sfs.html">plot_SFS()</a></code>
+the samples. Spectra can be displayed with the <code><a href="../reference/sfs.html">plot_SFS()</a></code>
 function (SFS - <em>Site Frequency Spectrum</em>). Most of the cevomod
 plotting functions return a ggplot object which can be easily modified.
-Additional aestetics can be added with the <code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code> function.
+Additional aesthetics can be added with the <code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code> function.
 Since the <code>metadata</code> is left-joined to the plot data, the
 metadata columns can be directly used in the <code>eas()</code>
 call.</p>
@@ -169,15 +169,14 @@ call.</p>
 <div class="section level2">
 <h2 id="preparation">Preparation<a class="anchor" aria-label="anchor" href="#preparation"></a>
 </h2>
-<p>Before the the models are fitted, we need to run the
-<code><a href="../reference/prepare_SNVs.html">prepare_SNVs()</a></code> function. In this step VAF values are
-binarized, and the <code>VAF_interval</code> column is added. By
-default, the number of bins equals the median sequencing coverage of
-variants in the sample. It allows to reduce the aliasing noise in the
-samples with low-sequencing depth, and allow to analyze the samples with
-the deeper coverage with a greater resolution. The desired number of
-bins can also be specified manually, using the <code>bins</code>
-argument.</p>
+<p>Before fitting the models, we need to run the
+<code><a href="../reference/prepare_SNVs.html">prepare_SNVs()</a></code> function. This step binarizes the VAF values
+and adds the column <code>VAF_interval</code>. By default, the number of
+bins is equal to the median sequencing coverage of the variants in the
+sample. This allows to reduce aliasing noise in samples with low
+sequencing depth and to analyze samples with higher coverage with higher
+resolution. The desired number of bins can also be specified manually
+using the <code>bins</code> argument.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="va">cd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/prepare_SNVs.html">prepare_SNVs</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -202,12 +201,12 @@ argument.</p>
 <div class="section level2">
 <h2 id="model-fitting">Model fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a>
 </h2>
-<p>When the SNVs are prepared, the models can be fitted with the
-<code>fit_*()</code> functions. Full model consist of the power-law
+<p>Once the SNVs are prepared, the models can be fitted using the
+<code>fit_*()</code> functions. Full models consist of the power-law
 component and one or more binomial components, which are fitted
 sequentially.</p>
-<p>In this example, we first fit the power-law model with the exponent
-equal to 2, and then the mixture of binomial models.</p>
+<p>In this example, we first fit the power-law model with an exponent of
+2, and then the mixture of binomial models.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="va">cd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/powerlaw_fixed_model.html">fit_powerlaw_tail_fixed</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -240,10 +239,10 @@ equal to 2, and then the mixture of binomial models.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 11</span></span></span>
 <span><span class="co">#&gt;   sample_id model  component  from    to length     A     b alpha rsquared best </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  willi… Neutral … 0.185 0.235   0.05  42.8 <span style="text-decoration: underline;">2</span>348.     2    0.980 TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 2  willi… Neutral … 0.215 0.265   0.05  25.5  299.     2    0.989 TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 3  willi… Neutral … 0.285 0.335   0.05 102.   595.     2    0.982 TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4  willi… Neutral … 0.265 0.315   0.05  67.4  800.     2    0.980 TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  power… Neutral … 0.185 0.235   0.05  42.8 <span style="text-decoration: underline;">2</span>348.     2    0.980 TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 2  power… Neutral … 0.215 0.265   0.05  25.5  299.     2    0.989 TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 3  power… Neutral … 0.285 0.335   0.05 102.   595.     2    0.982 TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4  power… Neutral … 0.265 0.315   0.05  67.4  800.     2    0.980 TRUE</span></span></code></pre></div>
 <p>The active model is returned if the <code>which</code> argument is
 left empty:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -253,19 +252,25 @@ left empty:</p>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Sample 1  binomial… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Sample 1  binomial… Subclone… <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Sample 1  williams  Neutral …  0.185  0.235   0.05  42.8 <span style="text-decoration: underline;">2</span>348.     2    0.980</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Sample 1  powerlaw… Neutral …  0.185  0.235   0.05  42.8 <span style="text-decoration: underline;">2</span>348.     2    0.980</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Sample 2  binomial… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Sample 2  williams  Neutral …  0.215  0.265   0.05  25.5  299.     2    0.989</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Sample 2  powerlaw… Neutral …  0.215  0.265   0.05  25.5  299.     2    0.989</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Sample 3  binomial… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Sample 3  binomial… Subclone… <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sample 3  williams  Neutral …  0.285  0.335   0.05 102.   595.     2    0.982</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sample 3  powerlaw… Neutral …  0.285  0.335   0.05 102.   595.     2    0.982</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Sample 4  binomial… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Sample 4  binomial… Subclone… <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> Sample 4  williams  Neutral …  0.265  0.315   0.05  67.4  800.     2    0.980</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> Sample 4  powerlaw… Neutral …  0.265  0.315   0.05  67.4  800.     2    0.980</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: best &lt;lgl&gt;, N &lt;int&gt;, cellularity &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   N_mutations &lt;dbl&gt;, BIC &lt;dbl&gt;, sequencing_DP &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   has_overlapping_clones &lt;lgl&gt;, max_BIC &lt;dbl&gt;</span></span></span></code></pre></div>
-<p>The tibble lists all parameters of all modeled samples. Bino</p>
+<p>The tibble lists the components for all models and samples. Binomial
+components are called either the clones or the subclones. The component
+with the highest cellular frequency is called the clone, and the
+remaining components are called subclones. This distinction is important
+when estimating the subclonal evolutionary parameters: the main clones
+are not under positive selection in the tumor, so we only estimate the
+evolutionary parameters for the subclones.</p>
 </div>
 <div class="section level2">
 <h2 id="plot-models">Plot models<a class="anchor" aria-label="anchor" href="#plot-models"></a>
@@ -280,35 +285,50 @@ left empty:</p>
 <span><span class="co">#&gt; Warning in geom_bar(join_aes(bar_mapping, mapping), stat = "identity", alpha =</span></span>
 <span><span class="co">#&gt; alpha, : Ignoring unknown aesthetics: <span style="color: #00BB00;">width</span></span></span></code></pre></div>
 <p><img src="get_started_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
-<p>Model fitted to the Sample 2 is very inacurrate. The slope of the
-distribution is too step to be approximated with the power-law exponent
-of 2. This sample should not be fitted the model with the fixed
-power-law component. For the rest of samples we can use the equations
-provided by <a href="https://www.nature.com/articles/s41588-018-0128-6" class="external-link">Williams et
-al.</a> to estimate the evolutionary parameters of the subclones.</p>
+<p>The model fitted to sample 2 is very inaccurate. The slope of the
+distribution is too steep to be approximated by the power-law exponent
+of 2. This sample should not be fitted with the model with the fixed
+power-law component. We will ignore this fit when estimating the
+evolutionary parameters.</p>
 </div>
 <div class="section level2">
 <h2 id="evolutionary-parameters">Evolutionary parameters<a class="anchor" aria-label="anchor" href="#evolutionary-parameters"></a>
 </h2>
-<p>The evolutionary parameters are estimated for the subclonal
-components of the models. The binomial components with the highest
-frequency are called Clones and no parameters are estimated for
-them.</p>
+<p>The evolutionary parameters for the subclones can be calculated using
+the equations provided by <a href="https://doi.org/10.1038/s41588-018-0128-6" class="external-link">Williams et
+al. (2018)</a>. Williams assumes an exponential tumor growth and a
+constant mutation rate, under which the power-law exponent equals 2, so
+we can use the equations with the models we fitted. In cevomod, we use
+the code and functions implemented in the <a href="https://github.com/caravagnalab/mobster/blob/master/R/evodynamics.R" class="external-link">MOBSTER
+package</a> to calculate the parameters. We should not use the model for
+Sample 2, though. The mutation rate is severely underestimated, and the
+model fit is inaccurate. One should evaluate the fitted models
+carefully, before continuing with the analysis.</p>
+<p>Mutation rates can be obtained with
+<code><a href="../reference/evo_params.html">get_mutation_rates()</a></code>, and the selection coefficients with
+<code><a href="../reference/evo_params.html">get_selection_coefficients()</a></code> functions. Both functions can
+be run on the cevodata objects (with the correct models fitted), or on
+the model tibbles directly. This allows us to manually correct the model
+tibbles before the calculation of the evolutionary parameters.</p>
+<p>For example, one can get filter Sample 2 out from the cevodata
+object:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">component</span>, <span class="st">"Subclone"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 18</span></span></span>
-<span><span class="co">#&gt;   sample_id model  component  from    to length     A     b alpha rsquared best </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  binom… Subclone…    <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span> TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3  binom… Subclone…    <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span> TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4  binom… Subclone…    <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span> TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: N &lt;int&gt;, cellularity &lt;dbl&gt;, N_mutations &lt;dbl&gt;, BIC &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   sequencing_DP &lt;dbl&gt;, has_overlapping_clones &lt;lgl&gt;, max_BIC &lt;dbl&gt;</span></span></span></code></pre></div>
-<p>For the model with the power-law exponent equal to 2, have proposed
-an equations to estimate the evolutionary parameters such as</p>
+<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op">!=</span> <span class="st">"Sample 2"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/evo_params.html">get_mutation_rates</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
+<span><span class="co">#&gt;   sample_id mutation_rate_williams</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1                    42.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   102. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    67.4</span></span></code></pre></div>
+<p>or from the models tibble:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/evo_params.html">get_selection_coefficients</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op">!=</span> <span class="st">"Sample 2"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/evo_params.html">get_selection_coefficients</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 8</span></span></span>
 <span><span class="co">#&gt;   sample_id mutation_rate_williams component  N_mutations subclone_frequency</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
