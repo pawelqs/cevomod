@@ -85,7 +85,7 @@ In this example, we first fit the power-law model with the exponent equal to 2, 
 
 ```{r}
 cd <- cd |> 
-  fit_williams_neutral_models() |> 
+  fit_powerlaw_tail_fixed() |> 
   fit_subclones()
 
 cd

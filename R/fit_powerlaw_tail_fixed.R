@@ -17,7 +17,7 @@
 #'   add_SNV_data(snvs) |>
 #'   calc_Mf_1f() |>
 #'   calc_SFS() |>
-#'   fit_williams_neutral_models(rsq_treshold = 0.99)
+#'   fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
 #'
 #' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
 #'   layer_lm_fits(cd)
@@ -27,8 +27,8 @@ NULL
 
 #' @rdname williams_neutral_model
 #' @export
-fit_williams_neutral_models <- function(object, ...) {
-  UseMethod("fit_williams_neutral_models")
+fit_powerlaw_tail_fixed <- function(object, ...) {
+  UseMethod("fit_powerlaw_tail_fixed")
 }
 
 
@@ -36,7 +36,7 @@ fit_williams_neutral_models <- function(object, ...) {
 #' @param pct_left drop pct of the lowerst frequency variants to improve fit
 #' @param pct_right drop pct of the highest frequency variants to improve fit
 #' @export
-fit_williams_neutral_models.cevodata <- function(object,
+fit_powerlaw_tail_fixed.cevodata <- function(object,
                                         rsq_treshold = 0.98,
                                         name = "williams_neutral",
                                         pct_left = 0.05, pct_right = 0.95,

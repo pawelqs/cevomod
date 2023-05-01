@@ -2,14 +2,14 @@
 % Please edit documentation in R/fit_powerlaw_tail_fixed.R
 \name{williams_neutral_model}
 \alias{williams_neutral_model}
-\alias{fit_williams_neutral_models}
-\alias{fit_williams_neutral_models.cevodata}
+\alias{fit_powerlaw_tail_fixed}
+\alias{fit_powerlaw_tail_fixed.cevodata}
 \alias{layer_lm_fits}
 \title{Fitting neutral models}
 \usage{
-fit_williams_neutral_models(object, ...)
+fit_powerlaw_tail_fixed(object, ...)
 
-\method{fit_williams_neutral_models}{cevodata}(
+\method{fit_powerlaw_tail_fixed}{cevodata}(
   object,
   rsq_treshold = 0.98,
   name = "williams_neutral",
@@ -57,7 +57,7 @@ cd <- init_cevodata("Test") |>
   add_SNV_data(snvs) |>
   calc_Mf_1f() |>
   calc_SFS() |>
-  fit_williams_neutral_models(rsq_treshold = 0.99)
+  fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
 
 plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
   layer_lm_fits(cd)

@@ -43,7 +43,7 @@ run_cevomod.cevodata <- function(object, ...) {
     calc_SFS() |>
     calc_cumulative_tails() |>
     calc_Mf_1f() |>
-    fit_williams_neutral_models() |>
+    fit_powerlaw_tail_fixed() |>
     fit_subclones() |>
     fit_powerlaw_tail_optim() |>
     fit_subclones()

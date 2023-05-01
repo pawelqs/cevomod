@@ -7,7 +7,7 @@ test_that("Fitting neutral partial models works", {
     add_SNV_data(snvs) |>
     calc_Mf_1f(verbose = FALSE) |>
     calc_SFS() |>
-    fit_williams_neutral_models(rsq_treshold = 0.99, verbose = FALSE)
+    fit_powerlaw_tail_fixed(rsq_treshold = 0.99, verbose = FALSE)
   expected <- "../testdata/tcga_brca_partial_neutral_models.tsv" |>
     read_tsv(col_types = "cccdddddddl") |>
     mutate(
@@ -44,7 +44,7 @@ cd <- init_cevodata("Test") |>
   add_SNV_data(generate_neutral_snvs()) |>
   calc_Mf_1f(verbose = FALSE) |>
   calc_SFS(bins = 100) |>
-  fit_williams_neutral_models(verbose = FALSE)
+  fit_powerlaw_tail_fixed(verbose = FALSE)
 
 
 test_that("calc_residuals creates proper tibble", {
