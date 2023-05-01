@@ -45,7 +45,7 @@ run_cevomod.cevodata <- function(object, ...) {
     calc_Mf_1f() |>
     fit_williams_neutral_models() |>
     fit_subclones() |>
-    fit_tung_durrett_models() |>
+    fit_powerlaw_tail_optim() |>
     fit_subclones()
   object$active_models <- "williams_neutral_subclones"
   object

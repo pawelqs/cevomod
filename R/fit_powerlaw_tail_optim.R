@@ -1,7 +1,7 @@
 
 #' Fitting Tung Durrett models
 #'
-#' `fit_tung_durrett_models()` uses `stats::optim` to find optimal A and alpha
+#' `fit_powerlaw_tail_optim()` uses `stats::optim` to find optimal A and alpha
 #' whch maximizes SFS area under the powerlaw curve (*sampled* region of SFS and
 #' the range of VAF values below the maximum SFS value does not count) and
 #' minimizes negative error - where the curve is above the real SFS (*sampled*
@@ -21,15 +21,15 @@
 #' data("tcga_brca_test")
 #' cd <- tcga_brca_test |>
 #'   dplyr::filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01")) |>
-#'   fit_tung_durrett_models()
+#'   fit_powerlaw_tail_optim()
 #' @name tung_durrett
 NULL
 
 
 #' @rdname tung_durrett
 #' @export
-fit_tung_durrett_models <- function(object, ...) {
-  UseMethod("fit_tung_durrett_models")
+fit_powerlaw_tail_optim <- function(object, ...) {
+  UseMethod("fit_powerlaw_tail_optim")
 }
 
 
@@ -38,7 +38,7 @@ fit_tung_durrett_models <- function(object, ...) {
 #' @param peak_detection_upper_limit upper VAF value up to which the main peak is searched
 #' @param reward_upper_limit mutations under the curve up to this limit will be rewarded
 #' @export
-fit_tung_durrett_models.cevodata <- function(object,
+fit_powerlaw_tail_optim.cevodata <- function(object,
                                              name = "tung_durrett",
                                              # pct_left = 0, pct_right = 0.98,
                                              allowed_zero_bins = 2,
