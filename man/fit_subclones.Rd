@@ -31,7 +31,7 @@ fit_subclones(
 \item{snvs_name}{which snvs to to use?}
 
 \item{powerlaw_model_name}{residual of which powerlaw model to use?
-williams_neutral/tung_durrett}
+williams_neutral/powerlaw_optim}
 
 \item{upper_VAF_limit}{ignore variants with f higher than}
 

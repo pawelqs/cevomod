@@ -4,7 +4,7 @@
 #' @param object object
 #' @param N vector of numbers of clones to test
 #' @param powerlaw_model_name residual of which powerlaw model to use?
-#'   williams_neutral/tung_durrett
+#'   williams_neutral/powerlaw_optim
 #' @param upper_VAF_limit ignore variants with f higher than
 #' @param verbose verbose?
 #' @name fit_subclones
