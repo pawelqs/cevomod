@@ -90,7 +90,7 @@ get_selection_coefficients <- function(object, ...) {
 #' @describeIn evo_params Get subclonal selection coefficients Williams
 #' @export
 get_selection_coefficients.cevodata <- function(object,
-                                                models_name = "williams_neutral_subclones",
+                                                models_name = "powerlaw_fixed_subclones",
                                                 Nmax = 10^10, ...) {
   get_models(object, models_name) |>
     get_selection_coefficients()

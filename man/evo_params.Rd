@@ -20,7 +20,7 @@ get_selection_coefficients(object, ...)
 
 \method{get_selection_coefficients}{cevodata}(
   object,
-  models_name = "williams_neutral_subclones",
+  models_name = "powerlaw_fixed_subclones",
   Nmax = 10^10,
   ...
 )
