@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-The main data structure used by cevomod is the cevodata S3 class. The easiest way to prepare the object is to create an empty object using the `init_cevodata()` constructor and populating the object with the data using the `add_*_data()` methods.
+The main data structure used by cevomod is the S3 class cevodata. The easiest way to prepare the object is to create an empty object using the `init_cevodata()` constructor and populate it with data using the `add_*_data()` methods.
 
 Let's use the list of SNV variants and the metadata from the small attached artificial dataset `test_data`
 
@@ -55,7 +55,7 @@ cd
 
 # VAF spectra
 
-cevomod models are fitted to the Variant Allele Frequency Spectra of the samples. Spectra can be displayed with `plot_SFS()` function (SFS - *Site Frequency Spectrum*). Most of the cevomod plotting functions return a ggplot object which can be easily modified. Additional aestetics can be added with the `aes()` function. Since the `metadata` is left-joined to the plot data, the metadata columns can be directly used in the `eas()` call. 
+cevomod models are fitted to the Variant Allele Frequency Spectra of the samples. Spectra can be displayed with the `plot_SFS()` function (SFS - *Site Frequency Spectrum*). Most of the cevomod plotting functions return a ggplot object which can be easily modified. Additional aesthetics can be added with the `aes()` function. Since the `metadata` is left-joined to the plot data, the metadata columns can be directly used in the `eas()` call. 
 
 ```{r}
 plot_SFS(cd) +
@@ -67,7 +67,7 @@ plot_SFS(cd) +
 
 # Preparation
 
-Before the the models are fitted, we need to run the `prepare_SNVs()` function. In this step VAF values are binarized, and the `VAF_interval` column is added. By default, the number of bins equals the median sequencing coverage of variants in the sample. It allows to reduce the aliasing noise in the samples with low-sequencing depth, and allow to analyze the samples with the deeper coverage with a greater resolution. The desired number of bins can also be specified manually, using the `bins` argument.
+Before fitting the models, we need to run the `prepare_SNVs()` function. This step binarizes the VAF values and adds the column `VAF_interval`. By default, the number of bins is equal to the median sequencing coverage of the variants in the sample. This allows to reduce aliasing noise in samples with low sequencing depth and to analyze samples with higher coverage with higher resolution. The desired number of bins can also be specified manually using the `bins` argument.
 
 ```{r}
 cd <- cd |> 
@@ -79,9 +79,9 @@ SNVs(cd) |>
 
 # Model fitting
 
-When the SNVs are prepared, the models can be fitted with the `fit_*()` functions. Full model consist of the power-law component and one or more binomial components, which are fitted sequentially.
+Once the SNVs are prepared, the models can be fitted using the `fit_*()` functions. Full models consist of the power-law component and one or more binomial components, which are fitted sequentially.
 
-In this example, we first fit the power-law model with the exponent equal to 2, and then the mixture of binomial models.
+In this example, we first fit the power-law model with an exponent of 2, and then the mixture of binomial models.
 
 ```{r}
 cd <- cd |> 
@@ -115,7 +115,7 @@ The active model is returned if the `which` argument is left empty:
 get_models(cd)
 ```
 
-The tibble lists all parameters of all modeled samples. Bino
+The tibble lists the components for all models and samples. Binomial components are called either the clones or the subclones. The component with the highest cellular frequency is called the clone, and the remaining components are called subclones. This distinction is important when estimating the subclonal evolutionary parameters: the main clones are not under positive selection in the tumor, so we only estimate the evolutionary parameters for the subclones.
 
 
 
@@ -130,23 +130,33 @@ plot_models(cd) +
   labs(title = "Variant Allele Frequency Spectrum")
 ```
 
-Model fitted to the Sample 2 is very inacurrate. The slope of the distribution is too step to be approximated with the power-law exponent of 2. This sample should not be fitted the model with the fixed power-law component. For the rest of samples we can use the equations provided by [Williams et al.](https://www.nature.com/articles/s41588-018-0128-6) to estimate the evolutionary parameters of the subclones.
+The model fitted to sample 2 is very inaccurate. The slope of the distribution is too steep to be approximated by the power-law exponent of 2. This sample should not be fitted with the model with the fixed power-law component. We will ignore this fit when estimating the evolutionary parameters.
 
 
 
 # Evolutionary parameters
 
-The evolutionary parameters are estimated for the subclonal components of the models. The binomial components with the highest frequency are called Clones and no parameters are estimated for them.
+The evolutionary parameters for the subclones can be calculated using the equations provided by [Williams et al. (2018)](https://doi.org/10.1038/s41588-018-0128-6). Williams assumes an exponential tumor growth and a constant mutation rate, under which the power-law exponent equals 2, so we can use the equations with the models we fitted. In cevomod, we use the code and functions implemented in the [MOBSTER package](https://github.com/caravagnalab/mobster/blob/master/R/evodynamics.R) to calculate the parameters. We should not use the model for Sample 2, though. The mutation rate is severely underestimated, and the model fit is inaccurate. One should evaluate the fitted models carefully, before continuing with the analysis.
+
+Mutation rates can be obtained with `get_mutation_rates()`, and the selection coefficients with `get_selection_coefficients()` functions. Both functions can be run on the cevodata objects (with the correct models fitted), or on the model tibbles directly. This allows us to manually correct the model tibbles before the calculation of the evolutionary parameters.
+
+For example, one can get filter Sample 2 out from the cevodata object:
 
 ```{r}
-get_models(cd) |> 
-  filter(str_detect(component, "Subclone"))
+cd |> 
+  filter(sample_id != "Sample 2") |> 
+  get_models() |> 
+  get_mutation_rates()
 ```
 
-For the model with the power-law exponent equal to 2,  have proposed an equations to estimate the evolutionary parameters such as 
+or from the models tibble:
+
 
 ```{r}
-get_selection_coefficients(cd)
+cd |> 
+  get_models() |> 
+  filter(sample_id != "Sample 2") |> 
+  get_selection_coefficients()
 ```
 
 
