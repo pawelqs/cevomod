@@ -48,8 +48,8 @@ cd <- init_cevodata("Test") |>
 
 
 test_that("calc_residuals creates proper tibble", {
-  cd <- calc_powerlaw_model_residuals(cd, "williams_neutral")
-  resids <- get_residuals(cd, "williams_neutral")
+  cd <- calc_powerlaw_model_residuals(cd, "powerlaw_fixed")
+  resids <- get_residuals(cd, "powerlaw_fixed")
   expect_equal(nrow(resids), 101)
   expect_true(all(c("powerlaw_resid", "sampling_rate") %in% names(resids)))
   expect_equal(

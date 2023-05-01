@@ -4,7 +4,7 @@
 \alias{plot_neutral_A_coefficients}
 \title{Plot 'a' coefficients for all fitted neutral models}
 \usage{
-plot_neutral_A_coefficients(object, model_name = "williams_neutral", ...)
+plot_neutral_A_coefficients(object, model_name = "powerlaw_fixed", ...)
 }
 \arguments{
 \item{object}{cevodata object}

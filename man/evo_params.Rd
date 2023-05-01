@@ -12,7 +12,7 @@
 \usage{
 get_mutation_rates(object, ...)
 
-\method{get_mutation_rates}{cevodata}(object, models_name = "williams_neutral", ...)
+\method{get_mutation_rates}{cevodata}(object, models_name = "powerlaw_fixed", ...)
 
 \method{get_mutation_rates}{tbl_df}(object, ...)
 

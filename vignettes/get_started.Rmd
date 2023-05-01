@@ -106,7 +106,7 @@ cd$active_models
 Models can be viewed with the `get_models()` function:
 
 ```{r}
-get_models(cd, which = "williams_neutral")
+get_models(cd, which = "powerlaw_fixed")
 ```
 
 The active model is returned if the `which` argument is left empty:

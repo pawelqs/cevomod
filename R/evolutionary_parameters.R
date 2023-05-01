@@ -24,7 +24,7 @@ get_mutation_rates <- function(object, ...) {
 
 #' @describeIn evo_params Get mutation rates by Williams
 #' @export
-get_mutation_rates.cevodata <- function(object, models_name = "williams_neutral", ...) {
+get_mutation_rates.cevodata <- function(object, models_name = "powerlaw_fixed", ...) {
   mutation_rates <- get_models(object, models_name) |>
     filter(.data$component == "Neutral tail") |>
     transmute(

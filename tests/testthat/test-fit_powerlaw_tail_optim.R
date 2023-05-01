@@ -37,7 +37,7 @@ test_that("Testing td_objective_function", {
   # object <- tcga_brca_test |>
   #   fit_powerlaw_tail_fixed() |>
   #   fit_powerlaw_tail_optim()
-  # model_names <- c("williams_neutral", "powerlaw_optim")
+  # model_names <- c("powerlaw_fixed", "powerlaw_optim")
   # column_name <- "powerlaw_pred"
   # compare_models(object, model_names, column_name)
   #

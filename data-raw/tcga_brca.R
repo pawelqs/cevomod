@@ -105,7 +105,7 @@ tcga_brca_test <- tcga_brca |>
   fit_subclones() |>
   fit_powerlaw_tail_optim() |>
   fit_subclones()
-tcga_brca_test$active_models <- "williams_neutral_subclones"
+tcga_brca_test$active_models <- "powerlaw_fixed_subclones"
 
 
 usethis::use_data(tcga_brca, overwrite = TRUE)

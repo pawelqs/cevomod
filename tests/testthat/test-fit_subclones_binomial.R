@@ -1,7 +1,7 @@
 
 object <- tcga_brca_test
 N <- 1:3
-powerlaw_model_name <- "williams_neutral"
+powerlaw_model_name <- "powerlaw_fixed"
 upper_VAF_limit <- 0.75
 verbose <- TRUE
 
