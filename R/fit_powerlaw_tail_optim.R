@@ -1,7 +1,7 @@
 
 #' Fitting Tung Durrett models
 #'
-#' `fit_tung_durrett_models()` uses `stats::optim` to find optimal A and alpha
+#' `fit_powerlaw_tail_optim()` uses `stats::optim` to find optimal A and alpha
 #' whch maximizes SFS area under the powerlaw curve (*sampled* region of SFS and
 #' the range of VAF values below the maximum SFS value does not count) and
 #' minimizes negative error - where the curve is above the real SFS (*sampled*
@@ -21,25 +21,25 @@
 #' data("tcga_brca_test")
 #' cd <- tcga_brca_test |>
 #'   dplyr::filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01")) |>
-#'   fit_tung_durrett_models()
-#' @name tung_durrett
+#'   fit_powerlaw_tail_optim()
+#' @name powerlaw_optim
 NULL
 
 
-#' @rdname tung_durrett
+#' @rdname powerlaw_optim
 #' @export
-fit_tung_durrett_models <- function(object, ...) {
-  UseMethod("fit_tung_durrett_models")
+fit_powerlaw_tail_optim <- function(object, ...) {
+  UseMethod("fit_powerlaw_tail_optim")
 }
 
 
-#' @rdname tung_durrett
+#' @rdname powerlaw_optim
 #' @inheritParams get_non_zero_SFS_range
 #' @param peak_detection_upper_limit upper VAF value up to which the main peak is searched
 #' @param reward_upper_limit mutations under the curve up to this limit will be rewarded
 #' @export
-fit_tung_durrett_models.cevodata <- function(object,
-                                             name = "tung_durrett",
+fit_powerlaw_tail_optim.cevodata <- function(object,
+                                             name = "powerlaw_optim",
                                              # pct_left = 0, pct_right = 0.98,
                                              allowed_zero_bins = 2,
                                              y_treshold = 1,
@@ -84,7 +84,7 @@ fit_tung_durrett_models.cevodata <- function(object,
   models <- data |>
     rowwise("sample_id") |>
     summarise(
-      model = "tung_durrett",
+      model = name,
       component = "powerlaw",
       opt = td_optim(
         .data$init_A, .data$init_alpha,
@@ -110,7 +110,7 @@ fit_tung_durrett_models.cevodata <- function(object,
   msg("Models fitted in ", Sys.time() - start_time, " seconds", verbose = verbose)
 
   object$models[[name]] <- models
-  object <- calc_powerlaw_model_residuals(object, "tung_durrett")
+  object <- calc_powerlaw_model_residuals(object, name)
   object$active_models <- name
   object
 }

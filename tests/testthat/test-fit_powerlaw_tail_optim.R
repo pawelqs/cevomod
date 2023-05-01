@@ -1,12 +1,12 @@
 data("tcga_brca_test")
 
 
-test_that("fit_tung_durrett_models models have non-negative objective fun value", {
+test_that("fit_powerlaw_tail_optim models have non-negative objective fun value", {
   cd <- tcga_brca_test |>
-    fit_tung_durrett_models(verbose = FALSE)
-  td <- get_models(cd, "tung_durrett")
+    fit_powerlaw_tail_optim(verbose = FALSE)
+  td <- get_models(cd, "powerlaw_optim")
   expect_true(all(td$value > 1990))
-  expect_s3_class(get_powerlaw_models(cd, "tung_durrett"), "cevo_powerlaw_models")
+  expect_s3_class(get_powerlaw_models(cd, "powerlaw_optim"), "cevo_powerlaw_models")
 })
 
 
@@ -35,9 +35,9 @@ test_that("Testing td_objective_function", {
 
 # test_that("Testing tung-durret models on Shlush_AML and tcga_brca_test data", {
   # object <- tcga_brca_test |>
-  #   fit_williams_neutral_models() |>
-  #   fit_tung_durrett_models()
-  # model_names <- c("williams_neutral", "tung_durrett")
+  #   fit_powerlaw_tail_fixed() |>
+  #   fit_powerlaw_tail_optim()
+  # model_names <- c("powerlaw_fixed", "powerlaw_optim")
   # column_name <- "powerlaw_pred"
   # compare_models(object, model_names, column_name)
   #
@@ -45,8 +45,8 @@ test_that("Testing td_objective_function", {
   # cd <- Shlush_AML |>
   #   calc_SFS() |>
   #   calc_Mf_1f() |>
-  #   fit_williams_neutral_models() |>
-  #   fit_tung_durrett_models()
+  #   fit_powerlaw_tail_fixed() |>
+  #   fit_powerlaw_tail_optim()
   # compare_models(cd, model_names, column_name)
   # cd |>  filter(sample_id == "AMLRO-9_Rx") |> compare_models(model_names, column_name)
 # })

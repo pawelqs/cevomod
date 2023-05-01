@@ -3,13 +3,13 @@ data("tcga_brca_test")
 
 test_that("calc_powerlaw_model_residuals returns powerlaw curves with similar numbers of mutations for different numbers of bins", {
   cd <- tcga_brca_test
-  cd$active_models <- "williams_neutral"
+  cd$active_models <- "powerlaw_fixed"
   cd1 <- tcga_brca_test |>
     calc_SFS(bins = 50) |>
-    calc_powerlaw_model_residuals("williams_neutral")
+    calc_powerlaw_model_residuals("powerlaw_fixed")
   cd2 <- tcga_brca_test |>
     calc_SFS(bins = 100) |>
-    calc_powerlaw_model_residuals("williams_neutral")
+    calc_powerlaw_model_residuals("powerlaw_fixed")
   # plot_models(cd1)
   # plot_models(cd2)
   n1 <- get_residuals(cd1) |>

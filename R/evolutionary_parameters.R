@@ -24,7 +24,7 @@ get_mutation_rates <- function(object, ...) {
 
 #' @describeIn evo_params Get mutation rates by Williams
 #' @export
-get_mutation_rates.cevodata <- function(object, models_name = "williams_neutral", ...) {
+get_mutation_rates.cevodata <- function(object, models_name = "powerlaw_fixed", ...) {
   mutation_rates <- get_models(object, models_name) |>
     filter(.data$component == "Neutral tail") |>
     transmute(
@@ -90,7 +90,7 @@ get_selection_coefficients <- function(object, ...) {
 #' @describeIn evo_params Get subclonal selection coefficients Williams
 #' @export
 get_selection_coefficients.cevodata <- function(object,
-                                                models_name = "williams_neutral_subclones",
+                                                models_name = "powerlaw_fixed_subclones",
                                                 Nmax = 10^10, ...) {
   get_models(object, models_name) |>
     get_selection_coefficients()

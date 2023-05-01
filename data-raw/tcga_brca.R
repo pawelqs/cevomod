@@ -101,11 +101,11 @@ tcga_brca_test <- tcga_brca |>
   calc_SFS() |>
   calc_cumulative_tails() |>
   calc_Mf_1f() |>
-  fit_williams_neutral_models() |>
+  fit_powerlaw_tail_fixed() |>
   fit_subclones() |>
-  fit_tung_durrett_models() |>
+  fit_powerlaw_tail_optim() |>
   fit_subclones()
-tcga_brca_test$active_models <- "williams_neutral_subclones"
+tcga_brca_test$active_models <- "powerlaw_fixed_subclones"
 
 
 usethis::use_data(tcga_brca, overwrite = TRUE)

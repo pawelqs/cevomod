@@ -17,28 +17,28 @@
 #'   add_SNV_data(snvs) |>
 #'   calc_Mf_1f() |>
 #'   calc_SFS() |>
-#'   fit_williams_neutral_models(rsq_treshold = 0.99)
+#'   fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
 #'
 #' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
 #'   layer_lm_fits(cd)
-#' @name williams_neutral_model
+#' @name powerlaw_fixed_model
 NULL
 
 
-#' @rdname williams_neutral_model
+#' @rdname powerlaw_fixed_model
 #' @export
-fit_williams_neutral_models <- function(object, ...) {
-  UseMethod("fit_williams_neutral_models")
+fit_powerlaw_tail_fixed <- function(object, ...) {
+  UseMethod("fit_powerlaw_tail_fixed")
 }
 
 
-#' @rdname williams_neutral_model
+#' @rdname powerlaw_fixed_model
 #' @param pct_left drop pct of the lowerst frequency variants to improve fit
 #' @param pct_right drop pct of the highest frequency variants to improve fit
 #' @export
-fit_williams_neutral_models.cevodata <- function(object,
+fit_powerlaw_tail_fixed.cevodata <- function(object,
                                         rsq_treshold = 0.98,
-                                        name = "williams_neutral",
+                                        name = "powerlaw_fixed",
                                         pct_left = 0.05, pct_right = 0.95,
                                         verbose = TRUE, ...) {
   msg("Fitting williams neutral models...", verbose = verbose)
@@ -128,13 +128,13 @@ plot_Mf_1f_fits <- function(object, ...) {
 }
 
 
-#' @describeIn williams_neutral_model Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
+#' @describeIn powerlaw_fixed_model Add M(f) ~ 1/f models layer to M(f) ~ 1/f plot
 #'
 #' @param cd cevodata
 #' @param model_name modelname
 #' @param ... other params passed to geom_segment()
 #' @export
-layer_lm_fits <- function(cd, model_name = "williams_neutral", ...) {
+layer_lm_fits <- function(cd, model_name = "powerlaw_fixed", ...) {
   geom_segment(
     aes(
       x = 1/.data$from,
@@ -162,7 +162,7 @@ plot_neutral_A_coefficients <- function(object, ...) {
 
 
 #' @export
-plot_neutral_A_coefficients <- function(object, model_name = "williams_neutral", ...) {
+plot_neutral_A_coefficients <- function(object, model_name = "powerlaw_fixed", ...) {
   get_models(object, model_name, best_only = FALSE) |>
     ggplot() +
     aes(x = .data$from, xend = .data$to, y = .data$A, yend = .data$A, color = .data$best) +

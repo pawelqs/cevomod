@@ -36,11 +36,11 @@ cd <- cd |>
 
 ```{r}
 cd1 <- cd |> 
-  fit_williams_neutral_models() |> 
+  fit_powerlaw_tail_fixed() |> 
   fit_subclones()
 
 cd2 <- cd |> 
-  fit_williams_neutral_models() |> 
+  fit_powerlaw_tail_fixed() |> 
   fit_subclones_bmix()
 
 get_models(cd1)
