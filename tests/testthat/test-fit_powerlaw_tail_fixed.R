@@ -11,12 +11,12 @@ test_that("Fitting neutral partial models works", {
   expected <- "../testdata/tcga_brca_partial_neutral_models.tsv" |>
     read_tsv(col_types = "cccdddddddl") |>
     mutate(
-      model = "williams",
+      model = "powerlaw_fixed",
       component = "Neutral tail",
       .before = "from"
     )
   class(expected) <- c("cevo_powerlaw_models", class(expected))
-  # write_tsv(cd$models$neutral_model, "tests/testdata/tcga_brca_partial_neutral_models.tsv")
+  # write_tsv(cd$models$powerlaw_fixed, "tests/testdata/tcga_brca_partial_neutral_models.tsv")
   expect_equal(get_models(cd, best_only = FALSE), expected)
 })
 
