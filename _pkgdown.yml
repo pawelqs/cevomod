@@ -13,6 +13,82 @@ home:
     href: https://github.com/pawelqs/cevomod/issues
 
 
+reference:
+- title: cevodata
+- contents:
+  - as_cevo_snvs
+  - init_cevodata
+  - starts_with("add_")
+  - starts_with("default_")
+  - set_cancer_type
+- title: cevodata transformations
+- contents:
+  - filter.cevodata
+  - split_by.cevodata
+  - merge.cevodata
+  - update.cevodata
+- title: Other transformations
+- contents:
+  - annotate_mutation_contexts
+  - cut_f_intervals
+  - filter_SNVs_by_regions
+  - mutation_frequencies
+  - shuffle
+- title: Model fitting
+- contents:
+  - starts_with("fit_")
+  - prepare_SNVs
+- title: Getters
+- contents:
+  - starts_with("get_")
+- title: Evolutionary parameters
+- contents:
+  - get_mutation_rates
+  - get_selection_coefficients
+- title: Visualizations
+- contents:
+  - compare_models
+  - geom_powerlaw
+  - hide_facet_labels
+  - hide_legend
+  - starts_with("layer_")
+  - print_palettes
+  - has_keyword("palettes")
+  - starts_with("plot")
+  - rotate_x_labels
+  - starts_with("scale_")
+  - starts_with("stat_")
+- title: Data
+- contents:
+  - driver_genes
+  - test_data
+- title: Other functions
+- contents:
+  - generate_neutral_snvs
+  - "`%not in%`"
+  - fill_na
+  - fix_powerlaw_N_mutations
+- title: internal
+  contents:
+    - colors
+    - count_mutation_types
+    - count_mutations_by_component
+    - evaluate_MC_runs
+    - identify_non_neutral_tail_mutations
+    - list_continuous_palettes
+    - list_discrete_palettes
+    - list_pnw_palettes
+    - tcga_brca
+    - tcga_brca_test
+    - quick_save
+    - run_browser
+    - run_cevomod
+    - theme_ellie
+    - variant_classification
+    - variant_classification_filter
+
+
+
 articles:
 - title: Tutorials
   navbar: ~

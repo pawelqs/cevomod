@@ -7,6 +7,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
+**Page under construction**
+
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -15,55 +19,71 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-# library(cevomod)
-# library(tidyverse)
+suppressPackageStartupMessages({
+  library(cevomod)
+  library(tidyverse)
+})
+
+cd <- test_data
+cd
 ```
 
-Page under construction
+
+# VAF spectra
+
+```{r}
+plot_SFS(cd) +
+  aes(fill = sex) +
+  scale_fill_manual(values = c(male = "#DD4124", female = "#00496F")) +
+  labs(title = "Variant Allele Frequency Spectrum")
+```
 
 
+```{r}
+plot_SFS(cd, geom = "line") +
+  aes(color = sample_id) +
+  labs(title = "Variant Allele Frequency Spectrum") +
+  theme_minimal()
+```
 
 # Cumulative tails
 
 ```{r, fig.width=7, fig.height=5}
-# tcga_brca_test %>%
-#   plot_cumulative_tails(size = 0.5, scale_y = FALSE)
-```
-
-# SFS with mut annotation
-
-```{r, fig.width=7, fig.height=4}
-# plot_SFS(tcga_brca_test, geom = "line") +
-#   layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "variant_classification")
-# 
-# plot_SFS(tcga_brca_test) +
-#   layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "impact")
-```
-
-# SNVs plots
-
-```{r, fig.width=7, fig.height=5}
-# p1 <- tcga_brca_test %>%
-#   plot_mutations(drivers = "BRCA", shape = "variant_classification")
-# 
-# p2 <- tcga_brca_test %>%
-#   plot_mutations(
-#     genes = c("TP53", "BRCA1", "KMT2C", "ERBB2"),
-#     mark_genes = c("TP53", "BRCA1", "ERBB2"),
-#     y = "samples",
-#     shape = "impact")
-# 
-# p1 / p2 + plot_layout(heights = c(3, 1))
+plot_cumulative_tails(cd, size = 0.5, scale_y = FALSE)
 ```
 
 # M(f) ~ 1/f
 
 ```{r}
-# tcga_brca_test %>%
-#   plot_Mf_1f() +
-#   scale_color_brewer(palette = "Dark2")
-# 
-# tcga_brca_test %>%
-#   plot_Mf_1f(from = 0.05, to = 0.5, scale = FALSE)
+plot_Mf_1f(cd)
 ```
+
+# VAF spectra with mutation annotation
+
+```{r}
+plot_SFS(cd) +
+  layer_mutations(cd, drivers = "BRCA")
+# 
+# plot_SFS(tcga_brca_test) +
+#   layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "impact")
+```
+
+# Mutation plots
+
+```{r}
+plot_mutations(cd, drivers = "BRCA")
+```
+
+# Plot models
+
+```{r}
+cd |> 
+  fit_powerlaw_tail_optim() |> 
+  fit_subclones() |> 
+  plot_models() +
+  aes(fill = sex) +
+  scale_fill_manual(values = c(male = "#DD4124", female = "#00496F")) +
+  labs(title = "Models")
+```
+
 

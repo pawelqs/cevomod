@@ -3,15 +3,20 @@
 #'
 #' Fits a *neutral* model with the power-law exponent equal:
 #' \deqn{y(f) = \frac{\mu}{\beta n} \frac{1}{f^2}}
-#' where
-#' \eqn{ \frac{\mu}{\beta}} is the mutation rate per effective cell division, and
-#' \The power-law exponent of this
-#' model equals 2, as expencted by
+#' where \eqn{ \mu/\beta } is the mutation rate per effective cell division, and
+#' n is the number of bins in the spectrum. The power-law exponent of this
+#' model equals 2, as expected by
 #' [Williams et al. (2018)](https://doi.org/10.1038/ng.3489) and
 #' [Durrett (2013)](https://doi.org/10.1214/11-aap824).
-#' This model is valid under assumptions of exponential population growth,
+#' This model is valid under the assumptions of exponential population growth,
 #' constant mutation rate, and absence of selectively advantageous micro-clones
-#' desctibed by Tung and Durrett (2021). Using equations described in
+#' desctibed by
+#' [Tung and Durrett (2021)](https://doi.org/10.1371/journal.pcbi.1008701).
+#'
+#' This model is fitted using the statistic
+#' \deqn{M(f) = \frac{\mu}{\beta} \frac{1}{f}} described by
+#' [Williams et al. (2016)](https://doi.org/10.1038/ng.3489).
+#' Using the equations described in
 #' [Williams et al. (2018)](https://doi.org/10.1038/s41588-018-0128-6)
 #' evolutionary parameters of detected subclones can be calculated.
 #'
