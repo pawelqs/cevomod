@@ -47,7 +47,7 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="cevodata">cevodata<a class="anchor" aria-label="anchor" href="#cevodata"></a></h2>
       
       
 
@@ -59,29 +59,14 @@
 
       <dl><dt>
           
-          <code><a href="ITH.html">plot_ITH()</a></code> <code><a href="ITH.html">plot(<i>&lt;cevo_ITH_tbl&gt;</i>)</a></code> <code><a href="ITH.html">estimate_ITH()</a></code> 
-        </dt>
-        <dd>Intratumor heterogeneity</dd>
-      </dl><dl><dt>
-          
-          <code><a href="Mf_1f.html">calc_Mf_1f()</a></code> <code><a href="Mf_1f.html">plot_Mf_1f()</a></code> <code><a href="Mf_1f.html">get_Mf_1f()</a></code> 
-        </dt>
-        <dd>William's M(f) ~ 1/f statistics</dd>
-      </dl><dl><dt>
-          
-          <code><a href="active_assays.html">default_SNVs()</a></code> <code><a href="active_assays.html">`default_SNVs&lt;-`()</a></code> <code><a href="active_assays.html">default_CNVs()</a></code> <code><a href="active_assays.html">`default_CNVs&lt;-`()</a></code> 
-        </dt>
-        <dd>Get/Set active assays of the cevodata object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="annotate_mutation_contexts.html">annotate_mutation_contexts()</a></code> 
-        </dt>
-        <dd>Annotate mutation context and types for mutation signatures analysis</dd>
-      </dl><dl><dt>
-          
           <code><a href="as_cevo_snvs.html">as_cevo_snvs()</a></code> 
         </dt>
         <dd>Create cevo_snvs tibble</dd>
+      </dl><dl><dt>
+          
+          <code><a href="init_cevodata.html">init_cevodata()</a></code> 
+        </dt>
+        <dd>Create new cevomod dataset object</dd>
       </dl><dl><dt>
           
           <code><a href="assays.html">add_SNV_data()</a></code> <code><a href="assays.html">add_CNV_data()</a></code> <code><a href="assays.html">SNVs()</a></code> <code><a href="assays.html">get_SNVs_wider()</a></code> <code><a href="assays.html">CNVs()</a></code> 
@@ -94,34 +79,61 @@
         <dd>Add metadata to the cevodata object</dd>
       </dl><dl><dt>
           
-          <code><a href="cnv_plots.html">plot_CNV_heatmap()</a></code> <code><a href="cnv_plots.html">heatmap_granges()</a></code> 
+          <code><a href="active_assays.html">default_SNVs()</a></code> <code><a href="active_assays.html">`default_SNVs&lt;-`()</a></code> <code><a href="active_assays.html">default_CNVs()</a></code> <code><a href="active_assays.html">`default_CNVs&lt;-`()</a></code> 
         </dt>
-        <dd>Plot CNV heatmap</dd>
+        <dd>Get/Set active assays of the cevodata object</dd>
       </dl><dl><dt>
           
-          <code><a href="colors.html">colors</a></code> 
+          <code><a href="set_cancer_type.html">set_cancer_type()</a></code> 
         </dt>
-        <dd>Some colors</dd>
+        <dd>Set cancer type for the object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="cevodata-transformations">cevodata transformations<a class="anchor" aria-label="anchor" href="#cevodata-transformations"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="filter.cevodata.html">filter(<i>&lt;cevodata&gt;</i>)</a></code> 
+        </dt>
+        <dd>Filter/subset cevodata object</dd>
       </dl><dl><dt>
           
-          <code><a href="compare_models.html">compare_models()</a></code> 
+          <code><a href="split_by.html">split_by()</a></code> 
         </dt>
-        <dd>Compare fits from many models</dd>
+        <dd>Split object</dd>
       </dl><dl><dt>
           
-          <code><a href="count_mutation_types.html">count_mutation_types()</a></code> 
+          <code><a href="merge.cevodata.html">merge(<i>&lt;cevodata&gt;</i>)</a></code> 
         </dt>
-        <dd>Get matrix of per sample mutation types for mutation signatures analysis</dd>
+        <dd>Merge two cevodata objects</dd>
       </dl><dl><dt>
           
-          <code><a href="count_mutations_by_component.html">count_mutations_by_component()</a></code> <code><a href="count_mutations_by_component.html">count_neutral_tail_mutations()</a></code> <code><a href="count_mutations_by_component.html">count_neutral_tail_filtered_mutations()</a></code> 
+          <code><a href="update.cevodata.html">update(<i>&lt;cevodata&gt;</i>)</a></code> 
         </dt>
-        <dd>Get numbers of neutral, clonal, subclonal ect variants</dd>
-      </dl><dl><dt>
+        <dd>Update cevodata object with values from another object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="other-transformations">Other transformations<a class="anchor" aria-label="anchor" href="#other-transformations"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
-          <code><a href="cumulative_tails.html">calc_cumulative_tails()</a></code> <code><a href="cumulative_tails.html">plot_cumulative_tails()</a></code> 
+          <code><a href="annotate_mutation_contexts.html">annotate_mutation_contexts()</a></code> 
         </dt>
-        <dd>Cumulative tails</dd>
+        <dd>Annotate mutation context and types for mutation signatures analysis</dd>
       </dl><dl><dt>
           
           <code><a href="cut_f_intervals.html">cut_f_intervals()</a></code> 
@@ -129,37 +141,31 @@
         <dd>Cut f or VAF into intervals</dd>
       </dl><dl><dt>
           
-          <code><a href="driver_genes.html">driver_genes</a></code> 
-        </dt>
-        <dd>Tbl of driver genes from Bailey, Ding et al. 'Comprehensive Characterization
-of Cancer Driver Genes and Mutations', Cell, 2-18
-https://doi.org/10.1016/j.cell.2018.02.060</dd>
-      </dl><dl><dt>
-          
-          <code><a href="evaluate_MC_runs.html">evaluate_MC_runs()</a></code> 
-        </dt>
-        <dd>Evaluate Monte Carlo results</dd>
-      </dl><dl><dt>
-          
-          <code><a href="evo_params.html">get_mutation_rates()</a></code> <code><a href="evo_params.html">get_selection_coefficients()</a></code> 
-        </dt>
-        <dd>Get evolutionary parameters from the model</dd>
-      </dl><dl><dt>
-          
-          <code><a href="fill_na.html">fill_na()</a></code> 
-        </dt>
-        <dd>Fill na values in the object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="filter.cevodata.html">filter(<i>&lt;cevodata&gt;</i>)</a></code> 
-        </dt>
-        <dd>Filter/subset cevodata object</dd>
-      </dl><dl><dt>
-          
           <code><a href="filter_SNVs_by_regions.html">filter_SNVs_by_regions()</a></code> 
         </dt>
         <dd>Filter SNVs by position: using regions tbl or bed file</dd>
       </dl><dl><dt>
+          
+          <code><a href="mutation_frequencies.html">calc_mutation_frequencies()</a></code> 
+        </dt>
+        <dd>Calc mutation frequencies</dd>
+      </dl><dl><dt>
+          
+          <code><a href="shuffle.html">shuffle()</a></code> 
+        </dt>
+        <dd>Shuffle order of elements in object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="model-fitting">Model fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="fit_mobster.html">fit_mobster()</a></code> 
         </dt>
@@ -171,19 +177,45 @@ https://doi.org/10.1016/j.cell.2018.02.060</dd>
         <dd>Fit subclonal distributions to neutral model residuals</dd>
       </dl><dl><dt>
           
-          <code><a href="fix_powerlaw_N_mutations.html">fix_powerlaw_N_mutations()</a></code> 
+          <code><a href="powerlaw_fixed_model.html">fit_powerlaw_tail_fixed()</a></code> <code><a href="powerlaw_fixed_model.html">layer_lm_fits()</a></code> 
         </dt>
-        <dd>Fill N_mutations column for powerlaw models</dd>
+        <dd>Fitting neutral models</dd>
       </dl><dl><dt>
           
-          <code><a href="generate_neutral_snvs.html">generate_neutral_snvs()</a></code> 
+          <code><a href="powerlaw_optim.html">fit_powerlaw_tail_optim()</a></code> 
         </dt>
-        <dd>Generate neutral SNVs</dd>
+        <dd>Fitting Tung Durrett models</dd>
       </dl><dl><dt>
           
-          <code><a href="geom_powerlaw.html">geom_powerlaw()</a></code> 
+          <code><a href="prepare_SNVs.html">prepare_SNVs()</a></code> 
         </dt>
-        <dd>Plot power-law curve</dd>
+        <dd>Prepare SNVs for analyses</dd>
+      </dl></div><div class="section level2">
+      <h2 id="getters">Getters<a class="anchor" aria-label="anchor" href="#getters"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="Mf_1f.html">calc_Mf_1f()</a></code> <code><a href="Mf_1f.html">plot_Mf_1f()</a></code> <code><a href="Mf_1f.html">get_Mf_1f()</a></code> 
+        </dt>
+        <dd>William's M(f) ~ 1/f statistics</dd>
+      </dl><dl><dt>
+          
+          <code><a href="assays.html">add_SNV_data()</a></code> <code><a href="assays.html">add_CNV_data()</a></code> <code><a href="assays.html">SNVs()</a></code> <code><a href="assays.html">get_SNVs_wider()</a></code> <code><a href="assays.html">CNVs()</a></code> 
+        </dt>
+        <dd>Get/Add SNV/CNV data from the cevodata dataset</dd>
+      </dl><dl><dt>
+          
+          <code><a href="evo_params.html">get_mutation_rates()</a></code> <code><a href="evo_params.html">get_selection_coefficients()</a></code> 
+        </dt>
+        <dd>Get evolutionary parameters from the model</dd>
       </dl><dl><dt>
           
           <code><a href="get_CNVs_var_names.html">get_CNVs_var_names()</a></code> 
@@ -221,9 +253,46 @@ https://doi.org/10.1016/j.cell.2018.02.060</dd>
         <dd>Get sample sequencing depths</dd>
       </dl><dl><dt>
           
-          <code><a href="grapes-not-in-grapes.html">`%not in%`</a></code> 
+          <code><a href="sfs.html">calc_SFS()</a></code> <code><a href="sfs.html">plot_SFS()</a></code> <code><a href="sfs.html">get_SFS()</a></code> 
         </dt>
-        <dd>Not in operator</dd>
+        <dd>Site Frequency Spectra</dd>
+      </dl></div><div class="section level2">
+      <h2 id="evolutionary-parameters">Evolutionary parameters<a class="anchor" aria-label="anchor" href="#evolutionary-parameters"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="evo_params.html">get_mutation_rates()</a></code> <code><a href="evo_params.html">get_selection_coefficients()</a></code> 
+        </dt>
+        <dd>Get evolutionary parameters from the model</dd>
+      </dl></div><div class="section level2">
+      <h2 id="visualizations">Visualizations<a class="anchor" aria-label="anchor" href="#visualizations"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="compare_models.html">compare_models()</a></code> 
+        </dt>
+        <dd>Compare fits from many models</dd>
+      </dl><dl><dt>
+          
+          <code><a href="geom_powerlaw.html">geom_powerlaw()</a></code> 
+        </dt>
+        <dd>Plot power-law curve</dd>
       </dl><dl><dt>
           
           <code><a href="hide_facet_labels.html">hide_facet_labels()</a></code> 
@@ -236,44 +305,39 @@ https://doi.org/10.1016/j.cell.2018.02.060</dd>
         <dd>Hide legend</dd>
       </dl><dl><dt>
           
-          <code><a href="identify_non_neutral_tail_mutations.html">identify_non_neutral_tail_mutations()</a></code> 
-        </dt>
-        <dd>Get selected mutations based on 2 sample models</dd>
-      </dl><dl><dt>
-          
-          <code><a href="init_cevodata.html">init_cevodata()</a></code> 
-        </dt>
-        <dd>Create new cevomod dataset object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="list_continuous_palettes.html">list_continuous_palettes()</a></code> 
-        </dt>
-        <dd>Show available palettes from paletteer</dd>
-      </dl><dl><dt>
-          
-          <code><a href="list_discrete_palettes.html">list_discrete_palettes()</a></code> 
-        </dt>
-        <dd>Show available palettes from paletteer</dd>
-      </dl><dl><dt>
-          
-          <code><a href="list_pnw_palettes.html">list_pnw_palettes()</a></code> 
-        </dt>
-        <dd>Show available palettes from PNWColorspackage</dd>
-      </dl><dl><dt>
-          
-          <code><a href="merge.cevodata.html">merge(<i>&lt;cevodata&gt;</i>)</a></code> 
-        </dt>
-        <dd>Merge two cevodata objects</dd>
-      </dl><dl><dt>
-          
-          <code><a href="mutation_frequencies.html">calc_mutation_frequencies()</a></code> 
-        </dt>
-        <dd>Calc mutation frequencies</dd>
-      </dl><dl><dt>
-          
           <code><a href="mutation_plots.html">plot_mutations()</a></code> <code><a href="mutation_plots.html">layer_mutations()</a></code> 
         </dt>
         <dd>Show mutations in particular genes</dd>
+      </dl><dl><dt>
+          
+          <code><a href="powerlaw_fixed_model.html">fit_powerlaw_tail_fixed()</a></code> <code><a href="powerlaw_fixed_model.html">layer_lm_fits()</a></code> 
+        </dt>
+        <dd>Fitting neutral models</dd>
+      </dl><dl><dt>
+          
+          <code><a href="print_palettes.html">print_palettes()</a></code> 
+        </dt>
+        <dd>Show palettes</dd>
+      </dl><dl><dt>
+          
+          <code><a href="ITH.html">plot_ITH()</a></code> <code><a href="ITH.html">plot(<i>&lt;cevo_ITH_tbl&gt;</i>)</a></code> <code><a href="ITH.html">estimate_ITH()</a></code> 
+        </dt>
+        <dd>Intratumor heterogeneity</dd>
+      </dl><dl><dt>
+          
+          <code><a href="Mf_1f.html">calc_Mf_1f()</a></code> <code><a href="Mf_1f.html">plot_Mf_1f()</a></code> <code><a href="Mf_1f.html">get_Mf_1f()</a></code> 
+        </dt>
+        <dd>William's M(f) ~ 1/f statistics</dd>
+      </dl><dl><dt>
+          
+          <code><a href="cnv_plots.html">plot_CNV_heatmap()</a></code> <code><a href="cnv_plots.html">heatmap_granges()</a></code> 
+        </dt>
+        <dd>Plot CNV heatmap</dd>
+      </dl><dl><dt>
+          
+          <code><a href="cumulative_tails.html">calc_cumulative_tails()</a></code> <code><a href="cumulative_tails.html">plot_cumulative_tails()</a></code> 
+        </dt>
+        <dd>Cumulative tails</dd>
       </dl><dl><dt>
           
           <code><a href="plot.cevo_Mf_1f_tbl.html">plot(<i>&lt;cevo_Mf_1f_tbl&gt;</i>)</a></code> 
@@ -326,44 +390,14 @@ https://doi.org/10.1016/j.cell.2018.02.060</dd>
         <dd>Plot sequencing depth of cevodata</dd>
       </dl><dl><dt>
           
-          <code><a href="powerlaw_fixed_model.html">fit_powerlaw_tail_fixed()</a></code> <code><a href="powerlaw_fixed_model.html">layer_lm_fits()</a></code> 
+          <code><a href="sfs.html">calc_SFS()</a></code> <code><a href="sfs.html">plot_SFS()</a></code> <code><a href="sfs.html">get_SFS()</a></code> 
         </dt>
-        <dd>Fitting neutral models</dd>
-      </dl><dl><dt>
-          
-          <code><a href="powerlaw_optim.html">fit_powerlaw_tail_optim()</a></code> 
-        </dt>
-        <dd>Fitting Tung Durrett models</dd>
-      </dl><dl><dt>
-          
-          <code><a href="prepare_SNVs.html">prepare_SNVs()</a></code> 
-        </dt>
-        <dd>Prepare SNVs for analyses</dd>
-      </dl><dl><dt>
-          
-          <code><a href="print_palettes.html">print_palettes()</a></code> 
-        </dt>
-        <dd>Show palettes</dd>
-      </dl><dl><dt>
-          
-          <code><a href="quick_save.html">quick_save()</a></code> <code><a href="quick_save.html">quick_load()</a></code> 
-        </dt>
-        <dd>Quick save to ~/.cevomod directory</dd>
+        <dd>Site Frequency Spectra</dd>
       </dl><dl><dt>
           
           <code><a href="rotate_x_labels.html">rotate_x_labels()</a></code> 
         </dt>
         <dd>Rotate x axix labels</dd>
-      </dl><dl><dt>
-          
-          <code><a href="run_browser.html">run_browser()</a></code> 
-        </dt>
-        <dd>Run cevobrowser app</dd>
-      </dl><dl><dt>
-          
-          <code><a href="run_cevomod.html">run_cevomod()</a></code> 
-        </dt>
-        <dd>Run cevodata pipeline</dd>
       </dl><dl><dt>
           
           <code><a href="scale_color_pnw.html">scale_color_pnw()</a></code> 
@@ -381,26 +415,6 @@ https://doi.org/10.1016/j.cell.2018.02.060</dd>
         <dd>Use PNWColors palette</dd>
       </dl><dl><dt>
           
-          <code><a href="set_cancer_type.html">set_cancer_type()</a></code> 
-        </dt>
-        <dd>Set cancer type for the object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="sfs.html">calc_SFS()</a></code> <code><a href="sfs.html">plot_SFS()</a></code> <code><a href="sfs.html">get_SFS()</a></code> 
-        </dt>
-        <dd>Site Frequency Spectra</dd>
-      </dl><dl><dt>
-          
-          <code><a href="shuffle.html">shuffle()</a></code> 
-        </dt>
-        <dd>Shuffle order of elements in object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="split_by.html">split_by()</a></code> 
-        </dt>
-        <dd>Split object</dd>
-      </dl><dl><dt>
-          
           <code><a href="stat_SFS.html">stat_SFS()</a></code> 
         </dt>
         <dd>SFS stat</dd>
@@ -409,43 +423,63 @@ https://doi.org/10.1016/j.cell.2018.02.060</dd>
           <code><a href="stat_cumulative_tail.html">stat_cumulative_tail()</a></code> 
         </dt>
         <dd>Plot Cumulative Tail</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+      <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
-          <code><a href="tcga_brca.html">tcga_brca</a></code> 
+          <code><a href="driver_genes.html">driver_genes</a></code> 
         </dt>
-        <dd>TCGA BRCA cevodata dataset</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tcga_brca_test.html">tcga_brca_test</a></code> 
-        </dt>
-        <dd>Small TCGA BRCA cevodata dataset</dd>
+        <dd>Tbl of driver genes from Bailey, Ding et al. 'Comprehensive Characterization
+of Cancer Driver Genes and Mutations', Cell, 2-18
+https://doi.org/10.1016/j.cell.2018.02.060</dd>
       </dl><dl><dt>
           
           <code><a href="test_data.html">test_data</a></code> 
         </dt>
         <dd>4 test samples</dd>
+      </dl></div><div class="section level2">
+      <h2 id="other-functions">Other functions<a class="anchor" aria-label="anchor" href="#other-functions"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="generate_neutral_snvs.html">generate_neutral_snvs()</a></code> 
+        </dt>
+        <dd>Generate neutral SNVs</dd>
       </dl><dl><dt>
           
-          <code><a href="theme_ellie.html">theme_ellie()</a></code> 
+          <code><a href="grapes-not-in-grapes.html">`%not in%`</a></code> 
         </dt>
-        <dd>Theme Ellie</dd>
+        <dd>Not in operator</dd>
       </dl><dl><dt>
           
-          <code><a href="update.cevodata.html">update(<i>&lt;cevodata&gt;</i>)</a></code> 
+          <code><a href="fill_na.html">fill_na()</a></code> 
         </dt>
-        <dd>Update cevodata object with values from another object</dd>
+        <dd>Fill na values in the object</dd>
       </dl><dl><dt>
           
-          <code><a href="variant_classification.html">variant_classification</a></code> 
+          <code><a href="fix_powerlaw_N_mutations.html">fix_powerlaw_N_mutations()</a></code> 
         </dt>
-        <dd>Custom Variant Classification</dd>
-      </dl><dl><dt>
-          
-          <code><a href="variant_classification_filter.html">variant_classification_filter()</a></code> <code><a href="variant_classification_filter.html">impact_filter()</a></code> 
-        </dt>
-        <dd>Filter mutations by variant_classification field</dd>
+        <dd>Fill N_mutations column for powerlaw models</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
