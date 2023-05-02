@@ -41,6 +41,10 @@ reference:
 - title: Getters
 - contents:
   - starts_with("get_")
+- title: Evolutionary parameters
+- contents:
+  - get_mutation_rates
+  - get_selection_coefficients
 - title: Visualizations
 - contents:
   - compare_models
