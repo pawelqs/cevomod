@@ -7,6 +7,13 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
+cevomod fits the VAF spectra with mixtures of the power-law-shaped and binomial distributions, a model proposed by [Williams et al. (2018)](https://doi.org/10.1038/ng.3489). The power-law components model the neutral component of tumor evolution, as proposed by [Williams et al. (2016)](https://doi.org/10.1038/ng.3489) and by [Durrett (2013)](https://doi.org/10.1214/11-aap824). The binomial components model the clones and subclones, whose true cellular frequencies are diluted in DNA sequencing. Model components are fitted sequentially, the power-law components are fitted first, then the binomial ones are fitted to the residuals of the power-law ones.
+
+
+
+# Power-law models
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -15,7 +22,85 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(cevomod)
+suppressPackageStartupMessages({
+  library(cevomod)
+  library(tidyverse)
+})
+
+cd <- test_data |> 
+  prepare_SNVs()
+cd
 ```
 
-Page under construction
+
+
+## Power-law components with the exponent equal to 2
+
+Under the assumptions of the exponential tumor growth, constant mutation rate, and in the absence of selectively advantageous micro-clones, the exponent of the power-law component is equal 2 ([Williams et al. (2016)](https://doi.org/10.1038/ng.3489) and [Durrett (2013)](https://doi.org/10.1214/11-aap824)). The component is described by 
+$$y(f) = \frac{\mu}{\beta n} \frac{1}{f^2}$$ 
+where $\mu/\beta$ is the mutation rate per effective cell division, and $n$ is the number of bins in the spectrum. This model can be fitted with:
+
+```{r}
+cd <- cd |> 
+  fit_powerlaw_tail_fixed(verbose = FALSE)
+
+plot_models(cd)
+```
+
+
+## Power-law components with the optimized exponent
+
+Then the assumptions of the exponential tumor growth and/or constant mutation rate are violated, or in the presence of selectively advantageous micro-clones, the power-law exponent may deviate from 2.
+The component is then described by 
+$$y(f) = \frac{\mu}{\beta n} \frac{1}{f^\alpha}$$
+where $\mu/\beta$ is the mutation rate per effective cell division, and $n$ is the number of bins in the spectrum, and $\alpha$ is a constant $\in (0, \infty$. Sample 2 is an example sample in which the model assumptions are violated. An optimized power-law model may be used to measure the sample deviation from the model assumptions: 
+
+```{r}
+cd <- cd |> 
+  fit_powerlaw_tail_optim(verbose = FALSE)
+
+plot_models(cd)
+```
+
+
+```{r}
+get_models(cd) |> 
+  select(sample_id, model, component, alpha)
+```
+
+In Sample 2, the power-law exponent equals 4, much higher than in 3 other samples. This can indicate for example the increasing tumor mutation rate.
+
+
+
+
+# Binomial components
+
+In cevomod, the binomial components for clonal and subclonal variants are fitted to the positive part of the power-law model residuals. By default, they are fitted using the [BMix](https://github.com/caravagnalab/BMix) package, although an alternative method using mclust is also available. In the default method, we randomly subsample the SNVs and Indels in each spectrum bin to the number given by the power-law component residual. Then, we employ the BMix to fit the VAF distribution of these variants with a mixture of 1 to 3 binomial distributions (clone plus subclones), accounting for the variant's sequencing depth. The best model is selected based on the Bayesian Information Criterium (BIC).
+
+
+```{r}
+cd <- fit_subclones_bmix(cd)
+
+plot_models(cd)
+```
+
+If the subclones are fitted for the power-law component with the exponent equal to 2, the evolutionary parameters can be estimated using the equations from [Williams et al. (2018)](https://doi.org/10.1038/s41588-018-0128-6). In cevomod, we use the code implemented in the [MOBSTER package](https://github.com/caravagnalab/mobster/blob/master/R/evodynamics.R) to calculate these parameters.
+
+Mutation rates can be obtained with `get_mutation_rates()`, and the selection coefficients with `get_selection_coefficients()` functions. Both functions can be run on the cevodata objects (with the correct models fitted), or on the model tibbles directly. This allows us to manually correct the model tibbles before the calculation of the evolutionary parameters.
+
+For example, one can get filter Sample 2 out from the cevodata object:
+
+```{r}
+cd <- cd |> 
+  filter(sample_id != "Sample 2") |> 
+  fit_subclones_bmix(powerlaw_model_name = "powerlaw_fixed")
+
+cd |> 
+  get_models() |> 
+  get_mutation_rates()
+
+cd |> 
+  get_models() |> 
+  get_selection_coefficients()
+```
+
