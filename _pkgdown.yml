@@ -41,6 +41,7 @@ reference:
 - title: Getters
 - contents:
   - starts_with("get_")
+  - active_models
 - title: Evolutionary parameters
 - contents:
   - get_mutation_rates
@@ -62,6 +63,7 @@ reference:
 - contents:
   - driver_genes
   - test_data
+  - test_data_fitted
 - title: Other functions
 - contents:
   - generate_neutral_snvs
@@ -78,7 +80,6 @@ reference:
     - list_continuous_palettes
     - list_discrete_palettes
     - list_pnw_palettes
-    - tcga_brca
     - tcga_brca_test
     - quick_save
     - run_browser
