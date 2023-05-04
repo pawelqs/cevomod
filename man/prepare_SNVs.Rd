@@ -4,7 +4,7 @@
 \alias{prepare_SNVs}
 \title{Prepare SNVs for analyses}
 \usage{
-prepare_SNVs(object, which = default_SNVs(object), bins = NULL)
+prepare_SNVs(object, which = default_SNVs(object), bins = NULL, verbose = TRUE)
 }
 \arguments{
 \item{object}{cevodata obj}
@@ -12,6 +12,8 @@ prepare_SNVs(object, which = default_SNVs(object), bins = NULL)
 \item{which}{which SNVs to use}
 
 \item{bins}{number of VAF interval bins}
+
+\item{verbose}{verbose?}
 }
 \description{
 Prepare SNVs for analyses

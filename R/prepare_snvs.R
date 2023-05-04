@@ -5,12 +5,14 @@
 #' @param object cevodata obj
 #' @param which which SNVs to use
 #' @param bins number of VAF interval bins
+#' @param verbose verbose?
 #' @export
-prepare_SNVs <- function(object, which = default_SNVs(object), bins = NULL) {
+prepare_SNVs <- function(object, which = default_SNVs(object), bins = NULL, verbose = TRUE) {
   snvs <- SNVs(object, which) |>
     cut_f_intervals(bins = bins)
   object |>
-    add_SNV_data(snvs, name = which)
+    add_SNV_data(snvs, name = which) |>
+    calc_SFS()
 }
 
 
