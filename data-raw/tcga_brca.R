@@ -108,7 +108,7 @@ tcga_brca_test <- tcga_brca |>
 tcga_brca_test$active_models <- "powerlaw_fixed_subclones"
 
 
-usethis::use_data(tcga_brca, overwrite = TRUE)
+# usethis::use_data(tcga_brca, overwrite = TRUE)
 usethis::use_data(tcga_brca_test, overwrite = TRUE)
 
 

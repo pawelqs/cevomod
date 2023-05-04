@@ -11,11 +11,6 @@ NULL
 #' @docType data
 NULL
 
-#' TCGA BRCA cevodata dataset
-#' @name tcga_brca
-#' @docType data
-NULL
-
 #' Small TCGA BRCA cevodata dataset
 #' @name tcga_brca_test
 #' @docType data
