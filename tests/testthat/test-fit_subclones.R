@@ -8,10 +8,15 @@ verbose <- TRUE
 
 test_that("fit_subclones() works", {
   x <- test_data |>
-    fit_powerlaw_tail_optim() |>
-    fit_subclones()
+    prepare_SNVs(verbose = FALSE) |>
+    fit_powerlaw_tail_optim(verbose = FALSE) |>
+    fit_subclones(verbose = FALSE, method = "mclust")
 
+  expect_false(
+    is.null(x$models$powerlaw_optim_subclones)
+  )
 })
+
 
 fit_binomial_models_cols <- c("N", "component", "cellularity", "N_mutations", "BIC")
 
