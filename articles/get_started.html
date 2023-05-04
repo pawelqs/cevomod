@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,7 +86,6 @@
 <div class="section level2">
 <h2 id="cevodata">cevodata<a class="anchor" aria-label="anchor" href="#cevodata"></a>
 </h2>
-<p><strong>Page under construction</strong></p>
 <p>The main data structure used by cevomod is the S3 class cevodata. The
 easiest way to prepare the object is to create an empty object using the
 <code><a href="../reference/init_cevodata.html">init_cevodata()</a></code> constructor and populate it with data using
@@ -107,16 +106,16 @@ attached artificial dataset <code>test_data</code></p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 16,000 × 11</span></span></span>
 <span><span class="co">#&gt;    sample_id chrom   pos gene_symbol ref   alt   ref_reads alt_reads   VAF</span></span>
 <span><span class="co">#&gt;  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Sample 1  chr1      1 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           61         1 0.031</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Sample 1  chr1      2 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           37        29 0.441</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Sample 1  chr1      3 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           35        28 0.446</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Sample 1  chr1      4 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           54         3 0.068</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Sample 1  chr1      5 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           25        27 0.519</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Sample 1  chr1      6 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           24        31 0.562</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Sample 1  chr1      7 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           21         1 0.082</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sample 1  chr1      8 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           22        24 0.521</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Sample 1  chr1      9 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           65         1 0.029</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Sample 1  chr1     10 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           25         6 0.211</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Sample 1  chr1      1 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           25        29 0.536</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Sample 1  chr1      2 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           22        19 0.462</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Sample 1  chr1      3 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           21        20 0.488</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Sample 1  chr1      4 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           34         2 0.078</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Sample 1  chr1      5 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           62         1 0.03 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Sample 1  chr1      6 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>            4         3 0.444</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Sample 1  chr1      7 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           33        34 0.507</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sample 1  chr1      8 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           31        30 0.483</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Sample 1  chr1      9 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           25        17 0.411</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Sample 1  chr1     10 <span style="color: #BB0000;">NA</span>          <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>           41        31 0.438</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 15,990 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: impact &lt;chr&gt;, DP &lt;int&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -191,12 +190,12 @@ using the <code>bins</code> argument.</p>
 <span><span class="co">#&gt; $ gene_symbol  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
 <span><span class="co">#&gt; $ ref          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
 <span><span class="co">#&gt; $ alt          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
-<span><span class="co">#&gt; $ ref_reads    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 61, 37, 35, 54, 25, 24, 21, 22, 65, 25, 31, 30, 58, 13, 2…</span></span>
-<span><span class="co">#&gt; $ alt_reads    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 29, 28, 3, 27, 31, 1, 24, 1, 6, 18, 33, 1, 1, 39, 30, …</span></span>
-<span><span class="co">#&gt; $ VAF          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0.031, 0.441, 0.446, 0.068, 0.519, 0.562, 0.082, 0.521, 0…</span></span>
-<span><span class="co">#&gt; $ impact       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "MODIFIER", "MODIFIER", "MODIFIER", "MODIFIER", "MODIFIER…</span></span>
-<span><span class="co">#&gt; $ VAF_interval <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "(0.0196,0.0392]", "(0.431,0.451]", "(0.431,0.451]", "(0.…</span></span>
-<span><span class="co">#&gt; $ DP           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 62, 66, 63, 57, 52, 55, 22, 46, 66, 31, 49, 63, 59, 14, 6…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ ref_reads    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 25, 22, 21, 34, 62, 4, 33, 31, 25, 41, 42, 64, 32, 29, 42…</span></span>
+<span><span class="co">#&gt; $ alt_reads    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 29, 19, 20, 2, 1, 3, 34, 30, 17, 31, 1, 1, 25, 31, 40, 1,…</span></span>
+<span><span class="co">#&gt; $ VAF          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0.536, 0.462, 0.488, 0.078, 0.030, 0.444, 0.507, 0.483, 0…</span></span>
+<span><span class="co">#&gt; $ impact       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
+<span><span class="co">#&gt; $ VAF_interval <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "(0.529,0.549]", "(0.451,0.471]", "(0.471,0.49]", "(0.058…</span></span>
+<span><span class="co">#&gt; $ DP           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 54, 41, 41, 36, 63, 7, 67, 61, 42, 72, 43, 65, 57, 60, 82…</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="model-fitting">Model fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a>
@@ -211,13 +210,22 @@ sequentially.</p>
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="va">cd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/powerlaw_fixed_model.html">fit_powerlaw_tail_fixed</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/fit_subclones.html">fit_subclones</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #5FAFD7;">Fitting binomial models</span></span></span>
+<span><span class="co">#&gt; <span style="color: #5FAFD7;">Fitting binomial models using BMix</span></span></span>
+<span><span class="co">#&gt; Warning: replacing previous import 'cli::num_ansi_colors' by</span></span>
+<span><span class="co">#&gt; 'crayon::num_ansi_colors' when loading 'BMix'</span></span>
+<span><span class="co">#&gt; Warning: replacing previous import 'crayon::%+%' by 'ggplot2::%+%' when loading</span></span>
+<span><span class="co">#&gt; 'BMix'</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Loading <span style="color: #00BB00;">BMix</span>, <span style="font-style: italic;">'Binomial and Beta-Binomial univariate mixtures'</span>. Support : <span style="color: #0000BB; font-style: italic;">&lt;https://caravagnalab.github.io/BMix/&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #5FAFD7;">Fitting williams neutral models...</span></span></span>
 <span><span class="co">#&gt; <span style="color: #5FAFD7;">Mf_1f's not calculated yet. Calculating with default bins</span></span></span>
 <span><span class="co">#&gt; <span style="color: #5FAFD7;">Calculating Williams's M(f) ~ 1/f statistics</span></span></span>
-<span><span class="co">#&gt; <span style="color: #5FAFD7;">SFS's not calculated yet. Calculating with sample DP as number of bins</span></span></span>
-<span></span>
-<span><span class="va">cd</span></span>
+<span><span class="co">#&gt; Warning: There was 1 warning in `reframe()`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> In argument: `fit_binomial_models_BMix(.data$data, N, pb, verbose)`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> In row 1.</span></span>
+<span><span class="co">#&gt; Caused by warning:</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> replacing previous import 'cli::num_ansi_colors' by 'crayon::num_ansi_colors' when loading 'easypar'</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cd</span></span>
 <span><span class="co">#&gt; <span style="color: #5F8700;">&lt;cevodata&gt; dataset: Demo data</span></span></span>
 <span><span class="co">#&gt; <span style="color: #87AF5F;">Genome: unknown</span></span></span>
 <span><span class="co">#&gt; SNV assays: snvs (default)</span></span>
@@ -226,44 +234,44 @@ sequentially.</p>
 <span><span class="co">#&gt; 16000 mutations total, 4000 +/- 0 mutations per case</span></span>
 <span><span class="co">#&gt; Active models: powerlaw_fixed_subclones</span></span></code></pre></div>
 <p>The fitted models can be listed with:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_model_names.html">get_model_names</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "powerlaw_fixed"           "powerlaw_fixed_subclones"</span></span></code></pre></div>
-<p>and the last fitted model is the active one:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cd</span><span class="op">$</span><span class="va">active_models</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_model_names.html">get_model_names</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "SFS"                      "powerlaw_fixed"          </span></span>
+<span><span class="co">#&gt; [3] "powerlaw_fixed_subclones"</span></span></code></pre></div>
+<p>and the last fitted model is the active one:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/active_models.html">active_models</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "powerlaw_fixed_subclones"</span></span></code></pre></div>
 <p>Models can be viewed with the <code><a href="../reference/get_models.html">get_models()</a></code> function:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="va">cd</span>, which <span class="op">=</span> <span class="st">"powerlaw_fixed"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 11</span></span></span>
 <span><span class="co">#&gt;   sample_id model  component  from    to length     A     b alpha rsquared best </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  power… Neutral … 0.185 0.235   0.05  42.8 <span style="text-decoration: underline;">2</span>348.     2    0.980 TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 2  power… Neutral … 0.215 0.265   0.05  25.5  299.     2    0.989 TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 3  power… Neutral … 0.285 0.335   0.05 102.   595.     2    0.982 TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4  power… Neutral … 0.265 0.315   0.05  67.4  800.     2    0.980 TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  power… Neutral … 0.045 0.095 0.05    46.6 <span style="text-decoration: underline;">2</span>339.     2    1.00  TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 2  power… Neutral … 0.235 0.285 0.050<span style="text-decoration: underline;">0</span>  17.6  358.     2    0.992 TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 3  power… Neutral … 0.285 0.335 0.050<span style="text-decoration: underline;">0</span> 104.   609.     2    0.986 TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4  power… Neutral … 0.245 0.295 0.050<span style="text-decoration: underline;">0</span>  78.8  747.     2    0.996 TRUE</span></span></code></pre></div>
 <p>The active model is returned if the <code>which</code> argument is
 left empty:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 11 × 18</span></span></span>
-<span><span class="co">#&gt;    sample_id model     component   from     to length     A     b alpha rsquared</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Sample 1  binomial… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Sample 1  binomial… Subclone… <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Sample 1  powerlaw… Neutral …  0.185  0.235   0.05  42.8 <span style="text-decoration: underline;">2</span>348.     2    0.980</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Sample 2  binomial… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Sample 2  powerlaw… Neutral …  0.215  0.265   0.05  25.5  299.     2    0.989</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Sample 3  binomial… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Sample 3  binomial… Subclone… <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sample 3  powerlaw… Neutral …  0.285  0.335   0.05 102.   595.     2    0.982</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Sample 4  binomial… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Sample 4  binomial… Subclone… <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> Sample 4  powerlaw… Neutral …  0.265  0.315   0.05  67.4  800.     2    0.980</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: best &lt;lgl&gt;, N &lt;int&gt;, cellularity &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   N_mutations &lt;dbl&gt;, BIC &lt;dbl&gt;, sequencing_DP &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   has_overlapping_clones &lt;lgl&gt;, max_BIC &lt;dbl&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 11 × 16</span></span></span>
+<span><span class="co">#&gt;    sample_id model    component   from     to  length     A     b alpha rsquared</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Sample 1  binomia… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Sample 1  powerla… Neutral …  0.045  0.095  0.05    46.6 <span style="text-decoration: underline;">2</span>339.     2    1.00 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Sample 2  binomia… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Sample 2  binomia… Subclone… <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Sample 2  powerla… Neutral …  0.235  0.285  0.050<span style="text-decoration: underline;">0</span>  17.6  358.     2    0.992</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Sample 3  binomia… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Sample 3  binomia… Subclone… <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Sample 3  powerla… Neutral …  0.285  0.335  0.050<span style="text-decoration: underline;">0</span> 104.   609.     2    0.986</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Sample 4  binomia… Clone     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Sample 4  binomia… Subclone… <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>   <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> Sample 4  powerla… Neutral …  0.245  0.295  0.050<span style="text-decoration: underline;">0</span>  78.8  747.     2    0.996</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 6 more variables: best &lt;lgl&gt;, N &lt;int&gt;, cellularity &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   N_mutations &lt;int&gt;, BIC &lt;dbl&gt;, sequencing_DP &lt;dbl&gt;</span></span></span></code></pre></div>
 <p>The tibble lists the components for all models and samples. Binomial
 components are called either the clones or the subclones. The component
 with the highest cellular frequency is called the clone, and the
@@ -277,14 +285,14 @@ evolutionary parameters for the subclones.</p>
 </h2>
 <p>The fitted models can be visualized with the
 <code><a href="../reference/plot_models.html">plot_models()</a></code> function:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_models.html">plot_models</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">sex</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>male <span class="op">=</span> <span class="st">"#DD4124"</span>, female <span class="op">=</span> <span class="st">"#00496F"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Variant Allele Frequency Spectrum"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in geom_bar(join_aes(bar_mapping, mapping), stat = "identity", alpha =</span></span>
 <span><span class="co">#&gt; alpha, : Ignoring unknown aesthetics: <span style="color: #00BB00;">width</span></span></span></code></pre></div>
-<p><img src="get_started_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p><img src="get_started_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 <p>The model fitted to sample 2 is very inaccurate. The slope of the
 distribution is too steep to be approximated by the power-law exponent
 of 2. This sample should not be fitted with the model with the fixed
@@ -312,7 +320,7 @@ the model tibbles directly. This allows us to manually correct the model
 tibbles before the calculation of the evolutionary parameters.</p>
 <p>For example, one can get filter Sample 2 out from the cevodata
 object:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op">!=</span> <span class="st">"Sample 2"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -320,21 +328,20 @@ object:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
 <span><span class="co">#&gt;   sample_id mutation_rate_williams</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1                    42.8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   102. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    67.4</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1                    46.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   104. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    78.8</span></span></code></pre></div>
 <p>or from the models tibble:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op">!=</span> <span class="st">"Sample 2"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/evo_params.html">get_selection_coefficients</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 8</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 8</span></span></span>
 <span><span class="co">#&gt;   sample_id mutation_rate_williams component  N_mutations subclone_frequency</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1                    42.8 Subclone 1          62              0.233</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   102.  Subclone 1         826              0.275</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    67.4 Subclone 1         546              0.222</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   104.  Subclone 1         785              0.231</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 4                    78.8 Subclone 1         367              0.181</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: emergence_time &lt;dbl&gt;, time_end &lt;dbl&gt;, selection &lt;dbl&gt;</span></span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

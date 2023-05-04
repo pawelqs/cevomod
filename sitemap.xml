@@ -40,6 +40,9 @@
     <loc>https://pawelqs.github.io/cevomod/reference/active_assays.html</loc>
   </url>
   <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/active_models.html</loc>
+  </url>
+  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/annotate_mutation_contexts.html</loc>
   </url>
   <url>
@@ -253,13 +256,13 @@
     <loc>https://pawelqs.github.io/cevomod/reference/stat_cumulative_tail.html</loc>
   </url>
   <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/tcga_brca.html</loc>
-  </url>
-  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/tcga_brca_test.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/test_data.html</loc>
+  </url>
+  <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/test_data_fitted.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/theme_ellie.html</loc>

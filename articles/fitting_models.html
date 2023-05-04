@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -126,7 +126,6 @@ the number of bins in the spectrum. This model can be fitted with:</p>
 <span>  <span class="fu"><a href="../reference/powerlaw_fixed_model.html">fit_powerlaw_tail_fixed</a></span><span class="op">(</span>verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #5FAFD7;">Mf_1f's not calculated yet. Calculating with default bins</span></span></span>
 <span><span class="co">#&gt; <span style="color: #5FAFD7;">Calculating Williams's M(f) ~ 1/f statistics</span></span></span>
-<span><span class="co">#&gt; <span style="color: #5FAFD7;">SFS's not calculated yet. Calculating with sample DP as number of bins</span></span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_models.html">plot_models</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in geom_bar(join_aes(bar_mapping, mapping), stat = "identity", alpha =</span></span>
@@ -149,8 +148,6 @@ model assumptions:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="va">cd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/powerlaw_optim.html">fit_powerlaw_tail_optim</a></span><span class="op">(</span>verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #5FAFD7;">SFS's not calculated yet. Calculating with sample DP as number of bins</span></span></span>
-<span><span class="co">#&gt; <span style="color: #5FAFD7;">SFS's not calculated yet. Calculating with sample DP as number of bins</span></span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_models.html">plot_models</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in geom_bar(join_aes(bar_mapping, mapping), stat = "identity", alpha =</span></span>
@@ -163,9 +160,9 @@ model assumptions:</p>
 <span><span class="co">#&gt;   sample_id model          component     alpha</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  powerlaw_optim powerlaw tail  1.88</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 2  powerlaw_optim powerlaw tail  4.06</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 3  powerlaw_optim powerlaw tail  2.09</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4  powerlaw_optim powerlaw tail  1.94</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 2  powerlaw_optim powerlaw tail  3.49</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 3  powerlaw_optim powerlaw tail  2.02</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4  powerlaw_optim powerlaw tail  1.86</span></span></code></pre></div>
 <p>In Sample 2, the power-law exponent equals 4, much higher than in 3
 other samples. This can indicate for example the increasing tumor
 mutation rate.</p>
@@ -186,12 +183,12 @@ variant’s sequencing depth. The best model is selected based on the
 Bayesian Information Criterium (BIC).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_subclones.html">fit_subclones_bmix</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #5FAFD7;">Fitting binomial models using BMix</span></span></span>
 <span><span class="co">#&gt; Warning: replacing previous import 'cli::num_ansi_colors' by</span></span>
 <span><span class="co">#&gt; 'crayon::num_ansi_colors' when loading 'BMix'</span></span>
 <span><span class="co">#&gt; Warning: replacing previous import 'crayon::%+%' by 'ggplot2::%+%' when loading</span></span>
 <span><span class="co">#&gt; 'BMix'</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Loading <span style="color: #00BB00;">BMix</span>, <span style="font-style: italic;">'Binomial and Beta-Binomial univariate mixtures'</span>. Support : <span style="color: #0000BB; font-style: italic;">&lt;https://caravagnalab.github.io/BMix/&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #5FAFD7;">Fitting binomial models using BMix</span></span></span>
 <span><span class="co">#&gt; Warning: There was 1 warning in `reframe()`.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> In argument: `fit_binomial_models_BMix(.data$data, N, pb, verbose)`.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> In row 1.</span></span>
@@ -227,9 +224,9 @@ object:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
 <span><span class="co">#&gt;   sample_id mutation_rate_williams</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1                    42.8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   102. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    67.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1                    46.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   104. </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    78.8</span></span>
 <span></span>
 <span><span class="va">cd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -237,8 +234,8 @@ object:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 8</span></span></span>
 <span><span class="co">#&gt;   sample_id mutation_rate_williams component  N_mutations subclone_frequency</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   102.  Subclone 1         833              0.235</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 4                    67.4 Subclone 1         553              0.158</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   104.  Subclone 1         785              0.234</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 4                    78.8 Subclone 1         367              0.180</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: emergence_time &lt;dbl&gt;, time_end &lt;dbl&gt;, selection &lt;dbl&gt;</span></span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
