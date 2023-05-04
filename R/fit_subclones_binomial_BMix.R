@@ -16,14 +16,14 @@ fit_subclones_bmix <- function(object,
     filter(.data$VAF >= 0)
 
   # necessary, since BMix does not return this parameter
-  sequencing_depth <- SNVs(object) |>
+  sequencing_depth <- SNVs(object, which = snvs_name) |>
     get_local_sequencing_depths() |>
     transmute(.data$sample_id, .data$VAF, sequencing_DP = .data$median_DP)
 
   non_neutral_tail_mut_counts <- residuals |>
     mutate(n = if_else(.data$VAF > upper_VAF_limit, 0, round(.data$powerlaw_resid_clones))) |>
     select("sample_id", "VAF_interval", "n")
-  snvs_to_cluster <- SNVs(object) |>
+  snvs_to_cluster <- SNVs(object, which = snvs_name) |>
     nest_by(.data$sample_id, .data$VAF_interval) |>
     inner_join(non_neutral_tail_mut_counts, by = c("sample_id", "VAF_interval")) |>
     reframe(

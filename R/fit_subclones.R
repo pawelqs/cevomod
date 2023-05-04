@@ -36,3 +36,64 @@ fit_subclones <- function(object,
 
   object
 }
+
+
+get_binomial_predictions <- function(clones, VAFs) {
+  clones_predictions <- clones |>
+    pmap(get_binomial_distribution) |>
+    map(rebinarize_distribution, VAFs = VAFs$VAF) |>
+    map("pred") |>
+    set_names(clones$component) |>
+    bind_cols()
+  res <- bind_cols(
+    VAFs,
+    clones_predictions,
+    binom_pred = rowSums(clones_predictions)
+  )
+}
+
+
+get_binomial_distribution <- function(cellularity, N_mutations, sequencing_DP, ...) {
+  i <- 0:round(sequencing_DP)
+  tibble(
+    VAF = i / sequencing_DP,
+    pred = N_mutations * stats::dbinom(i, round(sequencing_DP), cellularity)
+  )
+}
+
+
+rebinarize_distribution <- function(distribution, n_bins = NULL, VAFs = NULL) {
+  if (is.null(n_bins) == is.null(VAFs)) {
+    stop("Provide n_bins OR VAFs")
+  }
+  new_VAFs <- if (is.null(VAFs)) (1:n_bins) / n_bins else VAFs
+  original_VAFs <- distribution$VAF
+  distribution$VAF <- NULL
+
+  new_distributions <- distribution |>
+    map_dfc(~ stats::approx(original_VAFs, .x, xout = new_VAFs, rule = 2)$y)
+  scaling_factors <- map2(new_distributions, distribution, ~ sum(.x) / sum(.y))
+  rescaled_distributions <- map2_dfc(new_distributions, scaling_factors, ~ .x / .y)
+
+  rescaled_distributions |>
+    mutate(VAF = new_VAFs) |>
+    select("VAF", everything())
+}
+
+
+were_subclonal_models_fitted <- function(object, ...) {
+  models <- get_models(object)
+  expect_colnames <- c("N", "cellularity", "N_mutations")
+  all(expect_colnames %in% colnames(models))
+}
+
+
+empty_clones_tibble <- function() {
+  tibble(
+    N = integer(),
+    component = character(),
+    cellularity = double(),
+    N_mutations = double(),
+    BIC = double()
+  )
+}
