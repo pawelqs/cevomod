@@ -5,6 +5,14 @@ powerlaw_model_name <- "powerlaw_fixed"
 upper_VAF_limit <- 0.75
 verbose <- TRUE
 
+
+test_that("fit_subclones() works", {
+  x <- test_data |>
+    fit_powerlaw_tail_optim() |>
+    fit_subclones()
+
+})
+
 fit_binomial_models_cols <- c("N", "component", "cellularity", "N_mutations", "BIC")
 
 test_that("fit_binomial_models() works with very few remaining mutations", {
