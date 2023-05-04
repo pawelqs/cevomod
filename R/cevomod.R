@@ -22,6 +22,12 @@ NULL
 NULL
 
 
+#' cevomod results for 4 test samples
+#' @name test_data_fitted
+#' @docType data
+NULL
+
+
 #' Run cevodata pipeline
 #' @param object cevodata object
 #' @param ... other args
