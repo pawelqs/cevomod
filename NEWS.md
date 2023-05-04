@@ -1,34 +1,11 @@
-# cevomod 0.6.x
+# cevomod 1.0.x
 
-* **v0.6.0**  fitting subclones using BMix
+## cevomod 1.0.0
 
-# cevomod 0.5.x
+* cevodata class implementation
+* fitting the power-law tails with exponent equal to 2 using $M(f) \sim 1/f$ statistic
+* fitting the power-law tails with optimized exponent
+* fitting subclones using mclust
+* fitting subclones using BMix
+* calculation of the evolutionary parameters using the [Williams et al. (2018)](https://doi.org/10.1038/s41588-018-0128-6) equations and the [MOBSTER code](https://github.com/caravagnalab/mobster/blob/master/R/evodynamics.R) [(Caravagna et al. (2020))](https://doi.org/10.1038/s41588-020-0675-5)
 
-* **v0.5.0** 
-  - fitting Tung-Durrett models implemented
-  - compare_models() implemented
-  - Full Williams code for esitmation of selection coefficients included
-
-# cevomod 0.4.x
-
-* **v0.4.0** calculation of mutation rates and selection coefficients by Williams
-  implemented
-
-# cevomod 0.3.x
-
-* **v0.3.0**
-  - Residuals plotting done
-  - shiny app for browsing results implemented
-* **v0.3.5** experimental models joining
-
-
-# cevomod 0.2.0
-
-* Binomial model fitting and plotting v1
-
-
-# cevomod 0.1.0
-
-* Neutral  model fitting and plotting v1
-* cevodata class implemented
-* Added a `NEWS.md` file to track changes to the package.
