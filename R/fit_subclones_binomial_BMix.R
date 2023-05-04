@@ -1,20 +1,21 @@
 
 #' @describeIn fit_subclones Fit subclonal distributions to neutral model residuals using BMix
-#' @param snvs_name which snvs to to use?
 #' @export
 fit_subclones_bmix <- function(object,
                                N = 1:3,
-                               snvs_name = default_SNVs(object),
                                powerlaw_model_name = active_models(object),
+                               snvs_name = default_SNVs(object),
                                upper_VAF_limit = 0.75,
                                verbose = TRUE) {
-  rlang::check_installed("BMix", reason = "to fit subclomes using BMix")
   msg("Fitting binomial models using BMix", verbose = verbose)
+
+  rlang::check_installed("BMix", reason = "to fit subclomes using BMix")
 
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
   residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
     filter(.data$VAF >= 0)
-  # necessary, sinceBMix does not return this parameter
+
+  # necessary, since BMix does not return this parameter
   sequencing_depth <- SNVs(object) |>
     get_local_sequencing_depths() |>
     transmute(.data$sample_id, .data$VAF, sequencing_DP = .data$median_DP)

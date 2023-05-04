@@ -1,30 +1,20 @@
 
-#' Fit subclonal distributions to neutral model residuals
-#'
-#' @param object object
-#' @param N vector of numbers of clones to test
-#' @param powerlaw_model_name residual of which powerlaw model to use?
-#'   powerlaw_fixed/powerlaw_optim
-#' @param upper_VAF_limit ignore variants with f higher than
-#' @param verbose verbose?
-#' @name fit_subclones
-NULL
 
-
-#' @rdname fit_subclones
+#' @describeIn fit_subclones Fit subclonal distributions to neutral model residuals using mclust
 #' @export
-fit_subclones <- function(object,
-                          N = 1:3,
-                          powerlaw_model_name = active_models(object),
-                          upper_VAF_limit = 0.75,
-                          verbose = TRUE) {
-  msg("Fitting binomial models", verbose = verbose)
+fit_subclones_mclust <- function(object,
+                                 N = 1:3,
+                                 powerlaw_model_name = active_models(object),
+                                 snvs_name = default_SNVs(object),
+                                 upper_VAF_limit = 0.75,
+                                 verbose = TRUE) {
+  msg("Fitting binomial models using mclust", verbose = verbose)
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
 
   residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
     filter(.data$VAF >= 0)
 
-  sequencing_depths <- SNVs(object) |>
+  sequencing_depths <- SNVs(object, which = snvs_name) |>
     get_local_sequencing_depths() |>
     transmute(.data$sample_id, .data$VAF, sequencing_DP = .data$median_DP)
 
