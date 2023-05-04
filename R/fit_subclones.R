@@ -1,6 +1,7 @@
 
 
-#' Fit subclonal distributions to neutral model residuals
+#' Fit clonal and subclonal components of the model to the residuals of the
+#' power-law model
 #'
 #' @param object object
 #' @param N numbers of clones to for models
