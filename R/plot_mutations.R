@@ -136,7 +136,7 @@ layer_mutations <- function(object,
       ggrepel::geom_label_repel(
         aes(x = .data$VAF, shape = .data[[shape]], label = .data$gene_symbol),
         data = dt %>%
-          filter_SNVs(genes = NULL, drivers) %>%
+          filter_SNVs(genes, drivers) %>%
           filter_fun(),
         y = 0,
         size = size,
