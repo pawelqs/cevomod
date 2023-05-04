@@ -1,6 +1,6 @@
 Package: cevomod
 Title: Cancer Evolution Models
-Version: 0.9.0
+Version: 1.0.0
 Authors@R: 
     person("Paweł", "Kuś", , "kpawel2210@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4367-9821"))
@@ -15,21 +15,21 @@ Suggests:
     circlize,
     ComplexHeatmap,
     GenomicRanges,
+    ggrepel,
     grid,
+    mobster,
+    mutSignatures,
     neutralitytestr,
     knitr,
     patchwork,
+    pheatmap,
     rmarkdown,
-    testthat (>= 3.0.0),
-    tidyverse,
-    vdiffr,
     shiny,
     shinydashboard,
     shinyWidgets,
-    ggrepel,
-    pheatmap,
-    mobster,
-    mutSignatures
+    testthat (>= 3.0.0),
+    tidyverse,
+    vdiffr
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 

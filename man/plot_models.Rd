@@ -10,10 +10,10 @@ plot_models(object, ...)
 \method{plot_models}{cevodata}(
   object,
   models_name = active_models(object),
-  neutral_tail = TRUE,
-  binomial_layer = FALSE,
-  subclones = TRUE,
-  final_fit = TRUE,
+  show_neutral_tail = TRUE,
+  show_binomial_layer = FALSE,
+  show_subclones = TRUE,
+  show_final_fit = TRUE,
   neutral_tail_alpha = 0.3,
   neutral_tail_size = 0.5,
   neutral_tail_fill = "white",
@@ -33,13 +33,13 @@ plot_models(object, ...)
 
 \item{models_name}{models name}
 
-\item{neutral_tail}{TRUE,}
+\item{show_neutral_tail}{TRUE,}
 
-\item{binomial_layer}{FALSE,}
+\item{show_binomial_layer}{FALSE,}
 
-\item{subclones}{TRUE,}
+\item{show_subclones}{TRUE,}
 
-\item{final_fit}{TRUE,}
+\item{show_final_fit}{TRUE,}
 
 \item{neutral_tail_alpha}{0.3}
 

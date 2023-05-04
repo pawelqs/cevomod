@@ -7,8 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
 **Page under construction**
+
+Number of visualization methods were implemented in cevomod.
 
 
 ```{r, include = FALSE}
@@ -24,12 +25,29 @@ suppressPackageStartupMessages({
   library(tidyverse)
 })
 
+theme_set(theme_minimal())
+
 cd <- test_data
 cd
 ```
 
 
-# VAF spectra
+# Data overview
+
+
+## Sequencing depth
+
+```{r}
+plot_sequencing_depth(cd)
+```
+
+
+# VAF distributions
+
+
+## VAF spectra
+
+VAF spectrum is a histogram of the Variant Allele Frequencies, the most straightforward representation of the VAF distribution. It is a base plot for cevomod model representations.
 
 ```{r}
 plot_SFS(cd) +
@@ -46,41 +64,70 @@ plot_SFS(cd, geom = "line") +
   theme_minimal()
 ```
 
-# Cumulative tails
+## Cumulative tails
+
+Cumulative tails show the number of mutations with a frequency higher than f (x-axis). It uses the log-log scale by default, in which the power-law tail with $\alpha$ equal to 2 is a straight line.
 
 ```{r, fig.width=7, fig.height=5}
 plot_cumulative_tails(cd, size = 0.5, scale_y = FALSE)
 ```
 
-# M(f) ~ 1/f
+## M(f) ~ 1/f
+
+$$M(f) \sim \frac{1}{f}$$ statistic was described by [Williams et al. (2016)](https://doi.org/10.1038/ng.3489). In this representation, the power-law tail with $\alpha$ equal to 2 is a straight line. 
 
 ```{r}
 plot_Mf_1f(cd)
 ```
 
-# VAF spectra with mutation annotation
+# Mutations
 
-```{r}
+Drier mutations can be easily annotated on the VAF plots using the layer_mutations() function. By default, only the mutations with HIGH or MODERATE impact are annotated, but a custom filtering function can be applied with the `filter` argument.
+
+```{r, fig.width=10, fig.height=6}
 plot_SFS(cd) +
   layer_mutations(cd, drivers = "BRCA")
-# 
-# plot_SFS(tcga_brca_test) +
-#   layer_mutations(tcga_brca_test, drivers = "BRCA", shape = "impact")
 ```
 
-# Mutation plots
+Also, custom list of genes can be provided with the `genes` argument:
+
+```{r, fig.width=10, fig.height=6}
+plot_SFS(cd) +
+  layer_mutations(cd, genes = c("TP53", "BRCA1"))
+```
+
+## Mutation plots
+
+Mutations in many genes of interest can be plotted with `plot_mutations()`:
 
 ```{r}
 plot_mutations(cd, drivers = "BRCA")
 ```
 
-# Plot models
+# Models
+
+Active models can be plotted with `plot_models()`
 
 ```{r}
-cd |> 
-  fit_powerlaw_tail_optim() |> 
-  fit_subclones() |> 
+test_data_fitted |> 
+  plot_models()
+```
+
+The plots can be ealisy customized:
+
+```{r}
+test_data_fitted |> 
   plot_models() +
+  aes(fill = sex) +
+  scale_fill_manual(values = c(male = "#DD4124", female = "#00496F")) +
+  labs(title = "Models")
+```
+
+And the model components can be shown or hidden with `show_` arguments
+
+```{r}
+test_data_fitted |> 
+  plot_models(show_subclones = FALSE) +
   aes(fill = sex) +
   scale_fill_manual(values = c(male = "#DD4124", female = "#00496F")) +
   labs(title = "Models")

@@ -1,30 +1,20 @@
 
-#' Fit subclonal distributions to neutral model residuals
-#'
-#' @param object object
-#' @param N vector of numbers of clones to test
-#' @param powerlaw_model_name residual of which powerlaw model to use?
-#'   powerlaw_fixed/powerlaw_optim
-#' @param upper_VAF_limit ignore variants with f higher than
-#' @param verbose verbose?
-#' @name fit_subclones
-NULL
 
-
-#' @rdname fit_subclones
+#' @describeIn fit_subclones Fit subclonal distributions to neutral model residuals using mclust
 #' @export
-fit_subclones <- function(object,
-                          N = 1:3,
-                          powerlaw_model_name = active_models(object),
-                          upper_VAF_limit = 0.75,
-                          verbose = TRUE) {
-  msg("Fitting binomial models", verbose = verbose)
+fit_subclones_mclust <- function(object,
+                                 N = 1:3,
+                                 powerlaw_model_name = active_models(object),
+                                 snvs_name = default_SNVs(object),
+                                 upper_VAF_limit = 0.75,
+                                 verbose = TRUE) {
+  msg("Fitting binomial models using mclust", verbose = verbose)
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
 
   residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
     filter(.data$VAF >= 0)
 
-  sequencing_depths <- SNVs(object) |>
+  sequencing_depths <- SNVs(object, which = snvs_name) |>
     get_local_sequencing_depths() |>
     transmute(.data$sample_id, .data$VAF, sequencing_DP = .data$median_DP)
 
@@ -119,17 +109,6 @@ mclust_to_clones_tbl <- function(mclust_model, n_mutations) {
 }
 
 
-empty_clones_tibble <- function() {
-  tibble(
-    N = integer(),
-    component = character(),
-    cellularity = double(),
-    N_mutations = double(),
-    BIC = double()
-  )
-}
-
-
 evaluate_binomial_models <- function(models) {
   models <- models |>
     nest_by(.data$sample_id, .data$model, .data$N) |>
@@ -162,62 +141,3 @@ any_binomial_distibutions_correlate <- function(clones) {
   any(x > 0.5)
 }
 
-
-get_binomial_predictions <- function(clones, VAFs) {
-  clones_predictions <- clones |>
-    pmap(get_binomial_distribution) |>
-    map(rebinarize_distribution, VAFs = VAFs$VAF) |>
-    map("pred") |>
-    set_names(clones$component) |>
-    bind_cols()
-  res <- bind_cols(
-    VAFs,
-    clones_predictions,
-    binom_pred = rowSums(clones_predictions)
-  )
-}
-
-
-get_binomial_distribution <- function(cellularity, N_mutations, sequencing_DP, ...) {
-  i <- 0:round(sequencing_DP)
-  tibble(
-    VAF = i / sequencing_DP,
-    pred = N_mutations * stats::dbinom(i, round(sequencing_DP), cellularity)
-  )
-}
-
-
-rebinarize_distribution <- function(distribution, n_bins = NULL, VAFs = NULL) {
-  if (is.null(n_bins) == is.null(VAFs)) {
-    stop("Provide n_bins OR VAFs")
-  }
-  new_VAFs <- if (is.null(VAFs)) (1:n_bins) / n_bins else VAFs
-  original_VAFs <- distribution$VAF
-  distribution$VAF <- NULL
-
-  new_distributions <- distribution |>
-    map_dfc(~ stats::approx(original_VAFs, .x, xout = new_VAFs, rule = 2)$y)
-  scaling_factors <- map2(new_distributions, distribution, ~ sum(.x) / sum(.y))
-  rescaled_distributions <- map2_dfc(new_distributions, scaling_factors, ~ .x / .y)
-
-  rescaled_distributions |>
-    mutate(VAF = new_VAFs) |>
-    select("VAF", everything())
-}
-
-
-# predict_binomial_distribution <- function(Ns, means) {
-#   tibble(
-#     i = 1:100,
-#     VAF = .data$i/100,
-#     binom_pred = map2(unlist(Ns), unlist(means), ~.x * dbinom(.data$i, 100, .y)) |>
-#       reduce(`+`)
-#   )
-# }
-
-
-were_subclonal_models_fitted <- function(object, ...) {
-  models <- get_models(object)
-  expect_colnames <- c("N", "cellularity", "N_mutations")
-  all(expect_colnames %in% colnames(models))
-}

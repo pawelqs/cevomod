@@ -2,10 +2,10 @@
 #' Plot cevodata models
 #' @param object cevodata object
 #' @param models_name models name
-#' @param neutral_tail TRUE,
-#' @param binomial_layer FALSE,
-#' @param subclones TRUE,
-#' @param final_fit TRUE,
+#' @param show_neutral_tail TRUE,
+#' @param show_binomial_layer FALSE,
+#' @param show_subclones TRUE,
+#' @param show_final_fit TRUE,
 #' @param ... other arguments passed to plot_SFS()
 #' @name plot_models
 
@@ -30,10 +30,10 @@ plot_models <- function(object, ...) {
 #' @export
 plot_models.cevodata <- function(object,
                                  models_name = active_models(object),
-                                 neutral_tail = TRUE,
-                                 binomial_layer = FALSE,
-                                 subclones = TRUE,
-                                 final_fit = TRUE,
+                                 show_neutral_tail = TRUE,
+                                 show_binomial_layer = FALSE,
+                                 show_subclones = TRUE,
+                                 show_final_fit = TRUE,
                                  neutral_tail_alpha = 0.3,
                                  neutral_tail_size = 0.5,
                                  neutral_tail_fill = "white",
@@ -63,7 +63,7 @@ plot_models.cevodata <- function(object,
     ungroup()
 
   model_layers <- list(
-    if (neutral_tail && neutral_lm_fitted) {
+    if (show_neutral_tail && neutral_lm_fitted) {
       geom_area(
         aes(.data$VAF, .data$powerlaw_pred),
         data = resid,
@@ -73,14 +73,14 @@ plot_models.cevodata <- function(object,
         stat = "identity"
       )
     },
-    if (binomial_layer && subclones_fitted) {
+    if (show_binomial_layer && subclones_fitted) {
       geom_line(
         aes(.data$VAF, .data$binom_pred),
         data = resid,
         size = 1, color = binomial_layer_color, linetype = "dashed"
       )
     },
-    if (subclones && subclones_fitted) {
+    if (show_subclones && subclones_fitted) {
       dt <- resid |>
         pivot_longer(
           cols = c("Clone", starts_with("Subclone")),
@@ -95,7 +95,7 @@ plot_models.cevodata <- function(object,
         size = 1, alpha = 0.3, color = "black", show.legend = FALSE
       )
     },
-    if (final_fit && neutral_lm_fitted && subclones_fitted) {
+    if (show_final_fit && neutral_lm_fitted && subclones_fitted) {
       geom_line(
         aes(.data$VAF, .data$model_pred),
         data = resid |> filter(.data$powerlaw_pred < .data$ylim),

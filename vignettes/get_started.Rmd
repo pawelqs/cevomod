@@ -9,8 +9,6 @@ vignette: >
 
 # cevodata
 
-**Page under construction**
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -87,7 +85,10 @@ In this example, we first fit the power-law model with an exponent of 2, and the
 cd <- cd |> 
   fit_powerlaw_tail_fixed() |> 
   fit_subclones()
+```
 
+
+```{r}
 cd
 ```
 
@@ -100,7 +101,7 @@ get_model_names(cd)
 and the last fitted model is the active one:
 
 ```{r}
-cd$active_models
+active_models(cd)
 ```
 
 Models can be viewed with the `get_models()` function:

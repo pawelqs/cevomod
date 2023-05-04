@@ -197,7 +197,10 @@ get_powerlaw_models <- function(object,
 }
 
 
-active_models <- function(object, ...) {
+#' Get the name of the active models
+#' @param object cebodata object
+#' @export
+active_models <- function(object) {
   if (is.null(object$active_models) | length(object$models) == 0) {
     stop("No models has been fitted yet!")
   }

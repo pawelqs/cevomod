@@ -46,7 +46,7 @@ Fits a \emph{neutral} model with the power-law exponent equal:
 where \eqn{ \mu/\beta } is the mutation rate per effective cell division, and
 n is the number of bins in the spectrum. The power-law exponent of this
 model equals 2, as expected by
-\href{https://doi.org/10.1038/ng.3489}{Williams et al. (2018)} and
+\href{https://doi.org/10.1038/ng.3489}{Williams et al. (2016)} and
 \href{https://doi.org/10.1214/11-aap824}{Durrett (2013)}.
 This model is valid under the assumptions of exponential population growth,
 constant mutation rate, and absence of selectively advantageous micro-clones

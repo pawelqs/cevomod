@@ -1,28 +1,29 @@
 
 #' @describeIn fit_subclones Fit subclonal distributions to neutral model residuals using BMix
-#' @param snvs_name which snvs to to use?
 #' @export
 fit_subclones_bmix <- function(object,
                                N = 1:3,
-                               snvs_name = default_SNVs(object),
                                powerlaw_model_name = active_models(object),
+                               snvs_name = default_SNVs(object),
                                upper_VAF_limit = 0.75,
                                verbose = TRUE) {
-  rlang::check_installed("BMix", reason = "to fit subclomes using BMix")
   msg("Fitting binomial models using BMix", verbose = verbose)
+
+  rlang::check_installed("BMix", reason = "to fit subclomes using BMix")
 
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
   residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
     filter(.data$VAF >= 0)
-  # necessary, sinceBMix does not return this parameter
-  sequencing_depth <- SNVs(object) |>
+
+  # necessary, since BMix does not return this parameter
+  sequencing_depth <- SNVs(object, which = snvs_name) |>
     get_local_sequencing_depths() |>
     transmute(.data$sample_id, .data$VAF, sequencing_DP = .data$median_DP)
 
   non_neutral_tail_mut_counts <- residuals |>
     mutate(n = if_else(.data$VAF > upper_VAF_limit, 0, round(.data$powerlaw_resid_clones))) |>
     select("sample_id", "VAF_interval", "n")
-  snvs_to_cluster <- SNVs(object) |>
+  snvs_to_cluster <- SNVs(object, which = snvs_name) |>
     nest_by(.data$sample_id, .data$VAF_interval) |>
     inner_join(non_neutral_tail_mut_counts, by = c("sample_id", "VAF_interval")) |>
     reframe(

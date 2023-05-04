@@ -11,11 +11,6 @@ NULL
 #' @docType data
 NULL
 
-#' TCGA BRCA cevodata dataset
-#' @name tcga_brca
-#' @docType data
-NULL
-
 #' Small TCGA BRCA cevodata dataset
 #' @name tcga_brca_test
 #' @docType data
@@ -23,6 +18,12 @@ NULL
 
 #' 4 test samples
 #' @name test_data
+#' @docType data
+NULL
+
+
+#' cevomod results for 4 test samples
+#' @name test_data_fitted
 #' @docType data
 NULL
 
