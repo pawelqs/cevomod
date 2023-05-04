@@ -5,7 +5,8 @@
 \alias{fit_subclones}
 \alias{fit_subclones_bmix}
 \alias{fit_subclones_mclust}
-\title{Fit subclonal distributions to neutral model residuals}
+\title{Fit clonal and subclonal components of the model to the residuals of the
+power-law model}
 \usage{
 fit_subclones(
   object,
@@ -54,7 +55,8 @@ and usually fast enough.}
 \item{verbose}{verbose?}
 }
 \description{
-Fit subclonal distributions to neutral model residuals
+Fit clonal and subclonal components of the model to the residuals of the
+power-law model
 }
 \section{Functions}{
 \itemize{
