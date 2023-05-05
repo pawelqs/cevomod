@@ -124,8 +124,8 @@ add_CNV_data.cevodata <- function(object, cnvs, name = NULL, ...) {
 
 validate_CNVs <- function(cnvs) {
   required_cols <- c(
-    "sample_id", "chrom", "start", "end",
-    "log_ratio", "BAF", "total_cn", "major_cn", "minor_cn"
+    "sample_id", "chrom", "start", "end"
+    # "log_ratio", "BAF", "total_cn", "major_cn", "minor_cn"
   )
   missing_cols <- setdiff(required_cols, names(cnvs))
   if (length(missing_cols)) {
