@@ -95,14 +95,17 @@ get_clip_purities <- function(cd, purity_column = "purity") {
 
 
 save_clip_files <- function(clip_data, out_dir) {
+  if (!dir.exists(out_dir)) {
+    dir.create(out_dir)
+  }
   imap(
     clip_data,
     function(x, sample_id) {
-      write_tsv(x$snvs, file.path(out_dir, str_c(sample_id, "snv.tsv")))
-      write_tsv(x$cnvs, file.path(out_dir, str_c(sample_id, "cnv.tsv")))
-      write_tsv(
+      write_tsv(x$snvs, file.path(out_dir, str_c(sample_id, ".snv.tsv")))
+      write_tsv(x$cnvs, file.path(out_dir, str_c(sample_id, ".cnv.tsv")))
+      write_file(
         as.character(x$purities),
-        file.path(out_dir, str_c(sample_id, "purity.tsv"))
+        file.path(out_dir, str_c(sample_id, ".purity.tsv"))
       )
     }
   )
