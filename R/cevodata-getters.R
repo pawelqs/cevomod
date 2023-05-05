@@ -265,7 +265,6 @@ get_CNVs_var_names.cevodata <- function(object, which = default_CNVs(object), ..
 }
 
 
-
 get_patients_data <- function(metadata) {
   patient_data_cols <- metadata |>
     group_by(.data$patient_id) |>
@@ -275,4 +274,9 @@ get_patients_data <- function(metadata) {
     names()
   metadata |>
     select("patient_id", all_of(patient_data_cols))
+}
+
+
+get_sample_ids <- function(cd) {
+  cd$metadata$sample_id
 }

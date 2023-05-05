@@ -1,0 +1,111 @@
+
+
+## ------------------------------ CliP --------------------------------
+
+#' Export cevodata to CliP input
+#'
+#' [CliP](https://github.com/wwylab/CliP) is an algorithm for clonal structure
+#' identification through penalizing pairwise differences by Wenyi Wang Lab
+#' at MD Anderson Cancer Center in Houston.
+#'
+#' @param cd cevodata object
+#' @param out_dir Directory where to save files. List of items is returned if
+#'   out_dir is NULL
+#' @param snvs_name name of the snvs to use
+#' @param cnvs_name name of the cnvs to use
+#' @param purity_column name of the metadata column with the purity estimates
+#'   to be used
+#' @export
+to_clip <- function(cd, out_dir = NULL,
+                    snvs_name = default_SNVs(cd),
+                    cnvs_name = default_CNVs(cd),
+                    purity_column = "purity") {
+  snvs <- get_clip_snvs(cd, snvs_name)
+  cnvs <- get_clip_cnvs(cd, cnvs_name)
+  purities <- get_clip_purities(cd, purity_column)
+
+  clip_data <- lst(snvs, cnvs, purities) |>
+    transpose()
+
+  if (is.null(out_dir)) {
+    clip_data
+  } else {
+    save_clip_files(clip_data, out_dir)
+  }
+}
+
+
+
+get_clip_snvs <- function(cd, snvs_name = default_SNVs(cd)) {
+  empty_clip_snvs <- tibble(
+    chromosome_index = double(),
+    position = integer(),
+    alt_count = integer(),
+    ref_count = integer()
+  )
+
+  SNVs(cd, which = snvs_name) |>
+    transmute(
+      sample_id = parse_factor(.data$sample_id, levels = get_sample_ids(cd)),
+      chromosome_index = chromosomes_to_int(.data$chrom),
+      position = .data$pos,
+      alt_count = .data$alt_reads,
+      ref_count = .data$ref_reads
+    ) |>
+    nest_by(.data$sample_id) |>
+    complete(.data$sample_id, fill = list(data = list(empty_clip_snvs))) |>
+    deframe()
+}
+
+
+
+get_clip_cnvs <- function(cd, cnvs_name = default_CNVs(cd)) {
+  empty_clip_cnvs <- tibble(
+    chromosome_index = double(),
+    start_position = double(),
+    end_position = double(),
+    major_cn = double(),
+    minor_cn = double(),
+    total_cn = double()
+  )
+
+  CNVs(cd, which = cnvs_name) |>
+    transmute(
+      sample_id = parse_factor(.data$sample_id, levels = get_sample_ids(cd)),
+      chromosome_index = chromosomes_to_int(.data$chrom),
+      start_position = .data$start,
+      end_position = .data$end,
+      major_cn = .data$major_cn,
+      minor_cn = .data$minor_cn,
+      total_cn = .data$total_cn
+    ) |>
+    nest_by(.data$sample_id) |>
+    complete(.data$sample_id, fill = list(data = list(empty_clip_cnvs))) |>
+    deframe()
+}
+
+
+
+get_clip_purities <- function(cd, purity_column = "purity") {
+  cd$metadata |>
+    select("sample_id", all_of(purity_column)) |>
+    deframe()
+}
+
+
+
+save_clip_files <- function(clip_data, out_dir) {
+  imap(
+    clip_data,
+    function(x, sample_id) {
+      write_tsv(x$snvs, file.path(out_dir, str_c(sample_id, "snv.tsv")))
+      write_tsv(x$cnvs, file.path(out_dir, str_c(sample_id, "cnv.tsv")))
+      write_tsv(
+        as.character(x$purities),
+        file.path(out_dir, str_c(sample_id, "purity.tsv"))
+      )
+    }
+  )
+}
+
+
