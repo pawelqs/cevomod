@@ -70,6 +70,7 @@ reference:
   - "`%not in%`"
   - fill_na
   - fix_powerlaw_N_mutations
+  - to_clip
 - title: internal
   contents:
     - colors
