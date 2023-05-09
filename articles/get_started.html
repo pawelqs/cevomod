@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -120,13 +120,13 @@ attached artificial dataset <code>test_data</code></p>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: impact &lt;chr&gt;, DP &lt;int&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sample_data</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 3</span></span></span>
-<span><span class="co">#&gt;   sample_id patient_id sex   </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  Patient 1  male  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 2  Patient 2  male  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 3  Patient 3  female</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4  Patient 4  male</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 4</span></span></span>
+<span><span class="co">#&gt;   sample_id patient_id sex    purity</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  Patient 1  male        1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 2  Patient 2  male        1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 3  Patient 3  female      1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4  Patient 4  male        1</span></span></code></pre></div>
 <p>Most of the cevomod functions are pipe-oriented, so we can create and
 populate the object through the small pipeline:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -340,8 +340,8 @@ object:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 8</span></span></span>
 <span><span class="co">#&gt;   sample_id mutation_rate_williams component  N_mutations subclone_frequency</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   104.  Subclone 1         785              0.231</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 4                    78.8 Subclone 1         367              0.181</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   104.  Subclone 1         784              0.235</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 4                    78.8 Subclone 1         366              0.180</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: emergence_time &lt;dbl&gt;, time_end &lt;dbl&gt;, selection &lt;dbl&gt;</span></span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
