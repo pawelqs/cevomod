@@ -1,11 +1,9 @@
 
-# cevomod 1.x.x
-
-**cevomod 1.1.0**
+# cevomod 1.1.0
 
 * cevodata export to [CliP](https://github.com/wwylab/CliP) implemented
 
-**cevomod 1.0.0**
+# cevomod 1.0.0
 
 * cevodata class implementation
 * fitting the power-law tails with exponent equal to 2 using $M(f) \sim 1/f$ statistic
