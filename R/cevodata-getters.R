@@ -133,6 +133,24 @@ get_SNVs_wider_intervals <- function(object, fill_na = NULL, bins = NULL) {
 }
 
 
+#' Get SNVs with merged CNVs
+#' @param object cevodata object with SNVs and CNVs
+#' @export
+SNVs_CNVs <- function(object) {
+  SNVs(object) |>
+    join_CNVs(CNVs(object))
+}
+
+
+join_CNVs <- function(snvs, cnvs) {
+  left_join(
+    snvs, cnvs,
+    by = join_by("sample_id", "chrom", "pos" >= "start", "pos" <= "end"),
+    relationship = "many-to-one"
+  )
+}
+
+
 ## ------------------------------- Models ------------------------------------
 
 
@@ -228,7 +246,7 @@ fix_powerlaw_N_mutations <- function(models, cd, models_name) {
 }
 
 
-## ---------------------------------- Other -----------------------------------
+## ---------------------------------- CNVs -----------------------------------
 
 #' @rdname assays
 #' @export
@@ -264,6 +282,8 @@ get_CNVs_var_names.cevodata <- function(object, which = default_CNVs(object), ..
   colnames(cnvs_metadata)
 }
 
+
+## ---------------------------------- Other -----------------------------------
 
 get_patients_data <- function(metadata) {
   patient_data_cols <- metadata |>
