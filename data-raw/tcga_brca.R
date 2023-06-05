@@ -19,7 +19,7 @@ snvs <- mutations %>%
   left_join(variant_classification) %>%
   transmute(
     sample_id = Tumor_Sample_Barcode,
-    chrom = Chromosome,
+    chrom = str_c("chr", Chromosome),
     pos = Start_Position,
     gene_symbol = Hugo_Symbol,
     ref = Reference_Allele,
@@ -48,7 +48,7 @@ cna_hg19 <- read_tsv("/mnt/dane/data/cbioportal/brca_tcga_pan_can_atlas_2018/dat
 cnvs <- cna_hg19 |>
   transmute(
     sample_id = ID,
-    chrom,
+    chrom = str_c("chr", chrom),
     start = loc.start,
     end = loc.end,
     log_ratio = NA_real_,
