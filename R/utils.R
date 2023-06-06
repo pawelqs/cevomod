@@ -31,7 +31,11 @@ get_VAF_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
 }
 
 
-msg <- function(..., collapse = "", col = "steelblue3", new_line = TRUE, verbose = TRUE) {
+msg <- function(...,
+                collapse = "",
+                col = "steelblue3",
+                new_line = TRUE,
+                verbose = get_cevomod_verbosity()) {
   msg <- str_c(list(...), collapse = collapse)
   if (verbose && new_line) {
     cli::cat_line(msg, col = col)
