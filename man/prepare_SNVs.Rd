@@ -4,17 +4,10 @@
 \alias{prepare_SNVs}
 \title{Prepare SNVs for analyses}
 \usage{
-prepare_SNVs(
-  object,
-  which_snvs = default_SNVs(object),
-  bins = NULL,
-  verbose = TRUE
-)
+prepare_SNVs(object, bins = NULL, verbose = TRUE)
 }
 \arguments{
 \item{object}{cevodata obj}
-
-\item{which_snvs}{which SNVs to use}
 
 \item{bins}{number of VAF interval bins}
 
