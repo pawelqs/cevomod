@@ -96,7 +96,7 @@ top_mutated_patients <- TMB %>%
 
 tcga_brca_test <- tcga_brca |>
   filter(sample_id %in% top_mutated_patients) |>
-  calc_mutation_frequencies() |>
+  calc_mutation_frequencies(method = "use_VAF") |>
   prepare_SNVs() |>
   calc_SFS() |>
   calc_cumulative_tails() |>
