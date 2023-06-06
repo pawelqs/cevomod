@@ -11,7 +11,7 @@ prepare_SNVs <- function(object,
                          verbose = TRUE) {
   object |>
     calc_mutation_frequencies(method = "Dentro") |>
-    intervalize_mutation_frequencies(which_snvs, bins) |>
+    intervalize_mutation_frequencies(bins = bins) |>
     calc_SFS()
 }
 

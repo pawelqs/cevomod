@@ -10,18 +10,18 @@ sample_data <- tibble(
 )
 
 cnvs <- tribble(
-  ~sample_id,  ~chrom, ~start, ~end,  ~total_cn, ~major_cn, ~minor_cn,
-   "Sample 1",  "chr1", 1,      1000,  2,         1,         1,
-   "Sample 1",  "chr1", 1001,   2000,  4,         3,         1,
-   "Sample 1",  "chr1", 2001,   3000,  3,         2,         1,
-   "Sample 1",  "chr1", 3001,   4000,  2,         1,         1,
-   "Sample 2",  "chr1", 1,      1000,  2,         1,         1,
-   "Sample 2",  "chr1", 1001,   2000,  4,         3,         1,
-   "Sample 2",  "chr1", 2001,   3000,  3,         2,         1,
-   "Sample 2",  "chr1", 3001,   4000,  2,         1,         1,
-   "Sample 3",  "chr1", 1,      2000,  2,         1,         1,
-   "Sample 3",  "chr1", 2001,   4000,  4,         3,         1,
-   "Sample 4",  "chr1", 1,      4000,  2,         1,         1
+  ~sample_id,  ~chrom, ~start, ~end,  ~total_cn, ~major_cn, ~minor_cn, ~normal_cn,
+   "Sample 1",  "chr1", 1,      1000,  2,         1,         1,         2,
+   "Sample 1",  "chr1", 1001,   2000,  4,         3,         1,         2,
+   "Sample 1",  "chr1", 2001,   3000,  3,         2,         1,         2,
+   "Sample 1",  "chr1", 3001,   4000,  2,         1,         1,         2,
+   "Sample 2",  "chr1", 1,      1000,  2,         1,         1,         2,
+   "Sample 2",  "chr1", 1001,   2000,  4,         3,         1,         2,
+   "Sample 2",  "chr1", 2001,   3000,  3,         2,         1,         2,
+   "Sample 2",  "chr1", 3001,   4000,  2,         1,         1,         2,
+   "Sample 3",  "chr1", 1,      2000,  2,         1,         1,         2,
+   "Sample 3",  "chr1", 2001,   4000,  4,         3,         1,         2,
+   "Sample 4",  "chr1", 1,      4000,  2,         1,         1,         2
 )
 
 
