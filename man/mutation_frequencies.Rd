@@ -4,20 +4,56 @@
 \alias{mutation_frequencies}
 \alias{calc_mutation_frequencies}
 \alias{calc_mutation_frequencies.cevodata}
+\alias{dentro_2015_correction}
 \title{Calc mutation frequencies}
 \usage{
 calc_mutation_frequencies(object, ...)
 
-\method{calc_mutation_frequencies}{cevodata}(object, method = "use_VAF", ...)
+\method{calc_mutation_frequencies}{cevodata}(
+  object,
+  method = "Dentro",
+  which_snvs = default_SNVs(object),
+  which_cnvs = default_CNVs(object),
+  rm_intermediate_cols = TRUE,
+  ...
+)
+
+dentro_2015_correction(tbl)
 }
 \arguments{
-\item{object}{data object}
+\item{object}{\if{html}{\out{<cevodata>}} object}
 
-\item{...}{other arguments}
+\item{...}{Other arguments (not used)}
 
-\item{method}{method: "use_VAF". Other methods will be implemented later}
+\item{method}{Available methods:
+\itemize{
+\item use_VAF - use raw VAF avalues as mutation frequencies
+\item Dentro - use CNV-based frequency correction from
+\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5538405/}{Dentro et al. 'Principles of Reconstructing the Subclonal Architecture of Cancers' (2015)}
+doi: 10.1101/cshperspect.a026625
+}}
+
+\item{which_snvs}{Which SNVs to use}
+
+\item{which_cnvs}{Which CNVs to use}
+
+\item{rm_intermediate_cols}{Should the columns used to get MCF be removed?}
+
+\item{tbl}{tibble that contains columns: VAF, total_cn, normal_cn, purity}
+}
+\value{
+The same tibble with new columns: u, m, f. f contains the corrected
+Mutated Cell Frequencies
 }
 \description{
 Currently no method is implemented and this function only initializes
 f column in active SNVs slot with values from VAF column
 }
+\section{Functions}{
+\itemize{
+\item \code{dentro_2015_correction()}: CNV-based frequency correction method described by Dentro et al. (2015)
+
+Method was described in \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5538405/}{Dentro et al. 'Principles of Reconstructing the Subclonal Architecture of Cancers' (2015)}
+doi: 10.1101/cshperspect.a026625
+
+}}

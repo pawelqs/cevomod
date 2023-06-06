@@ -285,6 +285,12 @@ get_CNVs_var_names.cevodata <- function(object, which = default_CNVs(object), ..
 
 ## ---------------------------------- Other -----------------------------------
 
+get_purities <- function(cd) {
+  cd$metadata |>
+    select("sample_id", "purity")
+}
+
+
 get_patients_data <- function(metadata) {
   patient_data_cols <- metadata |>
     group_by(.data$patient_id) |>
