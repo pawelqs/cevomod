@@ -1,3 +1,4 @@
+set_cevomod_verbosity(0)
 data("tcga_brca_test")
 
 

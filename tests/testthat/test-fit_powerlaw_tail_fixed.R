@@ -1,4 +1,5 @@
 data("tcga_brca_test")
+set_cevomod_verbosity(0)
 
 test_that("Fitting neutral partial models works", {
   snvs <- SNVs(tcga_brca_test) |>

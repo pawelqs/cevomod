@@ -1,3 +1,5 @@
+set_cevomod_verbosity(0)
+
 test_that("filter_SNVs_by_regions works", {
   snvs <- tibble(
     sample_id = "S1",
