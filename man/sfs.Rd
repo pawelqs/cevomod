@@ -8,53 +8,70 @@
 \alias{plot_SFS}
 \alias{plot_SFS.cevodata}
 \alias{get_SFS}
-\alias{get_SFS.cevodata}
 \title{Site Frequency Spectra}
 \usage{
 calc_SFS(object, ...)
 
-\method{calc_SFS}{cevodata}(object, bins = NULL, ...)
+\method{calc_SFS}{cevodata}(
+  object,
+  which_snvs = default_SNVs(object),
+  column = mutation_frequencies_column_name(object, which_snvs),
+  bins = NULL,
+  verbose = get_cevomod_verbosity(),
+  ...
+)
 
-\method{calc_SFS}{cevo_snvs}(object, bins = NULL, ...)
+\method{calc_SFS}{cevo_snvs}(
+  object,
+  column = if ("CCF" \%in\% names(object)) "CCF" else "VAF",
+  bins = NULL,
+  verbose = get_cevomod_verbosity(),
+  ...
+)
 
 plot_SFS(object, ...)
 
 \method{plot_SFS}{cevodata}(object, mapping = NULL, ..., geom = "bar")
 
-get_SFS(object, ...)
-
-\method{get_SFS}{cevodata}(object, model_name = "SFS", verbose = TRUE, ...)
+get_SFS(object, model_name = "SFS", verbose = TRUE, ...)
 }
 \arguments{
 \item{object}{SNVs tibble object}
 
 \item{...}{other arguments}
 
-\item{bins}{resolution of the cumulative tails calculation}
+\item{which_snvs}{Which SNVs to use?}
+
+\item{column}{VAF/CCF}
+
+\item{bins}{Resolution of the cumulative tails calculation}
+
+\item{verbose}{verbose?}
 
 \item{mapping}{aes()}
 
-\item{geom}{geom}
+\item{geom}{Geom}
 
 \item{model_name}{name of slot with SFS statistics}
-
-\item{verbose}{verbose?}
 }
 \description{
-Creates  cevodata$models$SFS with the groupping variables and:
-\itemize{
-\item n columnt with the number of mutations in the VAF interval
-\item x and y columns describing SFS
-\item y_scaled with y values scaled to the range 0-1
-}
+Site Frequency Spectra (or Variant Allele Frequency Spectra) are the main
+statistic used by cevomod.
 }
 \section{Functions}{
 \itemize{
-\item \code{calc_SFS()}: Calculate SFS
+\item \code{calc_SFS()}: Calculates spectra for all samples and saves and saves them
+in cevodata$models$SFS tibble.
 
-\item \code{calc_SFS(cevodata)}: Calculate SFS
+SFS columns description:
+\itemize{
+\item y number of mutations in the frequency interval
+\item y_scaled with y values scaled to the range 0-1
+}
 
-\item \code{calc_SFS(cevo_snvs)}: Calculate SFS
+\item \code{calc_SFS(cevodata)}: method for cevodata object
+
+\item \code{calc_SFS(cevo_snvs)}: method for cevo_snvs object
 
 \item \code{plot_SFS()}: Plot SFS
 
@@ -62,14 +79,12 @@ Creates  cevodata$models$SFS with the groupping variables and:
 
 \item \code{get_SFS()}: Get SFS
 
-\item \code{get_SFS(cevodata)}: Get SFS
-
 }}
 \examples{
-data("tcga_brca_test")
+data("test_data")
 
-tcga_brca_test |>
+test_data |>
   calc_SFS() |>
   plot_SFS() +
-  layer_mutations(tcga_brca_test, drivers = "BRCA")
+  layer_mutations(test_data, drivers = "BRCA")
 }
