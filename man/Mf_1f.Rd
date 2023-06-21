@@ -8,14 +8,26 @@
 \alias{plot_Mf_1f}
 \alias{plot_Mf_1f.cevodata}
 \alias{get_Mf_1f}
-\alias{get_Mf_1f.cevodata}
 \title{William's M(f) ~ 1/f statistics}
 \usage{
 calc_Mf_1f(object, ...)
 
-\method{calc_Mf_1f}{cevodata}(object, bins = 100, verbose = TRUE, ...)
+\method{calc_Mf_1f}{cevodata}(
+  object,
+  which_snvs = default_SNVs(object),
+  column = mutation_frequencies_column_name(object, which_snvs),
+  bins = 100,
+  verbose = get_cevomod_verbosity(),
+  ...
+)
 
-\method{calc_Mf_1f}{cevo_snvs}(object, bins = 100, verbose = TRUE, ...)
+\method{calc_Mf_1f}{cevo_snvs}(
+  object,
+  column = if ("CCF" \%in\% names(object)) "CCF" else "VAF",
+  bins = 100,
+  verbose = get_cevomod_verbosity(),
+  ...
+)
 
 plot_Mf_1f(object, ...)
 
@@ -29,18 +41,20 @@ plot_Mf_1f(object, ...)
   ...
 )
 
-get_Mf_1f(object, ...)
-
-\method{get_Mf_1f}{cevodata}(object, model_name = "Mf_1f", verbose = TRUE, ...)
+get_Mf_1f(object, model_name = "Mf_1f", verbose = TRUE, ...)
 }
 \arguments{
 \item{object}{SNVs tibble object}
 
-\item{...}{other arguments}
+\item{...}{Other arguments}
 
-\item{bins}{resolution of the cumulative tails calculation}
+\item{which_snvs}{Which SNVs to use?}
 
-\item{verbose}{verbose?}
+\item{column}{VAF/CCF}
+
+\item{bins}{Resolution of the cumulative tails calculation}
+
+\item{verbose}{Verbose?}
 
 \item{from}{min VAF to plot}
 
@@ -56,33 +70,33 @@ get_Mf_1f(object, ...)
 ggplot obj
 }
 \description{
-Creates  cevodata$models$Mf_1f tbl with the groupping variables and:
+Mf_1f columns description:
 \itemize{
-\item VAF
+\item sample_id
+\item f
 \item n - number of mutations in the VAF interval
 \item \code{M(f)} and \code{1/f} columns to plot William's statistics
 }
 }
 \section{Functions}{
 \itemize{
-\item \code{calc_Mf_1f()}: Calculate Williams M(f) ~ 1/f
+\item \code{calc_Mf_1f()}: Calculate Williams M(f) ~ 1/f and saves it to
+cevodata$models$Mf_1f
 
-\item \code{calc_Mf_1f(cevodata)}: Calculate Williams M(f) ~ 1/f
+\item \code{calc_Mf_1f(cevodata)}: Method for \if{html}{\out{<cevodata>}} object
 
-\item \code{calc_Mf_1f(cevo_snvs)}: Calculate Williams M(f) ~ 1/f
+\item \code{calc_Mf_1f(cevo_snvs)}: Method for <cevo_snvs> object
 
 \item \code{plot_Mf_1f(cevodata)}: Plot M(f) ~ 1/f
 
 \item \code{get_Mf_1f()}: Get Mf_1f
 
-\item \code{get_Mf_1f(cevodata)}: Get Mf_1f
-
 }}
 \examples{
-data("tcga_brca_test")
-tcga_brca_test |>
+data("test_data")
+test_data |>
   calc_Mf_1f()
 
-tcga_brca_test |>
+test_data |>
   plot_Mf_1f()
 }
