@@ -82,22 +82,23 @@ complete_missing_f_intervals <- function(tbl, intervals) {
 
 
 get_interval_centers <- function(intervals) {
-  intervals |>
+  res <- intervals |>
     str_replace_all("[\\(\\)\\[\\]]", "") |>
-    str_split(pattern = ",") |>
-    map(parse_double) |>
-    map(mean) |>
-    unlist()
+    as_tibble_col("from_and_to") |>
+    separate_wider_delim(from_and_to, names = c("from", "to"), delim = ",") |>
+    map_df(parse_double) |>
+    mutate(centers = from + (to - from) / 2)
+  res$centers
 }
 
 
 get_interval_width <- function(intervals) {
-  intervals |>
+  res <- intervals |>
     str_replace_all("[\\(\\)\\[\\]]", "") |>
-    str_split(pattern = ",") |>
-    map(parse_double) |>
-    map(~.x[[2]] - .x[[1]]) |>
-    unlist() |>
-    stats::median()
+    as_tibble_col("from_and_to") |>
+    separate_wider_delim(from_and_to, names = c("from", "to"), delim = ",") |>
+    map_df(parse_double) |>
+    mutate(width = to - from)
+  stats::median(res$width)
 }
 
