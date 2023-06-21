@@ -1,15 +1,15 @@
 
 
-test_that("calc_mutation_frequencies() adds correct MCF column", {
+test_that("calc_mutation_frequencies() adds correct CCF column", {
   snvs <- tribble(
     ~sample_id, ~chrom, ~pos, ~VAF,
     "S1",       "chr1", 100,  0.1,
     "S1",       "chr1", 200,  0.1,
-    "S1",       "chr1", 300,  0.9,
+    "S1",       "chr1", 300,  0.9,  # no CNV, will be dropped
     "S1",       "chr1", 400,  0.4,
     "S1",       "chr2", 100,  0.2,
     "S2",       "chr1", 100,  0.16,
-    "S2",       "chr1", 300,  0.16
+    "S2",       "chr1", 300,  0.16  # no CNV, will be dropped
   )
   cnvs <- tribble(
     ~sample_id, ~chrom, ~start, ~end, ~total_cn, ~minor_cn, ~normal_cn,
@@ -24,12 +24,15 @@ test_that("calc_mutation_frequencies() adds correct MCF column", {
   )
   object <- init_cevodata("test", snvs = snvs, cnvs = cnvs) |>
     add_sample_data(purities)
+
+  expected <- object |>
+    SNVs() |>
+    mutate(CCF = c(0.5, 0.5, NA_real_, 1, 1, 0.48, NA_real_))
   res <- object |>
-    calc_mutation_frequencies(method = "Dentro", rm_intermediate_cols = TRUE) |>
-    SNVs()
-  expected <- res |>
-    mutate(MCF = c(0.5, 0.5, NA_real_, 1, 1, 0.48, NA_real_))
-  expect_equal(res, expected)
+    calc_mutation_frequencies(method = "Dentro", rm_intermediate_cols = TRUE)
+
+  expect_identical(names(res$SNVs), names(object$SNVs))
+  expect_equal(SNVs(res), expected)
 })
 
 
@@ -41,5 +44,6 @@ test_that("dentro_2015_correction() works", {
     purity = 0.5
   )
   res <- dentro_2015_correction(snvs)
-  expect_equal(res$MCF, c(0.5, 1, 1))
+  expect_named(res, c("VAF", "total_cn", "normal_cn", "purity", "u", "m", "CCF"))
+  expect_equal(res$CCF, c(0.5, 1, 1))
 })
