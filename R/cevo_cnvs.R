@@ -19,6 +19,6 @@ annotate_normal_cn <- function(object, which_cnvs = default_CNVs(object)) {
         .data$sex %in% c("male", "M") & .data$chrom %in% c("chrX", "chrY"), 1, 2
       )
     )
-  cd |>
+  object |>
     add_CNV_data(cnvs, name = which_cnvs)
 }
