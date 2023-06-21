@@ -11,9 +11,22 @@
 \usage{
 calc_cumulative_tails(object, ...)
 
-\method{calc_cumulative_tails}{cevodata}(object, bins = 100, ...)
+\method{calc_cumulative_tails}{cevodata}(
+  object,
+  which_snvs = default_SNVs(object),
+  column = mutation_frequencies_column_name(object, which_snvs),
+  bins = 100,
+  verbose = get_cevomod_verbosity(),
+  ...
+)
 
-\method{calc_cumulative_tails}{cevo_snvs}(object, bins = 100, ...)
+\method{calc_cumulative_tails}{cevo_snvs}(
+  object,
+  column = if ("CCF" \%in\% names(object)) "CCF" else "VAF",
+  bins = 100,
+  verbose = get_cevomod_verbosity(),
+  ...
+)
 
 plot_cumulative_tails(object, ...)
 
@@ -22,9 +35,15 @@ plot_cumulative_tails(object, ...)
 \arguments{
 \item{object}{SNVs tibble object}
 
-\item{...}{passed to stat_cumulative_tail}
+\item{...}{passed to geom_line()}
 
-\item{bins}{resolution of the cumulative tails calculation}
+\item{which_snvs}{Which SNVs to use?}
+
+\item{column}{VAF/CCF}
+
+\item{bins}{Resolution of the cumulative tails calculation}
+
+\item{verbose}{Verbose?}
 
 \item{scale_y}{scale y vaules to 1?}
 
@@ -34,16 +53,18 @@ plot_cumulative_tails(object, ...)
 ggplot obj
 }
 \description{
-Creates  cevodata$models$cumulative_tails tbl with the groupping variables and:
+cumulative_tails columns:
 \itemize{
-\item n column with the number of mutations in the VAF interval
-\item x and y columns describing the cumulative tails
+\item f
+\item n column with the number of mutations in the f interval
+\item y cumulative tail value
 \item y_scaled with y values scaled to the range 0-1
 }
 }
 \section{Functions}{
 \itemize{
-\item \code{calc_cumulative_tails(cevodata)}: Calculate the cumulative tails
+\item \code{calc_cumulative_tails(cevodata)}: Calculate the cumulative tails and saves to
+cevodata$models$cumulative_tails tibble
 
 \item \code{calc_cumulative_tails(cevo_snvs)}: Calculate the cumulative tails
 
@@ -51,10 +72,10 @@ Creates  cevodata$models$cumulative_tails tbl with the groupping variables and:
 
 }}
 \examples{
-data("tcga_brca_test")
-tcga_brca_test |>
+data("test_data")
+test_data |>
   calc_cumulative_tails()
 
-tcga_brca_test |>
+test_data |>
   plot_cumulative_tails()
 }

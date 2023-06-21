@@ -56,9 +56,9 @@ get_Mf_1f(object, model_name = "Mf_1f", verbose = TRUE, ...)
 
 \item{verbose}{Verbose?}
 
-\item{from}{min VAF to plot}
+\item{from}{min f to plot}
 
-\item{to}{max VAF to plot}
+\item{to}{max f to plot}
 
 \item{scale}{scale data?}
 

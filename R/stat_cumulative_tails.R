@@ -1,22 +1,27 @@
 
 #' Cumulative tails
 #'
-#' Creates  cevodata$models$cumulative_tails tbl with the groupping variables and:
-#'   - n column with the number of mutations in the VAF interval
-#'   - x and y columns describing the cumulative tails
+#' cumulative_tails columns:
+#'   - f
+#'   - n column with the number of mutations in the f interval
+#'   - y cumulative tail value
 #'   - y_scaled with y values scaled to the range 0-1
 #'
 #' @param object SNVs tibble object
-#' @param bins resolution of the cumulative tails calculation
+#' @param which_snvs Which SNVs to use?
+#' @param column VAF/CCF
+#' @param bins Resolution of the cumulative tails calculation
+#' @param verbose Verbose?
 #' @param ... other arguments
 #' @examples
-#' data("tcga_brca_test")
-#' tcga_brca_test |>
+#' data("test_data")
+#' test_data |>
 #'   calc_cumulative_tails()
 #'
-#' tcga_brca_test |>
+#' test_data |>
 #'   plot_cumulative_tails()
 #' @name cumulative_tails
+
 
 
 #' @rdname cumulative_tails
@@ -26,29 +31,44 @@ calc_cumulative_tails <- function(object, ...) {
 }
 
 
-#' @describeIn cumulative_tails Calculate the cumulative tails
+
+#' @describeIn cumulative_tails Calculate the cumulative tails and saves to
+#'   cevodata$models$cumulative_tails tibble
 #' @export
-calc_cumulative_tails.cevodata <- function(object, bins = 100, ...) {
-  cumulative_tails <- SNVs(object) |>
-    filter(.data$alt_reads > 0) |>
-    calc_cumulative_tails(bins)
+calc_cumulative_tails.cevodata <- function(object,
+                                           which_snvs = default_SNVs(object),
+                                           column = mutation_frequencies_column_name(object, which_snvs),
+                                           bins = 100,
+                                           verbose = get_cevomod_verbosity(),
+                                           ...) {
+  cumulative_tails <- SNVs(object, which_snvs) |>
+    calc_cumulative_tails(column = column, bins = bins, verbose = verbose)
   object$models[["cumulative_tails"]] <- cumulative_tails
   object
 }
 
 
+
 #' @describeIn cumulative_tails Calculate the cumulative tails
 #' @export
-calc_cumulative_tails.cevo_snvs <- function(object, bins = 100, ...) {
-  res <-object %>%
+calc_cumulative_tails.cevo_snvs <- function(object,
+                                            column = if ("CCF" %in% names(object)) "CCF" else "VAF",
+                                            bins = 100,
+                                            verbose = get_cevomod_verbosity(),
+                                            ...) {
+  msg("Calculating cumulative tails, using ", column, " column", verbose = verbose)
+
+  res <- cut_f_intervals(object, column = column, bins = bins) |>
+    filter(.data$f > 0) |>
+    mutate(x = get_interval_centers(.data$f_interval), .after = "f_interval") |>
     group_by(.data$sample_id) |>
-    rename(x = "VAF") %>%
-    .calc_cumulative_tails(bins) %>%
-    rename(VAF = "x", VAF_interval = "x_interval") |>
+    .calc_cumulative_tails(bins) |>
+    rename(f = "x", f_interval = "x_interval") |>
     ungroup()
   class(res) <- c("cevo_cumulative_tails_tbl", class(res))
   res
 }
+
 
 
 .calc_cumulative_tails <- function(dt, bins = 100) {
@@ -69,11 +89,31 @@ calc_cumulative_tails.cevo_snvs <- function(object, bins = 100, ...) {
 }
 
 
+
 #' @rdname cumulative_tails
 #' @export
 plot_cumulative_tails <- function(object, ...) {
   UseMethod("plot_cumulative_tails")
 }
+
+
+
+#' @describeIn cumulative_tails Shortcut to plot cum tails from SNVs dataframe
+#'
+#' @param scale_y scale y vaules to 1?
+#' @param scales loglog/semilog
+#' @param ... passed to geom_line()
+#' @return ggplot obj
+#' @export
+plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, scales = "loglog", ...) {
+  if (is.null(object$models$cumulative_tails)) {
+    object <- calc_cumulative_tails(object)
+  }
+  object$models$cumulative_tails |>
+    left_join(object$metadata, by = "sample_id") |>
+    plot(scale_y = scale_y, scales = scales, ...)
+}
+
 
 #' Plot the cumulative tails
 #'
@@ -85,48 +125,34 @@ plot_cumulative_tails <- function(object, ...) {
 #' @export
 #'
 #' @examples
-#' data("tcga_brca_test")
-#' tcga_brca_test |>
+#' data("test_data")
+#' test_data |>
 #'   calc_cumulative_tails() |>
 #'   plot_cumulative_tails()
 plot.cevo_cumulative_tails_tbl <- function(x, scale_y = TRUE, scales = "loglog", ...) {
-
   y <- if (scale_y) "y_scaled" else "y"
 
   plot_scales <- list(
     scale_y_log10(),
     scale_x_log10()
   )
-  if (scales != "loglog")
+  if (scales != "loglog") {
     plot_scales[[2]] <- NULL
+  }
 
   x %>%
-    ggplot(aes(.data$VAF, !!sym(y), color = .data$sample_id)) +
-    geom_line() +
+    ggplot(aes(.data$f, !!sym(y), color = .data$sample_id)) +
+    geom_line(...) +
     plot_scales +
     theme_minimal() +
     labs(title = "Cumulative tails")
 }
 
 
-#' @describeIn cumulative_tails Shortcut to plot cum tails from SNVs dataframe
-#'
-#' @param scale_y scale y vaules to 1?
-#' @param scales loglog/semilog
-#' @param ... passed to stat_cumulative_tail
-#' @return ggplot obj
-#' @export
-plot_cumulative_tails.cevodata <- function(object, scale_y = TRUE, scales = "loglog", ...) {
-  if (is.null(object$models$cumulative_tails)) {
-    object <- calc_cumulative_tails(object)
-  }
-  object$models$cumulative_tails |>
-    left_join(object$metadata, by = "sample_id") |>
-    plot(scale_y = scale_y, scales = scales)
-}
-
-
 #' Plot Cumulative Tail
+#'
+#' Nice extention of the default ggplot2 stats. However, it should be easier to
+#' use the plot_cumulative_tails() function.
 #'
 #' @inherit ggplot2::geom_histogram
 #' @param bins number of bins
@@ -155,10 +181,8 @@ stat_cumulative_tail <- function(mapping = NULL, data = NULL, geom = "point",
 
 
 StatCumulativeTail <- ggproto("StatCumulativeTail", Stat,
-
   required_aes = c("x"),
   default_aes = aes(x = stat(x), y = stat(y_scaled)),
-
   compute_group = function(data, scales, bins = 100) {
     .calc_cumulative_tails(data, bins)
   }
