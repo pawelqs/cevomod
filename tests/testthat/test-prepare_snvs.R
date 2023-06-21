@@ -1,3 +1,4 @@
+set_cevomod_verbosity(0)
 
 
 test_that("calc_mutation_frequencies() adds correct CCF column", {
