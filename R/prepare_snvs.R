@@ -89,11 +89,19 @@ dentro_2015_correction <- function(tbl) {
 ## --------------------------------- Cut intervals -----------------------------
 
 
-#' Intervalize mutation frequencies
+#' Intervalize the mutation frequencies
+#'
+#' Intervalize the mutation frequencies for the subsequent analyses and plots.
+#' Adds f_interval column to the SNV tibble
+#'
 #' @param object <cevodata> object
 #' @param which_snvs Which SNVs to use
-#' @param bins Number of VAF interval bins
+#' @param column Which frequency measure column to intervalize? By default, uses
+#'   the CCF is found in the SNV tibble, and VAF otherwise
+#' @param bins Number of interval bins
 #' @param verbose Verbose?
+#'
+#' @return <cevodata> object
 #' @export
 intervalize_mutation_frequencies <- function(object,
                                              which_snvs = default_SNVs(object),

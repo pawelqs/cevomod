@@ -2,21 +2,32 @@
 % Please edit documentation in R/prepare_snvs.R
 \name{intervalize_mutation_frequencies}
 \alias{intervalize_mutation_frequencies}
-\title{Intervalize mutation frequencies}
+\title{Intervalize the mutation frequencies}
 \usage{
 intervalize_mutation_frequencies(
   object,
   which_snvs = default_SNVs(object),
-  bins = NULL
+  column = mutation_frequencies_column_name(object, which_snvs),
+  bins = NULL,
+  verbose = get_cevomod_verbosity()
 )
 }
 \arguments{
-\item{object}{cevodata obj}
+\item{object}{\if{html}{\out{<cevodata>}} object}
 
-\item{which_snvs}{which SNVs to use}
+\item{which_snvs}{Which SNVs to use}
 
-\item{bins}{number of VAF interval bins}
+\item{column}{Which frequency measure column to intervalize? By default, uses
+the CCF is found in the SNV tibble, and VAF otherwise}
+
+\item{bins}{Number of interval bins}
+
+\item{verbose}{Verbose?}
+}
+\value{
+\if{html}{\out{<cevodata>}} object
 }
 \description{
-Intervalize mutation frequencies
+Intervalize the mutation frequencies for the subsequent analyses and plots.
+Adds f_interval column to the SNV tibble
 }

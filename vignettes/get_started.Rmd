@@ -65,7 +65,7 @@ plot_SFS(cd) +
 
 # Preparation
 
-Before fitting the models, we need to run the `prepare_SNVs()` function. This step binarizes the VAF values and adds the column `VAF_interval`. By default, the number of bins is equal to the median sequencing coverage of the variants in the sample. This allows to reduce aliasing noise in samples with low sequencing depth and to analyze samples with higher coverage with higher resolution. The desired number of bins can also be specified manually using the `bins` argument.
+Before fitting the models, we need to run the `prepare_SNVs()` function. This step binarizes the VAF values and adds the column `f_interval`. By default, the number of bins is equal to the median sequencing coverage of the variants in the sample. This allows to reduce aliasing noise in samples with low sequencing depth and to analyze samples with higher coverage with higher resolution. The desired number of bins can also be specified manually using the `bins` argument.
 
 ```{r}
 cd <- cd |> 
