@@ -1,3 +1,4 @@
+set_cevomod_verbosity(0)
 
 object <- tcga_brca_test
 N <- 1:3
@@ -7,13 +8,14 @@ verbose <- TRUE
 
 
 test_that("fit_subclones() works", {
-  x <- test_data |>
-    prepare_SNVs(verbose = FALSE) |>
-    fit_powerlaw_tail_optim(verbose = FALSE) |>
-    fit_subclones(verbose = FALSE, method = "mclust")
+  object <- test_data |>
+    prepare_SNVs() |>
+    fit_powerlaw_tail_optim()
+  res <- object |>
+    fit_subclones(method = "mclust")
 
   expect_false(
-    is.null(x$models$powerlaw_optim_subclones)
+    is.null(res$models$powerlaw_optim_subclones)
   )
 })
 
