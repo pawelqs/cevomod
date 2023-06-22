@@ -1,7 +1,7 @@
 
 #' Fitting neutral models
 #'
-#' Fits a *neutral* model with the power-law exponent equal:
+#' Fits a power-law component of the model:
 #' \deqn{y(f) = \frac{\mu}{\beta n} \frac{1}{f^2}}
 #' where \eqn{ \mu/\beta } is the mutation rate per effective cell division, and
 #' n is the number of bins in the spectrum. The power-law exponent of this
@@ -32,6 +32,7 @@
 #'
 #' cd <- init_cevodata("Test") |>
 #'   add_SNV_data(snvs) |>
+#'   intervalize_mutation_frequencies() |>
 #'   calc_Mf_1f() |>
 #'   calc_SFS() |>
 #'   fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
@@ -54,20 +55,22 @@ fit_powerlaw_tail_fixed <- function(object, ...) {
 #' @param pct_right drop pct of the highest frequency variants to improve fit
 #' @export
 fit_powerlaw_tail_fixed.cevodata <- function(object,
-                                        rsq_treshold = 0.98,
-                                        name = "powerlaw_fixed",
-                                        pct_left = 0.05, pct_right = 0.95,
-                                        verbose = TRUE, ...) {
+                                             rsq_treshold = 0.98,
+                                             name = "powerlaw_fixed",
+                                             pct_left = 0.05, pct_right = 0.95,
+                                             verbose = get_cevomod_verbosity(),
+                                             ...) {
   msg("Fitting williams neutral models...", verbose = verbose)
+
   Mf_1f <- get_Mf_1f(object)
-  bounds <- get_VAF_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
+  bounds <- get_f_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
   # bounds <- get_non_zero_SFS_range(get_SFS(object), allowed_zero_bins = 2) |>
   #   rename(lower_bound = "from", higher_bound = "to")
 
   data <- Mf_1f |>
     left_join(bounds, by = "sample_id") |>
-    filter(.data$VAF > .data$lower_bound, .data$VAF < .data$higher_bound) |>
-    select("sample_id", "VAF", "M(f)", "1/f") |>
+    filter(.data$f > .data$lower_bound, .data$f < .data$higher_bound) |>
+    select("sample_id", "f", "M(f)", "1/f") |>
     nest_by(.data$sample_id)
 
   pb <- if (verbose) progress_bar$new(total = nrow(data)) else NULL
@@ -87,8 +90,8 @@ fit_powerlaw_tail_fixed.cevodata <- function(object,
 
 
 fit_optimal_lm <- function(data, rsq_treshold = 0.98, pb = NULL) {
-  min_val <- min(data$VAF)
-  max_val <- max(data$VAF)
+  min_val <- min(data$f)
+  max_val <- max(data$f)
   grid <- expand_grid(
       from = seq(min_val, max_val, by = 0.01),
       to = seq(min_val, max_val, by = 0.01)
@@ -111,7 +114,7 @@ fit_optimal_lm <- function(data, rsq_treshold = 0.98, pb = NULL) {
 
 prepare_Mf_1f_data <- function(from, to, data, ...) {
   data |>
-    filter(.data$VAF >= from, .data$VAF <= to)
+    filter(.data$f >= from, .data$f <= to)
     # Following may be used to fit the model exactly as Williams, without the
     # Intercept term (lm(y ~ x + 0)). It does not affect slope coefficient,
     # thus I keep the current implementation for visualization purposes

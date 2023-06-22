@@ -15,7 +15,7 @@ fit_powerlaw_tail_fixed(object, ...)
   name = "powerlaw_fixed",
   pct_left = 0.05,
   pct_right = 0.95,
-  verbose = TRUE,
+  verbose = get_cevomod_verbosity(),
   ...
 )
 
@@ -41,7 +41,7 @@ layer_lm_fits(cd, model_name = "powerlaw_fixed", ...)
 \item{model_name}{modelname}
 }
 \description{
-Fits a \emph{neutral} model with the power-law exponent equal:
+Fits a power-law component of the model:
 \deqn{y(f) = \frac{\mu}{\beta n} \frac{1}{f^2}}
 where \eqn{ \mu/\beta } is the mutation rate per effective cell division, and
 n is the number of bins in the spectrum. The power-law exponent of this
@@ -73,6 +73,7 @@ snvs <- SNVs(tcga_brca_test) |>
 
 cd <- init_cevodata("Test") |>
   add_SNV_data(snvs) |>
+  intervalize_mutation_frequencies() |>
   calc_Mf_1f() |>
   calc_SFS() |>
   fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
