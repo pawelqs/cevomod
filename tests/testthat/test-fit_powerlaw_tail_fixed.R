@@ -72,7 +72,7 @@ object <- init_cevodata("Test") |>
   fit_powerlaw_tail_fixed()
 
 
-test_that("calc_residuals creates proper tibble", {
+test_that("calc_powerlaw_model_residuals() creates proper tibble", {
   cd <- calc_powerlaw_model_residuals(object, "powerlaw_fixed")
   resids <- get_residuals(cd, "powerlaw_fixed")
   expect_equal(nrow(resids), 101)
@@ -84,3 +84,4 @@ test_that("calc_residuals creates proper tibble", {
   )
   expect_equal(is.na(resids) |> sum(), 1)
 })
+
