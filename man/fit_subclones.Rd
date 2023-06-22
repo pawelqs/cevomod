@@ -14,8 +14,8 @@ fit_subclones(
   powerlaw_model_name = active_models(object),
   snvs_name = default_SNVs(object),
   method = "BMix",
-  upper_VAF_limit = 0.75,
-  verbose = TRUE
+  upper_f_limit = 0.75,
+  verbose = get_cevomod_verbosity()
 )
 
 fit_subclones_bmix(
@@ -23,7 +23,7 @@ fit_subclones_bmix(
   N = 1:3,
   powerlaw_model_name = active_models(object),
   snvs_name = default_SNVs(object),
-  upper_VAF_limit = 0.75,
+  upper_f_limit = 0.75,
   verbose = TRUE
 )
 
@@ -32,8 +32,8 @@ fit_subclones_mclust(
   N = 1:3,
   powerlaw_model_name = active_models(object),
   snvs_name = default_SNVs(object),
-  upper_VAF_limit = 0.75,
-  verbose = TRUE
+  upper_f_limit = 0.75,
+  verbose = get_cevomod_verbosity()
 )
 }
 \arguments{
@@ -50,7 +50,7 @@ powerlaw_fixed/powerlaw_optim}
 While mclust is a 3-4 times faster method, the BMix method is more accurate
 and usually fast enough.}
 
-\item{upper_VAF_limit}{ignore variants with f higher than}
+\item{upper_f_limit}{ignore variants with f higher than}
 
 \item{verbose}{verbose?}
 }
