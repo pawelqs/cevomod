@@ -3,7 +3,7 @@
 #'
 #' `fit_powerlaw_tail_optim()` uses `stats::optim` to find optimal A and alpha
 #' whch maximizes SFS area under the powerlaw curve (*sampled* region of SFS and
-#' the range of VAF values below the maximum SFS value does not count) and
+#' the range of f values below the maximum SFS value does not count) and
 #' minimizes negative error - where the curve is above the real SFS (*sampled*
 #' are does not count). Penalty for the negative error depends on the number of
 #' points with the negative error value. Penalty value is the sum of error values
@@ -13,7 +13,7 @@
 #'
 #' @param object cevodata
 #' @param name name in the models' slot
-#' @param av_filter average filter values to be applied to VAF
+#' @param av_filter average filter values to be applied to f
 #' @param control control param of stats::optim()
 #' @param verbose verbose?
 #' @param ... other arguments passed to stats::optim()
@@ -35,7 +35,7 @@ fit_powerlaw_tail_optim <- function(object, ...) {
 
 #' @rdname powerlaw_optim
 #' @inheritParams get_non_zero_SFS_range
-#' @param peak_detection_upper_limit upper VAF value up to which the main peak is searched
+#' @param peak_detection_upper_limit upper f value up to which the main peak is searched
 #' @param reward_upper_limit mutations under the curve up to this limit will be rewarded
 #' @export
 fit_powerlaw_tail_optim.cevodata <- function(object,
@@ -48,7 +48,8 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
                                              peak_detection_upper_limit = 0.3,
                                              reward_upper_limit = 0.4,
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
-                                             verbose = TRUE, ...) {
+                                             verbose = get_cevomod_verbosity(),
+                                             ...) {
   msg("Fitting optimized power-law models...", verbose = verbose)
   start_time <- Sys.time()
 
@@ -60,13 +61,13 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
       y_threshold_pct = y_threshold_pct
     ) |>
     rename(lower_bound = "from", higher_bound = "to")
-  # bounds <- get_VAF_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
+  # bounds <- get_f_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
   nbins <- summarise(sfs, nbins = n(), .by = "sample_id")
 
   data <- sfs |>
     left_join(bounds, by = "sample_id") |>
-    filter(.data$VAF > .data$lower_bound, .data$VAF < .data$higher_bound) |>
-    select("sample_id", "VAF", "y") |>
+    filter(.data$f > .data$lower_bound, .data$f < .data$higher_bound) |>
+    select("sample_id", "f", "y") |>
     mutate(
       y = .data$y |>
         stats::filter(av_filter) |>
@@ -123,7 +124,7 @@ td_optim <- function(init_A, init_alpha, data,
   res <- stats::optim(
     par = c(init_A, init_alpha),
     fn = td_objective_function,
-    x = data$VAF,
+    x = data$f,
     y = data$y,
     peak_detection_upper_limit = peak_detection_upper_limit,
     reward_upper_limit = reward_upper_limit,
@@ -151,7 +152,7 @@ td_objective_function <- function(params, x, y,
 
   # Reward for number of mutations under the curve
   y2 <- pmin(y1, y)
-  before_max <- seq_along(y) < which.max(y[x < peak_detection_upper_limit]) # detects peak up to VAF = 0.3
+  before_max <- seq_along(y) < which.max(y[x < peak_detection_upper_limit]) # detects peak up to f = 0.3
   y2[before_max | sampled_range | (x > reward_upper_limit)] <- 0
   mut_reward <- sum(y2)
 
