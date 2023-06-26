@@ -75,6 +75,7 @@ calc_SFS.cevo_snvs <- function(object,
     mutate(y_scaled = round(.data$y / sum(.data$y), digits = 4)) |>
     ungroup()
   class(res) <- c("cevo_SFS_tbl", class(res))
+  attr(res, "f_column") <- attributes(snvs)[["f_column"]]
   res
 }
 

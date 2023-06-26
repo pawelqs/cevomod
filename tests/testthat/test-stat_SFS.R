@@ -5,8 +5,9 @@ data("test_data")
 test_that("Calculation of SFS works", {
   object <- test_data
   cd <- calc_SFS(object)
-  expected <- read_tsv("../testdata/test_data_SFS.tsv", col_types = "ccdid")
+  expected <- read_tsv(test_path("SFS.tsv"), col_types = "ccdid")
   class(expected) <- c("cevo_SFS_tbl", class(expected))
+  attr(expected, "f_column") <- "VAF"
   # write_tsv(cd$models$SFS, "tests/testdata/test_data_SFS.tsv")
   expect_equal(cd$models$SFS, expected)
 })

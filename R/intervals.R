@@ -30,6 +30,7 @@ cut_f_intervals <- function(snvs, column, bins = NULL) {
     unnest("data") |>
     mutate(f = get_interval_centers(.data$f_interval), .after = "f_interval")
   attr(res, "intervals") <- interval_levels
+  attr(res, "f_column") <- column
   res
 }
 

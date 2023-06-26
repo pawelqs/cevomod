@@ -51,3 +51,12 @@ test_that("dentro_2015_correction() works", {
   expect_named(res, c("VAF", "CCF", "CCF/2", "total_cn", "normal_cn", "purity", "u", "m"))
   expect_equal(res$CCF, c(0.5, 1, 1))
 })
+
+
+test_that("intervalize_mutation() sets an attribute on which frequency measure was used", {
+  res <- intervalize_mutation_frequencies(test_data)
+  attr <- res |>
+    SNVs() |>
+    attributes()
+  expect_equal(attr$f_column, "VAF")
+})

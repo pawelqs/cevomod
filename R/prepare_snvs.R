@@ -111,7 +111,6 @@ intervalize_mutation_frequencies <- function(object,
                                              bins = NULL,
                                              verbose = get_cevomod_verbosity()) {
   msg("Calculating f intervals, using ", column, " column", verbose = verbose)
-
   snvs <- SNVs(object, which_snvs) |>
     cut_f_intervals(bins = bins, column = column)
   object |>
@@ -134,14 +133,16 @@ get_frequency_measure_name <- function(object, ...) {
 }
 
 
+#' @rdname get_frequency_measure_name
 #' @export
-get_frequency_measure_name.cevodata <- function(object, which_snvs = default_SNVs(object)) {
+get_frequency_measure_name.cevodata <- function(object, which_snvs = default_SNVs(object), ...) {
   SNVs(object, which_snvs) |>
     get_frequency_measure_name()
 }
 
 
+#' @rdname get_frequency_measure_name
 #' @export
-get_frequency_measure_name.cevo_snvs <- function(object) {
+get_frequency_measure_name.cevo_snvs <- function(object, ...) {
   if ("CCF/2" %in% names(object)) "CCF/2" else "VAF"
 }
