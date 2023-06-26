@@ -2,10 +2,16 @@
 % Please edit documentation in R/cevomod-global.R
 \name{set_cevomod_verbosity}
 \alias{set_cevomod_verbosity}
-\title{Change verbosity level}
+\title{Change the verbosity level}
 \usage{
 set_cevomod_verbosity(verbosity_level = 1)
 }
+\arguments{
+\item{verbosity_level}{Verbosity level to use:
+0 - silent
+1 - normal
+2 - detailed (in some cases)}
+}
 \description{
-Change verbosity level
+Change the verbosity level
 }

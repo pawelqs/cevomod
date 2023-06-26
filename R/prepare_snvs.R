@@ -30,6 +30,7 @@ prepare_SNVs <- function(object,
 #' @param which_snvs Which SNVs to use
 #' @param which_cnvs Which CNVs to use
 #' @param rm_intermediate_cols Should the columns used to get CCF be removed?
+#' @param verbose Verbose?
 #'
 #' @return <cevodata> object
 #' @export

@@ -27,6 +27,8 @@ dentro_2015_correction(tbl)
 
 \item{rm_intermediate_cols}{Should the columns used to get CCF be removed?}
 
+\item{verbose}{Verbose?}
+
 \item{tbl}{tibble that contains columns: VAF, total_cn, normal_cn, purity}
 }
 \value{
