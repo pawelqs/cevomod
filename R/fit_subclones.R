@@ -33,7 +33,10 @@ fit_subclones <- function(object,
   } else if (method == "mclust") {
     object <- object |>
       fit_subclones_mclust(N, powerlaw_model_name, snvs_name, upper_f_limit, verbose)
+  } else {
+    stop("Currently supported methods are: BMix and mclust")
   }
+
 
   object
 }

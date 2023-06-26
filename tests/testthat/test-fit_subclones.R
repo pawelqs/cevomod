@@ -1,18 +1,31 @@
 set_cevomod_verbosity(0)
 
+object <- test_data |>
+  prepare_SNVs() |>
+  fit_powerlaw_tail_optim()
+
 N <- 1:3
 powerlaw_model_name <- "powerlaw_optim"
 upper_f_limit <- 0.75
 snvs_name <- "snvs"
 
 
-test_that("fit_subclones() works", {
-  object <- test_data |>
-    prepare_SNVs() |>
-    fit_powerlaw_tail_optim()
+test_that("fit_subclones() mclust works", {
   res <- object |>
     fit_subclones(method = "mclust")
+  expect_false(
+    is.null(res$models$powerlaw_optim_subclones)
+  )
+})
 
+
+test_that("fit_subclones() bmix works", {
+  suppressWarnings(
+    suppressMessages({
+      res <- object |>
+        fit_subclones(method = "BMix")
+    })
+  )
   expect_false(
     is.null(res$models$powerlaw_optim_subclones)
   )
