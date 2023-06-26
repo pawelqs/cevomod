@@ -24,7 +24,7 @@ fit_subclones_bmix(
   powerlaw_model_name = active_models(object),
   snvs_name = default_SNVs(object),
   upper_f_limit = 0.75,
-  verbose = TRUE
+  verbose = get_cevomod_verbosity()
 )
 
 fit_subclones_mclust(
