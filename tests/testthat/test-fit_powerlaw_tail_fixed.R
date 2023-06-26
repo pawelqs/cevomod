@@ -11,21 +11,21 @@ test_that("Fitting neutral partial models works", {
     calc_Mf_1f() |>
     calc_SFS() |>
     fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
-  expected <- "../testdata/tcga_brca_partial_neutral_models.tsv" |>
-    read_tsv(col_types = "cccdddddddl") |>
+  path <- test_path("tcga_brca_partial_neutral_models.tsv")
+  expected <- read_tsv(path, col_types = "cccdddddddl") |>
     mutate(
       model = "powerlaw_fixed",
       component = "Neutral tail",
       .before = "from"
     )
   class(expected) <- c("cevo_powerlaw_models", class(expected))
-  # write_tsv(object$models$powerlaw_fixed, "tests/testdata/tcga_brca_partial_neutral_models.tsv")
+  # write_tsv(object$models$powerlaw_fixed, path)
   expect_equal(get_models(object, best_only = FALSE), expected)
 })
 
 
 # ## Verify the above model visually to evaluate the changes
-# powerlaw_fixed_old <- "tests/testdata/tcga_brca_partial_neutral_models.tsv" |>
+# powerlaw_fixed_old <- test_path("tcga_brca_partial_neutral_models.tsv") |>
 #   read_tsv(col_types = "cccdddddddl") |>
 #   mutate(
 #     model = "powerlaw_fixed",

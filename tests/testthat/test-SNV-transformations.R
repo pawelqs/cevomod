@@ -11,7 +11,7 @@ test_that("filter_SNVs_by_regions works", {
     start = c(103, 100),
     end = c(200, 102)
   )
-  bed_file = "../testdata/regions.tsv"
+  bed_file = test_path("regions.tsv")
   expected <- tibble(
     sample_id = "S1",
     chrom = str_c("chr", c(1, 1, 2, 2, 2)),
