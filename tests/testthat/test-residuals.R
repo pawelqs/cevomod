@@ -5,19 +5,21 @@ test_that("calc_powerlaw_model_residuals returns powerlaw curves with similar nu
   cd <- tcga_brca_test
   cd$active_models <- "powerlaw_fixed"
   cd1 <- tcga_brca_test |>
+    intervalize_mutation_frequencies() |>
     calc_SFS(bins = 50) |>
     calc_powerlaw_model_residuals("powerlaw_fixed")
   cd2 <- tcga_brca_test |>
+    intervalize_mutation_frequencies() |>
     calc_SFS(bins = 100) |>
     calc_powerlaw_model_residuals("powerlaw_fixed")
   # plot_models(cd1)
   # plot_models(cd2)
   n1 <- get_residuals(cd1) |>
-    filter(VAF > 0.1) |>
+    filter(f > 0.1) |>
     pull(powerlaw_pred) |>
     sum()
   n2 <- get_residuals(cd2) |>
-    filter(VAF > 0.1) |>
+    filter(f > 0.1) |>
     pull(powerlaw_pred) |>
     sum()
   expect_true((abs(n1 - n2) / n1) < 0.02)

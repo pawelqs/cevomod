@@ -3,21 +3,14 @@
 \name{plot_residuals}
 \alias{plot_residuals}
 \alias{plot_sampling_rate}
-\alias{plot_sampling_rate.cevodata}
 \alias{plot_residuals_powerlaw_model}
-\alias{plot_residuals_powerlaw_model.cevodata}
 \alias{plot_residuals_full_model}
-\alias{plot_residuals_full_model.cevodata}
 \alias{plot_binomial_fits_vs_powerlaw_residuals_bars}
 \title{Plot model residuals}
 \usage{
-plot_sampling_rate(object, ...)
+plot_sampling_rate(object, mapping = NULL, geom = geom_point, ...)
 
-\method{plot_sampling_rate}{cevodata}(object, mapping = NULL, geom = geom_point, ...)
-
-plot_residuals_powerlaw_model(object, ...)
-
-\method{plot_residuals_powerlaw_model}{cevodata}(
+plot_residuals_powerlaw_model(
   object,
   models_name = active_models(object),
   mapping = NULL,
@@ -26,9 +19,7 @@ plot_residuals_powerlaw_model(object, ...)
   ...
 )
 
-plot_residuals_full_model(object, ...)
-
-\method{plot_residuals_full_model}{cevodata}(object, mapping = NULL, geom = geom_point, ...)
+plot_residuals_full_model(object, mapping = NULL, geom = geom_point, ...)
 
 plot_binomial_fits_vs_powerlaw_residuals_bars(
   object,
@@ -42,11 +33,11 @@ plot_binomial_fits_vs_powerlaw_residuals_bars(
 \arguments{
 \item{object}{cevodata object}
 
-\item{...}{other parameters}
-
 \item{mapping}{mapping elements to overwrite the default mapping}
 
 \item{geom}{geom to use}
+
+\item{...}{other parameters}
 
 \item{models_name}{models_name}
 
@@ -57,11 +48,11 @@ Plot model residuals
 }
 \section{Functions}{
 \itemize{
-\item \code{plot_sampling_rate(cevodata)}: Plot sampling rate
+\item \code{plot_sampling_rate()}: Plot sampling rate
 
-\item \code{plot_residuals_powerlaw_model(cevodata)}: Plot residuals of the neutral model
+\item \code{plot_residuals_powerlaw_model()}: Plot residuals of the neutral model
 
-\item \code{plot_residuals_full_model(cevodata)}: Plot residuals of the full model
+\item \code{plot_residuals_full_model()}: Plot residuals of the full model
 
 \item \code{plot_binomial_fits_vs_powerlaw_residuals_bars()}: Plot binomial fits vs powerlaw residuals (barplot)
 
