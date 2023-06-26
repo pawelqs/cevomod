@@ -92,12 +92,14 @@ fit_powerlaw_tail_fixed.cevodata <- function(object,
 fit_optimal_lm <- function(data, rsq_treshold = 0.98, pb = NULL) {
   min_val <- min(data$f)
   max_val <- max(data$f)
-  desired_length <- if ((max_val - min_val) >= 0.05) 0.05 else max(grid$length)
   grid <- expand_grid(
       from = seq(min_val, max_val, by = 0.01),
       to = seq(min_val, max_val, by = 0.01)
     ) |>
-    mutate(length = .data$to - .data$from) |>
+    mutate(length = .data$to - .data$from)
+
+  desired_length <- if ((max_val - min_val) >= 0.05) 0.05 else max(grid$length)
+  grid <- grid |>
     filter(near(.data$length, desired_length))
 
   grid$data <- pmap(grid, prepare_Mf_1f_data, data = data)
