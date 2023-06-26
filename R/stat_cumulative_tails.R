@@ -9,7 +9,7 @@
 #'
 #' @param object SNVs tibble object
 #' @param which_snvs Which SNVs to use?
-#' @param column VAF/CCF
+#' @param column VAF or CCF/2
 #' @param bins Resolution of the cumulative tails calculation
 #' @param verbose Verbose?
 #' @param ... other arguments

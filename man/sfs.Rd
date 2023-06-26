@@ -23,7 +23,7 @@ calc_SFS(object, ...)
 
 \method{calc_SFS}{cevo_snvs}(
   object,
-  column = if ("CCF" \%in\% names(object)) "CCF" else "VAF",
+  column = get_frequency_measure_name(object),
   bins = NULL,
   verbose = get_cevomod_verbosity(),
   ...
@@ -42,7 +42,7 @@ get_SFS(object, model_name = "SFS", verbose = TRUE, ...)
 
 \item{which_snvs}{Which SNVs to use?}
 
-\item{column}{VAF/CCF}
+\item{column}{VAF or CCF/2}
 
 \item{bins}{Resolution of the cumulative tails calculation}
 

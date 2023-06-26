@@ -2,12 +2,24 @@
 % Please edit documentation in R/prepare_snvs.R
 \name{get_frequency_measure_name}
 \alias{get_frequency_measure_name}
-\title{Get mutation rates by Williams
-Use ...}
+\alias{get_frequency_measure_name.cevodata}
+\alias{get_frequency_measure_name.cevo_snvs}
+\title{Decide which mutation frequency measure to use}
 \usage{
 get_frequency_measure_name(object, ...)
+
+\method{get_frequency_measure_name}{cevodata}(object, which_snvs = default_SNVs(object), ...)
+
+\method{get_frequency_measure_name}{cevo_snvs}(object, ...)
+}
+\arguments{
+\item{object}{object}
+
+\item{...}{other params (not used now)}
+
+\item{which_snvs}{Which SNVs to use?}
 }
 \description{
-Get mutation rates by Williams
-Use ...
+Used during the intervalization of mutation frequencies. Uses CCF/2 if found
+in the object, and VAF otherwise
 }

@@ -18,7 +18,7 @@ intervalize_mutation_frequencies(
 \item{which_snvs}{Which SNVs to use}
 
 \item{column}{Which frequency measure column to intervalize? By default, uses
-the CCF is found in the SNV tibble, and VAF otherwise}
+the CCF/2  if it is found in the SNV tibble, and VAF otherwise}
 
 \item{bins}{Number of interval bins}
 

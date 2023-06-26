@@ -99,7 +99,7 @@ dentro_2015_correction <- function(tbl) {
 #' @param object <cevodata> object
 #' @param which_snvs Which SNVs to use
 #' @param column Which frequency measure column to intervalize? By default, uses
-#'   the CCF is found in the SNV tibble, and VAF otherwise
+#'   the CCF/2  if it is found in the SNV tibble, and VAF otherwise
 #' @param bins Number of interval bins
 #' @param verbose Verbose?
 #'
@@ -119,8 +119,15 @@ intervalize_mutation_frequencies <- function(object,
 }
 
 
-#' Get mutation rates by Williams
-#' Use ...
+#' Decide which mutation frequency measure to use
+#'
+#' Used during the intervalization of mutation frequencies. Uses CCF/2 if found
+#' in the object, and VAF otherwise
+#'
+#' @param object object
+#' @param which_snvs Which SNVs to use?
+#' @param ... other params (not used now)
+#'
 #' @export
 get_frequency_measure_name <- function(object, ...) {
   UseMethod("get_frequency_measure_name")
