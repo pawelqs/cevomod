@@ -37,7 +37,7 @@ calc_cumulative_tails <- function(object, ...) {
 #' @export
 calc_cumulative_tails.cevodata <- function(object,
                                            which_snvs = default_SNVs(object),
-                                           column = mutation_frequencies_column_name(object, which_snvs),
+                                           column = get_frequency_measure_name(object, which_snvs),
                                            bins = 100,
                                            verbose = get_cevomod_verbosity(),
                                            ...) {
@@ -52,7 +52,7 @@ calc_cumulative_tails.cevodata <- function(object,
 #' @describeIn cumulative_tails Calculate the cumulative tails
 #' @export
 calc_cumulative_tails.cevo_snvs <- function(object,
-                                            column = if ("CCF" %in% names(object)) "CCF" else "VAF",
+                                            column = get_frequency_measure_name(object),
                                             bins = 100,
                                             verbose = get_cevomod_verbosity(),
                                             ...) {

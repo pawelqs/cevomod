@@ -36,7 +36,7 @@ calc_Mf_1f <- function(object, ...) {
 #' @export
 calc_Mf_1f.cevodata <- function(object,
                                 which_snvs = default_SNVs(object),
-                                column = mutation_frequencies_column_name(object, which_snvs),
+                                column = get_frequency_measure_name(object, which_snvs),
                                 bins = 100,
                                 verbose = get_cevomod_verbosity(),
                                 ...) {
@@ -50,7 +50,7 @@ calc_Mf_1f.cevodata <- function(object,
 #' @describeIn Mf_1f Method for <cevo_snvs> object
 #' @export
 calc_Mf_1f.cevo_snvs <- function(object,
-                                 column = if ("CCF" %in% names(object)) "CCF" else "VAF",
+                                 column = get_frequency_measure_name(object),
                                  bins = 100,
                                  verbose = get_cevomod_verbosity(),
                                  ...) {

@@ -39,7 +39,7 @@ calc_SFS <- function(object, ...) {
 #' @export
 calc_SFS.cevodata <- function(object,
                               which_snvs = default_SNVs(object),
-                              column = mutation_frequencies_column_name(object, which_snvs),
+                              column = get_frequency_measure_name(object, which_snvs),
                               bins = NULL,
                               verbose = get_cevomod_verbosity(),
                               ...) {
@@ -52,7 +52,7 @@ calc_SFS.cevodata <- function(object,
 #' @describeIn sfs method for cevo_snvs object
 #' @export
 calc_SFS.cevo_snvs <- function(object,
-                               column =  if ("CCF" %in% names(object)) "CCF" else "VAF",
+                               column = get_frequency_measure_name(object),
                                bins = NULL,
                                verbose = get_cevomod_verbosity(),
                                ...) {

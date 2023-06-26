@@ -7,7 +7,7 @@
 intervalize_mutation_frequencies(
   object,
   which_snvs = default_SNVs(object),
-  column = mutation_frequencies_column_name(object, which_snvs),
+  column = get_frequency_measure_name(object, which_snvs),
   bins = NULL,
   verbose = get_cevomod_verbosity()
 )

@@ -28,7 +28,10 @@ test_that("calc_mutation_frequencies() adds correct CCF column", {
 
   expected <- object |>
     SNVs() |>
-    mutate(CCF = c(0.5, 0.5, NA_real_, 1, 1, 0.48, NA_real_))
+    mutate(
+      CCF = c(0.5, 0.5, NA_real_, 1, 1, 0.48, NA_real_),
+      `CCF/2` = CCF / 2
+    )
   res <- object |>
     calc_mutation_frequencies(method = "Dentro", rm_intermediate_cols = TRUE)
 
@@ -45,6 +48,6 @@ test_that("dentro_2015_correction() works", {
     purity = 0.5
   )
   res <- dentro_2015_correction(snvs)
-  expect_named(res, c("VAF", "total_cn", "normal_cn", "purity", "u", "m", "CCF"))
+  expect_named(res, c("VAF", "CCF", "CCF/2", "total_cn", "normal_cn", "purity", "u", "m"))
   expect_equal(res$CCF, c(0.5, 1, 1))
 })

@@ -14,7 +14,7 @@ calc_cumulative_tails(object, ...)
 \method{calc_cumulative_tails}{cevodata}(
   object,
   which_snvs = default_SNVs(object),
-  column = mutation_frequencies_column_name(object, which_snvs),
+  column = get_frequency_measure_name(object, which_snvs),
   bins = 100,
   verbose = get_cevomod_verbosity(),
   ...

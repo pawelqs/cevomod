@@ -47,8 +47,7 @@ calc_mutation_frequencies <- function(object,
     snvs <- SNVs(object, which_snvs) |>
       join_CNVs(cnvs) |>
       left_join(purities, by = "sample_id") |>
-      dentro_2015_correction() |>
-      relocate("CCF", .after = "VAF")
+      dentro_2015_correction()
     intermediate_cols <- c("start", "end", "total_cn", "normal_cn", "purity", "u", "m")
   } else {
     stop("Currently supported methods: 'Dentro'")
@@ -82,8 +81,10 @@ dentro_2015_correction <- function(tbl) {
     mutate(
       u = .data$VAF * (1 / .data$purity) * (.data$purity * .data$total_cn + (1 - .data$purity) * .data$normal_cn),
       m = if_else(.data$u < 1, 1, round(.data$u)),
-      CCF = .data$u / .data$m
-    )
+      CCF = .data$u / .data$m,
+      `CCF/2` = .data$CCF / 2
+    ) |>
+    relocate("CCF", "CCF/2", .after = "VAF")
 }
 
 
@@ -106,7 +107,7 @@ dentro_2015_correction <- function(tbl) {
 #' @export
 intervalize_mutation_frequencies <- function(object,
                                              which_snvs = default_SNVs(object),
-                                             column = mutation_frequencies_column_name(object, which_snvs),
+                                             column = get_frequency_measure_name(object, which_snvs),
                                              bins = NULL,
                                              verbose = get_cevomod_verbosity()) {
   msg("Calculating f intervals, using ", column, " column", verbose = verbose)
@@ -118,8 +119,22 @@ intervalize_mutation_frequencies <- function(object,
 }
 
 
-mutation_frequencies_column_name <- function(object, which_snvs = default_SNVs(object)) {
-  snvs <- SNVs(object, which_snvs)
-  if ("CCF" %in% names(snvs)) "CCF" else "VAF"
+#' Get mutation rates by Williams
+#' Use ...
+#' @export
+get_frequency_measure_name <- function(object, ...) {
+  UseMethod("get_frequency_measure_name")
 }
 
+
+#' @export
+get_frequency_measure_name.cevodata <- function(object, which_snvs = default_SNVs(object)) {
+  SNVs(object, which_snvs) |>
+    get_frequency_measure_name()
+}
+
+
+#' @export
+get_frequency_measure_name.cevo_snvs <- function(object) {
+  if ("CCF/2" %in% names(object)) "CCF/2" else "VAF"
+}
