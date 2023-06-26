@@ -85,9 +85,9 @@ get_interval_centers <- function(intervals) {
   res <- intervals |>
     str_replace_all("[\\(\\)\\[\\]]", "") |>
     as_tibble_col("from_and_to") |>
-    separate_wider_delim(from_and_to, names = c("from", "to"), delim = ",") |>
+    separate_wider_delim("from_and_to", names = c("from", "to"), delim = ",") |>
     map_df(parse_double) |>
-    mutate(centers = from + (to - from) / 2)
+    mutate(centers = .data$from + (.data$to - .data$from) / 2)
   res$centers
 }
 
@@ -96,9 +96,9 @@ get_interval_width <- function(intervals) {
   res <- intervals |>
     str_replace_all("[\\(\\)\\[\\]]", "") |>
     as_tibble_col("from_and_to") |>
-    separate_wider_delim(from_and_to, names = c("from", "to"), delim = ",") |>
+    separate_wider_delim("from_and_to", names = c("from", "to"), delim = ",") |>
     map_df(parse_double) |>
-    mutate(width = to - from)
+    mutate(width = .data$to - .data$from)
   stats::median(res$width)
 }
 
