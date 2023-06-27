@@ -38,7 +38,8 @@ use_data(test_data, overwrite = TRUE)
 withr::with_seed(
   123,
   test_data_fitted <- test_data |>
-    prepare_SNVs() |>
+    intervalize_mutation_frequencies() |>
+    calc_SFS() |>
     fit_powerlaw_tail_fixed() |>
     fit_subclones() |>
     fit_powerlaw_tail_optim() |>

@@ -37,7 +37,7 @@ get_mutation_rates.cevodata <- function(object, models_name = "powerlaw_fixed", 
   # residuals <- get_residuals(object)
   # bin_widths <- residuals |>
   #   group_by(sample_id) |>
-  #   summarise(bin_width = get_interval_width(VAF_interval))
+  #   summarise(bin_width = get_interval_width(f_interval))
   #
   # min_VAF <- 0.2
   # max_VAF <- 0.8

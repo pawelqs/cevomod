@@ -1,62 +1,82 @@
 
 #' Site Frequency Spectra
 #'
-#' Creates  cevodata$models$SFS with the groupping variables and:
-#'   - n columnt with the number of mutations in the VAF interval
-#'   - x and y columns describing SFS
-#'   - y_scaled with y values scaled to the range 0-1
+#' Site Frequency Spectra (or Variant Allele Frequency Spectra) are the main
+#' statistic used by cevomod.
 #'
 #' @param object SNVs tibble object
-#' @param bins resolution of the cumulative tails calculation
-#' @param geom geom
+#' @param which_snvs Which SNVs to use?
+#' @param column VAF or CCF/2
+#' @param bins Resolution of the cumulative tails calculation
+#' @param verbose Verbose?
+#' @param geom Geom
 #' @param ... other arguments
 #' @examples
-#' data("tcga_brca_test")
+#' data("test_data")
 #'
-#' tcga_brca_test |>
+#' test_data |>
 #'   calc_SFS() |>
 #'   plot_SFS() +
-#'   layer_mutations(tcga_brca_test, drivers = "BRCA")
+#'   layer_mutations(test_data, drivers = "BRCA")
 #' @name sfs
 NULL
 
 
-#' @describeIn sfs Calculate SFS
+#' @describeIn sfs Calculates spectra for all samples and saves and saves them
+#' in cevodata$models$SFS tibble.
+#'
+#' SFS columns description:
+#' - y number of mutations in the frequency interval
+#' - y_scaled with y values scaled to the range 0-1
+#'
 #' @export
 calc_SFS <- function(object, ...) {
   UseMethod("calc_SFS")
 }
 
 
-#' @describeIn sfs Calculate SFS
+#' @describeIn sfs method for cevodata object
 #' @export
-calc_SFS.cevodata <- function(object, bins = NULL, ...) {
-  object$models[["SFS"]] <- SNVs(object) |>
-    calc_SFS(bins = bins)
+calc_SFS.cevodata <- function(object,
+                              which_snvs = default_SNVs(object),
+                              column = get_frequency_measure_name(object, which_snvs),
+                              bins = NULL,
+                              verbose = get_cevomod_verbosity(),
+                              ...) {
+  object$models[["SFS"]] <- SNVs(object, which_snvs) |>
+    calc_SFS(column = column, bins = bins, verbose = verbose)
   object
 }
 
 
-#' @describeIn sfs Calculate SFS
+#' @describeIn sfs method for cevo_snvs object
 #' @export
-calc_SFS.cevo_snvs <- function(object, bins = NULL, ...) {
-  if (is.null(object[["VAF_interval"]]) | !is.null(bins)) {
-    snvs <- cut_f_intervals(object, bins = bins) |>
-      filter(.data$VAF > 0)
+calc_SFS.cevo_snvs <- function(object,
+                               column = get_frequency_measure_name(object),
+                               bins = NULL,
+                               verbose = get_cevomod_verbosity(),
+                               ...) {
+  msg("Calculating SFS statistics", verbose = verbose)
+
+  if (is.null(object[["f_interval"]]) | !is.null(bins)) {
+    msg("Calculating f intervals, using ", column, " column", verbose = verbose)
+    snvs <- cut_f_intervals(object, column = column, bins = bins) |>
+      filter(.data$f > 0)
   } else {
     snvs <- object |>
-      filter(.data$VAF > 0)
+      filter(.data$f > 0)
   }
   intervals <- attributes(snvs)$intervals
   res <- snvs |>
-    group_by(.data$sample_id, .data$VAF_interval) |>
+    group_by(.data$sample_id, .data$f_interval) |>
     summarise(y = n(), .groups = "drop_last") |>
-    complete_missing_VAF_intervals(intervals) |>
+    complete_missing_f_intervals(intervals) |>
     replace_na(list(y = 0)) |>
-    mutate(VAF = get_interval_centers(.data$VAF_interval), .after = "VAF_interval") |>
+    mutate(f = get_interval_centers(.data$f_interval), .after = "f_interval") |>
     mutate(y_scaled = round(.data$y / sum(.data$y), digits = 4)) |>
     ungroup()
   class(res) <- c("cevo_SFS_tbl", class(res))
+  attr(res, "f_column") <- attributes(snvs)[["f_column"]]
   res
 }
 
@@ -93,7 +113,7 @@ plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
 #' @return ggplot obj
 #' @export
 plot.cevo_SFS_tbl <- function(x, mapping = NULL, alpha = 0.8, ..., geom = "bar") {
-  default_mapping <- aes(.data$VAF, .data$y, group = .data$sample_id)
+  default_mapping <- aes(.data$f, .data$y, group = .data$sample_id)
 
   if (geom == "bar") {
     x <- x |>
@@ -116,35 +136,11 @@ plot.cevo_SFS_tbl <- function(x, mapping = NULL, alpha = 0.8, ..., geom = "bar")
 }
 
 
-#' SFS stat
-#'
-#' Modification of stat_bin with custom parameters
-#' @param mapping aes()
-#' @param data data
-#' @param binwidth binwidth
-#' @param geom geom
-#' @param position position
-#' @param ... args passed to stat_bin
-#'
-#' @export
-stat_SFS <- function(mapping = NULL, data = NULL,
-                     binwidth = 0.01, geom = "line", position = "identity", ...) {
-  stat_bin(mapping = mapping, data = data, binwidth = binwidth, geom = geom, position = position, ...)
-}
-
-
-#' @describeIn sfs Get SFS
-#' @export
-get_SFS <- function(object, ...) {
-  UseMethod("get_SFS")
-}
-
-
 #' @describeIn sfs Get SFS
 #' @param model_name name of slot with SFS statistics
 #' @param verbose verbose?
 #' @export
-get_SFS.cevodata <- function(object, model_name = "SFS", verbose = TRUE, ...) {
+get_SFS <- function(object, model_name = "SFS", verbose = TRUE, ...) {
   sfs <- object$models[[model_name]]
   if (is.null(sfs)) {
     msg(
@@ -174,9 +170,9 @@ get_non_zero_SFS_range <- function(sfs,
     mutate(
       empty_bin = (.data$y < y_treshold) | (.data$y < max(.data$y) * y_threshold_pct),
       segment_number = segment(.data$empty_bin),
-      empty_low_VAF_range = .data$empty_bin & .data$segment_number == 0
+      empty_low_f_range = .data$empty_bin & .data$segment_number == 0
     ) |>
-    filter(!.data$empty_low_VAF_range) |>
+    filter(!.data$empty_low_f_range) |>
     group_by(.data$sample_id, .data$segment_number) |>
     mutate(
       segment_length = n(),
@@ -186,7 +182,7 @@ get_non_zero_SFS_range <- function(sfs,
     mutate(new_segments = segment(.data$keep)) |>
     filter(.data$new_segments == 0) |>
     summarise(
-      from = min(.data$VAF),
-      to = max(.data$VAF)
+      from = min(.data$f),
+      to = max(.data$f)
     )
 }

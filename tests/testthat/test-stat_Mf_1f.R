@@ -2,9 +2,10 @@ data("tcga_brca_test")
 
 test_that("Calculation of Mf_1f works", {
   cd <- calc_Mf_1f(tcga_brca_test, verbose = FALSE)
-  expected <- read_tsv("../testdata/tcga_brca_Mf_1f.tsv", col_types = "ccdiid")
+  path <- test_path("tcga_brca_Mf_1f.tsv")
+  expected <- read_tsv(path, col_types = "ccdiid")
   class(expected) <- c("cevo_Mf_1f_tbl", class(expected))
-  # write_tsv(cd$models$Mf_1f, "tests/testdata/tcga_brca_Mf_1f.tsv")
+  # write_tsv(cd$models$Mf_1f, path)
   expect_equal(cd$models$Mf_1f, expected)
 })
 

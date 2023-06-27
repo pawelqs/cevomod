@@ -1,27 +1,51 @@
 data("tcga_brca_test")
+set_cevomod_verbosity(0)
+
 
 test_that("Fitting neutral partial models works", {
   snvs <- SNVs(tcga_brca_test) |>
     filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01"))
-  cd <- init_cevodata("Test") |>
+  object <- init_cevodata("Test") |>
     add_SNV_data(snvs) |>
-    calc_Mf_1f(verbose = FALSE) |>
+    intervalize_mutation_frequencies() |>
+    calc_Mf_1f() |>
     calc_SFS() |>
-    fit_powerlaw_tail_fixed(rsq_treshold = 0.99, verbose = FALSE)
-  expected <- "../testdata/tcga_brca_partial_neutral_models.tsv" |>
-    read_tsv(col_types = "cccdddddddl") |>
+    fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
+  path <- test_path("tcga_brca_partial_neutral_models.tsv")
+  expected <- read_tsv(path, col_types = "cccdddddddl") |>
     mutate(
       model = "powerlaw_fixed",
       component = "Neutral tail",
       .before = "from"
     )
   class(expected) <- c("cevo_powerlaw_models", class(expected))
-  # write_tsv(cd$models$powerlaw_fixed, "tests/testdata/tcga_brca_partial_neutral_models.tsv")
-  expect_equal(get_models(cd, best_only = FALSE), expected)
+  # write_tsv(object$models$powerlaw_fixed, path)
+  expect_equal(get_models(object, best_only = FALSE), expected)
 })
 
 
-test_that("calc_powerlaw_curve works", {
+# ## Verify the above model visually to evaluate the changes
+# powerlaw_fixed_old <- test_path("tcga_brca_partial_neutral_models.tsv") |>
+#   read_tsv(col_types = "cccdddddddl") |>
+#   mutate(
+#     model = "powerlaw_fixed",
+#     component = "Neutral tail",
+#     .before = "from"
+#   )
+# object$models$powerlaw_fixed_old <- powerlaw_fixed_old
+# object <- calc_powerlaw_model_residuals(object, models_name = "powerlaw_fixed_old")
+# plot_models(object) +
+#   geom_line(
+#     aes(.data$f, .data$powerlaw_pred),
+#     data = object$misc$residuals_powerlaw_fixed_old |>
+#       filter(powerlaw_pred < 600),
+#     color = "red", alpha = 0.5,
+#     linetype = "dashed"
+#   )
+
+
+
+test_that("calc_powerlaw_curve() works", {
   dt <- tibble(VAF = 1:100/100, A = 176.5929, alpha = 2, nbins = 100)
   curve <- dt |>
     mutate(powerlaw_pred = calc_powerlaw_curve(VAF, A, alpha, nbins))
@@ -40,15 +64,16 @@ test_that("calc_powerlaw_curve works", {
 })
 
 
-cd <- init_cevodata("Test") |>
+object <- init_cevodata("Test") |>
   add_SNV_data(generate_neutral_snvs()) |>
-  calc_Mf_1f(verbose = FALSE) |>
+  intervalize_mutation_frequencies() |>
+  calc_Mf_1f() |>
   calc_SFS(bins = 100) |>
-  fit_powerlaw_tail_fixed(verbose = FALSE)
+  fit_powerlaw_tail_fixed()
 
 
-test_that("calc_residuals creates proper tibble", {
-  cd <- calc_powerlaw_model_residuals(cd, "powerlaw_fixed")
+test_that("calc_powerlaw_model_residuals() creates proper tibble", {
+  cd <- calc_powerlaw_model_residuals(object, "powerlaw_fixed")
   resids <- get_residuals(cd, "powerlaw_fixed")
   expect_equal(nrow(resids), 101)
   expect_true(all(c("powerlaw_resid", "sampling_rate") %in% names(resids)))
@@ -59,3 +84,4 @@ test_that("calc_residuals creates proper tibble", {
   )
   expect_equal(is.na(resids) |> sum(), 1)
 })
+

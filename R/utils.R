@@ -19,13 +19,13 @@ drop_na_columns <- function(.data) {
 }
 
 
-get_VAF_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
+get_f_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
   bounds <- snvs |>
-    filter(.data$VAF > 0.00001, !is.na(.data$VAF)) |>
+    filter(.data$f > 0.00001, !is.na(.data$f)) |>
     group_by(.data$sample_id) |>
     summarise(
-      lower_bound = stats::quantile(.data$VAF, pct_left),
-      higher_bound = stats::quantile(.data$VAF, pct_right)
+      lower_bound = stats::quantile(.data$f, pct_left),
+      higher_bound = stats::quantile(.data$f, pct_right)
     )
   bounds
 }
@@ -122,38 +122,6 @@ segment <- function(vec) {
   x <- vec != lag(vec)
   x[1] <- 0
   cumsum(x)
-}
-
-
-chromosomes_to_int <- function(chrom) {
-  case_match(
-    chrom,
-    "chr1" ~ 1,
-    "chr2" ~ 2,
-    "chr3" ~ 3,
-    "chr4" ~ 4,
-    "chr5" ~ 5,
-    "chr6" ~ 6,
-    "chr7" ~ 7,
-    "chr8" ~ 8,
-    "chr9" ~ 9,
-    "chr10" ~ 10,
-    "chr11" ~ 11,
-    "chr12" ~ 12,
-    "chr13" ~ 13,
-    "chr14" ~ 14,
-    "chr15" ~ 15,
-    "chr16" ~ 16,
-    "chr17" ~ 17,
-    "chr18" ~ 18,
-    "chr19" ~ 19,
-    "chr20" ~ 20,
-    "chr21" ~ 21,
-    "chr22" ~ 22,
-    "chrX" ~ 23,
-    "chrY" ~ 24,
-    "chrMT" ~ 25
-  )
 }
 
 

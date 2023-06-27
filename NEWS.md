@@ -1,4 +1,8 @@
 
+# cevomod 1.2.0
+
+* modelling can utilize VAF of CCF (Cancer Cell Fraction)
+
 # cevomod 1.1.0
 
 * cevodata export to [CliP](https://github.com/wwylab/CliP) implemented

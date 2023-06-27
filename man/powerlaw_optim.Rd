@@ -18,7 +18,7 @@ fit_powerlaw_tail_optim(object, ...)
   peak_detection_upper_limit = 0.3,
   reward_upper_limit = 0.4,
   control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
-  verbose = TRUE,
+  verbose = get_cevomod_verbosity(),
   ...
 )
 }
@@ -36,9 +36,9 @@ fit_powerlaw_tail_optim(object, ...)
 \item{y_threshold_pct}{bins that have less mutations than this param times the
 height of the higherst peak will be considered empty}
 
-\item{av_filter}{average filter values to be applied to VAF}
+\item{av_filter}{average filter values to be applied to f}
 
-\item{peak_detection_upper_limit}{upper VAF value up to which the main peak is searched}
+\item{peak_detection_upper_limit}{upper f value up to which the main peak is searched}
 
 \item{reward_upper_limit}{mutations under the curve up to this limit will be rewarded}
 
@@ -49,7 +49,7 @@ height of the higherst peak will be considered empty}
 \description{
 \code{fit_powerlaw_tail_optim()} uses \code{stats::optim} to find optimal A and alpha
 whch maximizes SFS area under the powerlaw curve (\emph{sampled} region of SFS and
-the range of VAF values below the maximum SFS value does not count) and
+the range of f values below the maximum SFS value does not count) and
 minimizes negative error - where the curve is above the real SFS (\emph{sampled}
 are does not count). Penalty for the negative error depends on the number of
 points with the negative error value. Penalty value is the sum of error values

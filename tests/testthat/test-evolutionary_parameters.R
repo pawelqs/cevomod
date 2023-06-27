@@ -19,6 +19,6 @@ test_that("mobster_evolutionary_parameters() works", {
     rowwise("sample_id", "mutation_rate_williams") |>
     reframe(mobster_evolutionary_parameters(subclones))
   # write_tsv(res, "tests/testdata/expected_mobster_evolutionary_parameters.tsv")
-  expected <- read_tsv("../testdata/expected_mobster_evolutionary_parameters.tsv", show_col_types = FALSE)
+  expected <- read_tsv(test_path("expected_mobster_evolutionary_parameters.tsv"), show_col_types = FALSE)
   expect_equal(res, expected)
 })

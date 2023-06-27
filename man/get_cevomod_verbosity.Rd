@@ -2,10 +2,10 @@
 % Please edit documentation in R/cevomod-global.R
 \name{get_cevomod_verbosity}
 \alias{get_cevomod_verbosity}
-\title{Get verbosity level}
+\title{Get the verbosity level}
 \usage{
 get_cevomod_verbosity()
 }
 \description{
-Get verbosity level
+Get the verbosity level
 }

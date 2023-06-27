@@ -17,9 +17,9 @@
 \arguments{
 \item{x}{tibble with calc_Mf_1f() results}
 
-\item{from}{min VAF to plot}
+\item{from}{min f to plot}
 
-\item{to}{max VAF to plot}
+\item{to}{max f to plot}
 
 \item{scale}{scale data?}
 
@@ -36,9 +36,9 @@ ggplot obj
 Plot M(f) ~ 1/f
 }
 \examples{
-data("tcga_brca_test")
+data("test_data")
 
-tcga_brca_test |>
+test_data |>
   calc_Mf_1f() |>
   plot_Mf_1f()
 }

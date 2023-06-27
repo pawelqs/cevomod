@@ -306,3 +306,9 @@ get_patients_data <- function(metadata) {
 get_sample_ids <- function(cd) {
   cd$metadata$sample_id
 }
+
+
+get_patient_sex <- function(cd) {
+  cd$metadata |>
+    select("sample_id", "sex")
+}
