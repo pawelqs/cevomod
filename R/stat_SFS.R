@@ -56,9 +56,10 @@ calc_SFS.cevo_snvs <- function(object,
                                bins = NULL,
                                verbose = get_cevomod_verbosity(),
                                ...) {
-  msg("Calculating SFS statistics, using ", column, " column", verbose = verbose)
+  msg("Calculating SFS statistics", verbose = verbose)
 
   if (is.null(object[["f_interval"]]) | !is.null(bins)) {
+    msg("Calculating f intervals, using ", column, " column", verbose = verbose)
     snvs <- cut_f_intervals(object, column = column, bins = bins) |>
       filter(.data$f > 0)
   } else {
