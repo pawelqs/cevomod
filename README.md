@@ -25,6 +25,14 @@ You can install the development version of cevomod from [GitHub](https://github.
 devtools::install_github("pawelqs/cevomod")
 ```
 
+
+## Chnages in version 2.0.0
+
+Starting with version 2.0.0, cevomod can use either VAF or CCF (Cancer Cell Fraction) as a measure of mutation frequency. CCF is a measure of mutation frequency corrected for tumor purity and copy number alterations. CCF can be calculated prior to mutation frequency intervalization using the `calc_mutation_frequencies()` function and requires information on total copy number in tumor and normal tissue and sample purity (tumor cell content). See the Vignettes for more examples.
+
+To see the previous changes in the package see the [Changelog](https://pawelqs.github.io/cevomod/news/index.html)
+
+
 ## Help and support
 
 [GitHub Issues](https://github.com/pawelqs/cevomod/issues)
