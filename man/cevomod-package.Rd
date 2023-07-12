@@ -14,6 +14,7 @@ Cancer Evolutionary Models. Set of methods facilitating the analysis of Cancer E
 Useful links:
 \itemize{
   \item \url{https://pawelqs.github.io/cevomod/}
+  \item \url{https://github.com/pawelqs/cevomod}
 }
 
 }

@@ -61,4 +61,4 @@ Remotes:
     caravagnalab/mobster,
     caravagnalab/BMix
 LazyData: true
-URL: https://pawelqs.github.io/cevomod/
+URL: https://pawelqs.github.io/cevomod/, https://github.com/pawelqs/cevomod
