@@ -114,6 +114,7 @@ plot_SFS.cevodata <- function(object, mapping = NULL, ..., geom = "bar") {
 #' @export
 plot.cevo_SFS_tbl <- function(x, mapping = NULL, alpha = 0.8, ..., geom = "bar") {
   default_mapping <- aes(.data$f, .data$y, group = .data$sample_id)
+  x_label <- if (is.null(attr(x, "f_column"))) "f" else attr(x, "f_column")
 
   if (geom == "bar") {
     x <- x |>
@@ -132,7 +133,7 @@ plot.cevo_SFS_tbl <- function(x, mapping = NULL, alpha = 0.8, ..., geom = "bar")
       geom_line(...)
   }
 
-  p + labs(title = "SFS", y = "count")
+  p + labs(title = "SFS", y = "count", x = x_label)
 }
 
 
