@@ -1,18 +1,17 @@
 
-# cevomod 1.2.0
+## cevomod 2.0.0
+* cevomod functions can no utilize VAF or CCF (Cancer Cell Fraction) as a measure
+  of mutation frequency. CCF is calculated using the formula introduced in [Dentro et al. *Principles of Reconstructing the Subclonal Architecture of Cancers* (2015)](https://doi.org/10.1101/cshperspect.a026625)
 
-* modelling can utilize VAF of CCF (Cancer Cell Fraction)
 
-# cevomod 1.1.0
-
+## cevomod 1.1.0
 * cevodata export to [CliP](https://github.com/wwylab/CliP) implemented
 
-# cevomod 1.0.0
 
+## cevomod 1.0.0
 * cevodata class implementation
 * fitting the power-law tails with exponent equal to 2 using $M(f) \sim 1/f$ statistic
 * fitting the power-law tails with optimized exponent
 * fitting subclones using mclust
 * fitting subclones using BMix
 * calculation of the evolutionary parameters using the [Williams et al. (2018)](https://doi.org/10.1038/s41588-018-0128-6) equations and the [MOBSTER code](https://github.com/caravagnalab/mobster/blob/master/R/evodynamics.R) [(Caravagna et al. (2020))](https://doi.org/10.1038/s41588-020-0675-5)
-
