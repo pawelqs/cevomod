@@ -406,7 +406,7 @@
 <polyline points='34.95,534.41 37.69,534.41 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='34.95,455.31 37.69,455.31 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='34.95,376.21 37.69,376.21 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' />
-<text x='376.10' y='568.24' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='3.06px' lengthAdjust='spacingAndGlyphs'>f</text>
+<text x='376.10' y='568.24' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='21.40px' lengthAdjust='spacingAndGlyphs'>VAF</text>
 <text transform='translate(13.05,292.27) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='26.91px' lengthAdjust='spacingAndGlyphs'>count</text>
 <text x='37.69' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='25.68px' lengthAdjust='spacingAndGlyphs'>SFS</text>
 </g>
