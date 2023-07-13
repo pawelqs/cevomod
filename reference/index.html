@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,13 @@
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/pawelqs/cevomod/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -138,7 +144,7 @@
           
           <code><a href="cut_f_intervals.html">cut_f_intervals()</a></code> 
         </dt>
-        <dd>Cut f or VAF into intervals</dd>
+        <dd>Get mutation frequency intervals</dd>
       </dl><dl><dt>
           
           <code><a href="filter_SNVs_by_regions.html">filter_SNVs_by_regions()</a></code> 
@@ -146,14 +152,40 @@
         <dd>Filter SNVs by position: using regions tbl or bed file</dd>
       </dl><dl><dt>
           
-          <code><a href="mutation_frequencies.html">calc_mutation_frequencies()</a></code> 
+          <code><a href="shuffle.html">shuffle()</a></code> 
+        </dt>
+        <dd>Shuffle order of elements in object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="annotate_normal_cn.html">annotate_normal_cn()</a></code> 
+        </dt>
+        <dd>Annotate chromosome ploidies in CNV data</dd>
+      </dl><dl><dt>
+          
+          <code><a href="calc_mutation_frequencies.html">calc_mutation_frequencies()</a></code> <code><a href="calc_mutation_frequencies.html">dentro_2015_correction()</a></code> 
         </dt>
         <dd>Calc mutation frequencies</dd>
       </dl><dl><dt>
           
-          <code><a href="shuffle.html">shuffle()</a></code> 
+          <code><a href="intervalize_mutation_frequencies.html">intervalize_mutation_frequencies()</a></code> 
         </dt>
-        <dd>Shuffle order of elements in object</dd>
+        <dd>Intervalize the mutation frequencies</dd>
+      </dl><dl><dt>
+          
+          <code><a href="prepare_SNVs.html">prepare_SNVs()</a></code> 
+        </dt>
+        <dd>Prepare SNVs for analyses</dd>
       </dl></div><div class="section level2">
       <h2 id="model-fitting">Model fitting<a class="anchor" aria-label="anchor" href="#model-fitting"></a></h2>
       
@@ -186,11 +218,6 @@ power-law model</dd>
           <code><a href="powerlaw_optim.html">fit_powerlaw_tail_optim()</a></code> 
         </dt>
         <dd>Fitting Tung Durrett models</dd>
-      </dl><dl><dt>
-          
-          <code><a href="prepare_SNVs.html">prepare_SNVs()</a></code> 
-        </dt>
-        <dd>Prepare SNVs for analyses</dd>
       </dl></div><div class="section level2">
       <h2 id="getters">Getters<a class="anchor" aria-label="anchor" href="#getters"></a></h2>
       
@@ -222,6 +249,16 @@ power-law model</dd>
           <code><a href="get_CNVs_var_names.html">get_CNVs_var_names()</a></code> 
         </dt>
         <dd>Get names of CNV variables</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get_cevomod_verbosity.html">get_cevomod_verbosity()</a></code> 
+        </dt>
+        <dd>Get the verbosity level</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get_frequency_measure_name.html">get_frequency_measure_name()</a></code> 
+        </dt>
+        <dd>Decide which mutation frequency measure to use</dd>
       </dl><dl><dt>
           
           <code><a href="get_model_names.html">get_model_names()</a></code> 
@@ -262,6 +299,11 @@ power-law model</dd>
           <code><a href="active_models.html">active_models()</a></code> 
         </dt>
         <dd>Get the name of the active models</dd>
+      </dl><dl><dt>
+          
+          <code><a href="SNVs_CNVs.html">SNVs_CNVs()</a></code> 
+        </dt>
+        <dd>Get SNVs with merged CNVs</dd>
       </dl></div><div class="section level2">
       <h2 id="evolutionary-parameters">Evolutionary parameters<a class="anchor" aria-label="anchor" href="#evolutionary-parameters"></a></h2>
       
@@ -421,11 +463,6 @@ power-law model</dd>
         <dd>Use PNWColors palette</dd>
       </dl><dl><dt>
           
-          <code><a href="stat_SFS.html">stat_SFS()</a></code> 
-        </dt>
-        <dd>SFS stat</dd>
-      </dl><dl><dt>
-          
           <code><a href="stat_cumulative_tail.html">stat_cumulative_tail()</a></code> 
         </dt>
         <dd>Plot Cumulative Tail</dd>
@@ -469,6 +506,11 @@ https://doi.org/10.1016/j.cell.2018.02.060</dd>
       
 
       <dl><dt>
+          
+          <code><a href="set_cevomod_verbosity.html">set_cevomod_verbosity()</a></code> 
+        </dt>
+        <dd>Change the verbosity level</dd>
+      </dl><dl><dt>
           
           <code><a href="generate_neutral_snvs.html">generate_neutral_snvs()</a></code> 
         </dt>

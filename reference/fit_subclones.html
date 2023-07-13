@@ -14,7 +14,7 @@ power-law model"><meta property="og:image" content="https://pawelqs.github.io/ce
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,13 @@ power-law model"><meta property="og:image" content="https://pawelqs.github.io/ce
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/pawelqs/cevomod/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -49,7 +55,7 @@ power-law model"><meta property="og:image" content="https://pawelqs.github.io/ce
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Fit clonal and subclonal components of the model to the residuals of the
 power-law model</h1>
-      
+      <small class="dont-index">Source: <a href="https://github.com/pawelqs/cevomod/blob/HEAD/R/fit_subclones.R" class="external-link"><code>R/fit_subclones.R</code></a>, <a href="https://github.com/pawelqs/cevomod/blob/HEAD/R/fit_subclones_binomial_BMix.R" class="external-link"><code>R/fit_subclones_binomial_BMix.R</code></a>, <a href="https://github.com/pawelqs/cevomod/blob/HEAD/R/fit_subclones_binomial_mclust.R" class="external-link"><code>R/fit_subclones_binomial_mclust.R</code></a></small>
       <div class="d-none name"><code>fit_subclones.Rd</code></div>
     </div>
 
@@ -66,8 +72,8 @@ power-law model</p>
 <span>  powerlaw_model_name <span class="op">=</span> <span class="fu"><a href="active_models.html">active_models</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>,</span>
 <span>  snvs_name <span class="op">=</span> <span class="fu"><a href="active_assays.html">default_SNVs</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"BMix"</span>,</span>
-<span>  upper_VAF_limit <span class="op">=</span> <span class="fl">0.75</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  upper_f_limit <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fu"><a href="get_cevomod_verbosity.html">get_cevomod_verbosity</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">fit_subclones_bmix</span><span class="op">(</span></span>
@@ -75,8 +81,8 @@ power-law model</p>
 <span>  N <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
 <span>  powerlaw_model_name <span class="op">=</span> <span class="fu"><a href="active_models.html">active_models</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>,</span>
 <span>  snvs_name <span class="op">=</span> <span class="fu"><a href="active_assays.html">default_SNVs</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>,</span>
-<span>  upper_VAF_limit <span class="op">=</span> <span class="fl">0.75</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  upper_f_limit <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fu"><a href="get_cevomod_verbosity.html">get_cevomod_verbosity</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">fit_subclones_mclust</span><span class="op">(</span></span>
@@ -84,8 +90,8 @@ power-law model</p>
 <span>  N <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
 <span>  powerlaw_model_name <span class="op">=</span> <span class="fu"><a href="active_models.html">active_models</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>,</span>
 <span>  snvs_name <span class="op">=</span> <span class="fu"><a href="active_assays.html">default_SNVs</a></span><span class="op">(</span><span class="va">object</span><span class="op">)</span>,</span>
-<span>  upper_VAF_limit <span class="op">=</span> <span class="fl">0.75</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  upper_f_limit <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fu"><a href="get_cevomod_verbosity.html">get_cevomod_verbosity</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -114,7 +120,7 @@ While mclust is a 3-4 times faster method, the BMix method is more accurate
 and usually fast enough.</p></dd>
 
 
-<dt>upper_VAF_limit</dt>
+<dt>upper_f_limit</dt>
 <dd><p>ignore variants with f higher than</p></dd>
 
 

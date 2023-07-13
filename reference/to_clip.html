@@ -14,7 +14,7 @@ at MD Anderson Cancer Center in Houston."><meta property="og:image" content="htt
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,13 @@ at MD Anderson Cancer Center in Houston."><meta property="og:image" content="htt
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/pawelqs/cevomod/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -48,7 +54,7 @@ at MD Anderson Cancer Center in Houston."><meta property="og:image" content="htt
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Export cevodata to CliP input</h1>
-      
+      <small class="dont-index">Source: <a href="https://github.com/pawelqs/cevomod/blob/HEAD/R/cevodata-export.R" class="external-link"><code>R/cevodata-export.R</code></a></small>
       <div class="d-none name"><code>to_clip.Rd</code></div>
     </div>
 
@@ -65,7 +71,8 @@ at MD Anderson Cancer Center in Houston.</p>
 <span>  out_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  snvs_name <span class="op">=</span> <span class="fu"><a href="active_assays.html">default_SNVs</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span>,</span>
 <span>  cnvs_name <span class="op">=</span> <span class="fu"><a href="active_assays.html">default_CNVs</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span>,</span>
-<span>  purity_column <span class="op">=</span> <span class="st">"purity"</span></span>
+<span>  purity_column <span class="op">=</span> <span class="st">"purity"</span>,</span>
+<span>  keep_chromosomes <span class="op">=</span> <span class="fu">str_c</span><span class="op">(</span><span class="st">"chr"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">22</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -91,6 +98,11 @@ out_dir is NULL</p></dd>
 <dt>purity_column</dt>
 <dd><p>name of the metadata column with the purity estimates
 to be used</p></dd>
+
+
+<dt>keep_chromosomes</dt>
+<dd><p>list of non-sex chromosomes. CliP does not use sex
+chromosomes</p></dd>
 
 </dl></div>
 

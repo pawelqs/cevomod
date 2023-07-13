@@ -37,6 +37,9 @@
     <loc>https://pawelqs.github.io/cevomod/reference/Mf_1f.html</loc>
   </url>
   <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/SNVs_CNVs.html</loc>
+  </url>
+  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/active_assays.html</loc>
   </url>
   <url>
@@ -46,10 +49,16 @@
     <loc>https://pawelqs.github.io/cevomod/reference/annotate_mutation_contexts.html</loc>
   </url>
   <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/annotate_normal_cn.html</loc>
+  </url>
+  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/as_cevo_snvs.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/assays.html</loc>
+  </url>
+  <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/calc_mutation_frequencies.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/cevo_metadata.html</loc>
@@ -115,6 +124,12 @@
     <loc>https://pawelqs.github.io/cevomod/reference/get_CNVs_var_names.html</loc>
   </url>
   <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/get_cevomod_verbosity.html</loc>
+  </url>
+  <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/get_frequency_measure_name.html</loc>
+  </url>
+  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/get_model_names.html</loc>
   </url>
   <url>
@@ -154,6 +169,9 @@
     <loc>https://pawelqs.github.io/cevomod/reference/init_cevodata.html</loc>
   </url>
   <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/intervalize_mutation_frequencies.html</loc>
+  </url>
+  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/list_continuous_palettes.html</loc>
   </url>
   <url>
@@ -164,9 +182,6 @@
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/merge.cevodata.html</loc>
-  </url>
-  <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/mutation_frequencies.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/mutation_plots.html</loc>
@@ -241,6 +256,9 @@
     <loc>https://pawelqs.github.io/cevomod/reference/set_cancer_type.html</loc>
   </url>
   <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/set_cevomod_verbosity.html</loc>
+  </url>
+  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/sfs.html</loc>
   </url>
   <url>
@@ -248,9 +266,6 @@
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/split_by.html</loc>
-  </url>
-  <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/stat_SFS.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/stat_cumulative_tail.html</loc>
