@@ -15,13 +15,16 @@
 #' @param cnvs_name name of the cnvs to use
 #' @param purity_column name of the metadata column with the purity estimates
 #'   to be used
+#' @param keep_chromosomes list of non-sex chromosomes. CliP does not use sex
+#'   chromosomes
 #' @export
 to_clip <- function(cd, out_dir = NULL,
                     snvs_name = default_SNVs(cd),
                     cnvs_name = default_CNVs(cd),
-                    purity_column = "purity") {
-  snvs <- get_clip_snvs(cd, snvs_name)
-  cnvs <- get_clip_cnvs(cd, cnvs_name)
+                    purity_column = "purity",
+                    keep_chromosomes = str_c("chr", 1:22)) {
+  snvs <- get_clip_snvs(cd, snvs_name, keep_chromosomes)
+  cnvs <- get_clip_cnvs(cd, cnvs_name, keep_chromosomes)
   purities <- get_clip_purities(cd, purity_column)
 
   clip_data <- lst(snvs, cnvs, purities) |>
@@ -36,7 +39,9 @@ to_clip <- function(cd, out_dir = NULL,
 
 
 
-get_clip_snvs <- function(cd, snvs_name = default_SNVs(cd)) {
+get_clip_snvs <- function(cd,
+                          snvs_name = default_SNVs(cd),
+                          keep_chromosomes = str_c("chr", 1:22)) {
   empty_clip_snvs <- tibble(
     chromosome_index = double(),
     position = integer(),
@@ -45,6 +50,7 @@ get_clip_snvs <- function(cd, snvs_name = default_SNVs(cd)) {
   )
 
   SNVs(cd, which = snvs_name) |>
+    filter(.data$chrom %in% keep_chromosomes) |>
     transmute(
       sample_id = parse_factor(.data$sample_id, levels = get_sample_ids(cd)),
       chromosome_index = chromosomes_to_int(.data$chrom),
@@ -59,7 +65,9 @@ get_clip_snvs <- function(cd, snvs_name = default_SNVs(cd)) {
 
 
 
-get_clip_cnvs <- function(cd, cnvs_name = default_CNVs(cd)) {
+get_clip_cnvs <- function(cd,
+                          cnvs_name = default_CNVs(cd),
+                          keep_chromosomes = str_c("chr", 1:22)) {
   empty_clip_cnvs <- tibble(
     chromosome_index = double(),
     start_position = double(),
@@ -70,6 +78,7 @@ get_clip_cnvs <- function(cd, cnvs_name = default_CNVs(cd)) {
   )
 
   CNVs(cd, which = cnvs_name) |>
+    filter(.data$chrom %in% keep_chromosomes) |>
     transmute(
       sample_id = parse_factor(.data$sample_id, levels = get_sample_ids(cd)),
       chromosome_index = chromosomes_to_int(.data$chrom),
@@ -79,6 +88,7 @@ get_clip_cnvs <- function(cd, cnvs_name = default_CNVs(cd)) {
       minor_cn = .data$minor_cn,
       total_cn = .data$total_cn
     ) |>
+    filter(.data$total_cn > 0) |>   # these records break CliP
     nest_by(.data$sample_id) |>
     complete(.data$sample_id, fill = list(data = list(empty_clip_cnvs))) |>
     deframe()
@@ -94,11 +104,23 @@ get_clip_purities <- function(cd, purity_column = "purity") {
 
 
 
+chromosomes_to_int <- function(chrom) {
+  case_when(
+    chrom %in% str_c("chr", 1:22) ~ str_replace(chrom, "chr", "") |> as.integer(),
+    chrom == "chrX" ~ 23,
+    chrom == "chrY" ~ 24,
+    chrom == "chrMT" ~ 25,
+    TRUE ~ NA_integer_
+  )
+}
+
+
+
 save_clip_files <- function(clip_data, out_dir) {
   if (!dir.exists(out_dir)) {
     dir.create(out_dir)
   }
-  imap(
+  iwalk(
     clip_data,
     function(x, sample_id) {
       write_tsv(x$snvs, file.path(out_dir, str_c(sample_id, ".snv.tsv")))

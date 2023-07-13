@@ -66,12 +66,8 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 to the paired geom/stat.}
 }
 \description{
-Visualise the distribution of a single continuous variable by dividing
-the x axis into bins and counting the number of observations in each bin.
-Histograms (\code{geom_histogram()}) display the counts with bars; frequency
-polygons (\code{geom_freqpoly()}) display the counts with lines. Frequency
-polygons are more suitable when you want to compare the distribution
-across the levels of a categorical variable.
+Nice extention of the default ggplot2 stats. However, it should be easier to
+use the plot_cumulative_tails() function.
 }
 \details{
 \code{stat_bin()} is suitable only for continuous x data. If your x data is

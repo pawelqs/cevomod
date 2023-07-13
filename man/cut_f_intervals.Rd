@@ -2,22 +2,21 @@
 % Please edit documentation in R/intervals.R
 \name{cut_f_intervals}
 \alias{cut_f_intervals}
-\alias{cut_f_intervals.cevo_snvs}
-\title{Cut f or VAF into intervals}
+\title{Get mutation frequency intervals}
 \usage{
-cut_f_intervals(object, ...)
-
-\method{cut_f_intervals}{cevo_snvs}(object, bins = NULL, column = "VAF", ...)
+cut_f_intervals(snvs, column, bins = NULL)
 }
 \arguments{
-\item{object}{object}
+\item{snvs}{SNVs tibble}
 
-\item{...}{other params}
+\item{column}{Name of column with frequencies, eg. VAF or CCF}
 
-\item{bins}{number of bins}
-
-\item{column}{name of column with frequencies, VAF or f}
+\item{bins}{Number of bins}
+}
+\value{
+Tibble with f_interval and f columns
 }
 \description{
-Cut f or VAF into intervals
+Cuts requested column e.g. CCF or VAF into intervals. Adds f_interval and f
+columns to the input SNVs tibble
 }

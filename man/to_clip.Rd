@@ -9,7 +9,8 @@ to_clip(
   out_dir = NULL,
   snvs_name = default_SNVs(cd),
   cnvs_name = default_CNVs(cd),
-  purity_column = "purity"
+  purity_column = "purity",
+  keep_chromosomes = str_c("chr", 1:22)
 )
 }
 \arguments{
@@ -24,6 +25,9 @@ out_dir is NULL}
 
 \item{purity_column}{name of the metadata column with the purity estimates
 to be used}
+
+\item{keep_chromosomes}{list of non-sex chromosomes. CliP does not use sex
+chromosomes}
 }
 \description{
 \href{https://github.com/wwylab/CliP}{CliP} is an algorithm for clonal structure

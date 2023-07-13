@@ -1,6 +1,6 @@
 Package: cevomod
 Title: Cancer Evolution Models
-Version: 1.1.0
+Version: 2.0.0
 Authors@R: 
     person("Paweł", "Kuś", , "kpawel2210@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4367-9821"))
@@ -9,7 +9,7 @@ Description: Cancer Evolutionary Models. Set of methods facilitating the analysi
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 Suggests: 
     BMix,
     circlize,
@@ -61,4 +61,4 @@ Remotes:
     caravagnalab/mobster,
     caravagnalab/BMix
 LazyData: true
-URL: https://pawelqs.github.io/cevomod/
+URL: https://pawelqs.github.io/cevomod/, https://github.com/pawelqs/cevomod

@@ -6,30 +6,29 @@ fit_subclones_mclust <- function(object,
                                  N = 1:3,
                                  powerlaw_model_name = active_models(object),
                                  snvs_name = default_SNVs(object),
-                                 upper_VAF_limit = 0.75,
-                                 verbose = TRUE) {
+                                 upper_f_limit = 0.75,
+                                 verbose = get_cevomod_verbosity()) {
   msg("Fitting binomial models using mclust", verbose = verbose)
+
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
-
   residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
-    filter(.data$VAF >= 0)
-
+    filter(.data$f >= 0)
   sequencing_depths <- SNVs(object, which = snvs_name) |>
     get_local_sequencing_depths() |>
-    transmute(.data$sample_id, .data$VAF, sequencing_DP = .data$median_DP)
+    transmute(.data$sample_id, .data$f, sequencing_DP = .data$median_DP)
 
   pb <- if (verbose) progress_bar$new(total = n_distinct(residuals$sample_id)) else NULL
   models <- residuals |>
-    select("sample_id", "VAF", "powerlaw_resid_clones") |>
+    select("sample_id", "f", "powerlaw_resid_clones") |>
     mutate(
-      powerlaw_resid_clones = if_else(.data$VAF > upper_VAF_limit, 0, .data$powerlaw_resid_clones)
+      powerlaw_resid_clones = if_else(.data$f > upper_f_limit, 0, .data$powerlaw_resid_clones)
     ) |>
     nest_by(.data$sample_id) |>
     reframe(fit_binomial_models(.data$data, N = N, pb = pb)) |>
     mutate(model = "binomial_clones", .after = "sample_id") |>
-    mutate(VAF = round(.data$cellularity, digits = 2)) |>
-    left_join(sequencing_depths, by = c("sample_id", "VAF")) |>
-    select(-"VAF") |>
+    mutate(f = round(.data$cellularity, digits = 2)) |>
+    left_join(sequencing_depths, by = c("sample_id", "f")) |>
+    select(-"f") |>
     evaluate_binomial_models()
 
   best_models <- models |>
@@ -37,15 +36,15 @@ fit_subclones_mclust <- function(object,
     nest_by(.data$sample_id, .key = "clones")
 
   clonal_predictions <- residuals |>
-    select("sample_id", "VAF_interval", "VAF") |>
-    nest_by(.data$sample_id, .key = "VAFs") |>
+    select("sample_id", "f_interval", "f") |>
+    nest_by(.data$sample_id, .key = "intervals") |>
     inner_join(best_models, by = "sample_id") |>
-    reframe(get_binomial_predictions(.data$clones, .data$VAFs)) |>
-    select(-"VAF")
+    reframe(get_binomial_predictions(.data$clones, .data$intervals)) |>
+    select(-"f")
 
   residuals <- residuals |>
     select(-"model_resid") |>
-    left_join(clonal_predictions, by = c("sample_id", "VAF_interval")) |>
+    left_join(clonal_predictions, by = c("sample_id", "f_interval")) |>
     mutate(
       model_pred = .data$powerlaw_pred + .data$binom_pred,
       model_resid = .data$SFS - .data$model_pred
@@ -72,20 +71,20 @@ fit_binomial_models <- function(..., pb = NULL) {
 
 
 fit_binomial_models_Mclust <- function(residuals, N) {
-  VAFs <- rep(residuals$VAF, times = floor(residuals$powerlaw_resid_clones))
-  if (length(VAFs) <= 1) {
+  f <- rep(residuals$f, times = floor(residuals$powerlaw_resid_clones))
+  if (length(f) <= 1) {
     return(empty_clones_tibble())
   }
-  if (sd(VAFs) == 0) {
+  if (sd(f) == 0) {
     N <- 1
   }
   mclust_res <- N |>
-    map(~ mclust::Mclust(VAFs, G = .x, verbose = FALSE)) |>
+    map(~ mclust::Mclust(f, G = .x, verbose = FALSE)) |>
     discard(is.null)
 
   if (length(mclust_res) > 0) {
     clones <- mclust_res |>
-      map(mclust_to_clones_tbl, n_mutations = length(VAFs)) |>
+      map(mclust_to_clones_tbl, n_mutations = length(f)) |>
       bind_rows()
   } else {
     clones <- empty_clones_tibble()

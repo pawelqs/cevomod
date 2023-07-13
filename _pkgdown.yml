@@ -32,16 +32,21 @@ reference:
   - annotate_mutation_contexts
   - cut_f_intervals
   - filter_SNVs_by_regions
-  - mutation_frequencies
   - shuffle
+- title: Data preparation
+- contents:
+  - annotate_normal_cn
+  - calc_mutation_frequencies
+  - intervalize_mutation_frequencies
+  - prepare_SNVs
 - title: Model fitting
 - contents:
   - starts_with("fit_")
-  - prepare_SNVs
 - title: Getters
 - contents:
   - starts_with("get_")
   - active_models
+  - SNVs_CNVs
 - title: Evolutionary parameters
 - contents:
   - get_mutation_rates
@@ -66,6 +71,7 @@ reference:
   - test_data_fitted
 - title: Other functions
 - contents:
+  - set_cevomod_verbosity
   - generate_neutral_snvs
   - "`%not in%`"
   - fill_na

@@ -5,27 +5,25 @@ fit_subclones_bmix <- function(object,
                                N = 1:3,
                                powerlaw_model_name = active_models(object),
                                snvs_name = default_SNVs(object),
-                               upper_VAF_limit = 0.75,
-                               verbose = TRUE) {
+                               upper_f_limit = 0.75,
+                               verbose = get_cevomod_verbosity()) {
   msg("Fitting binomial models using BMix", verbose = verbose)
-
   rlang::check_installed("BMix", reason = "to fit subclomes using BMix")
 
   powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
   residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
-    filter(.data$VAF >= 0)
-
+    filter(.data$f >= 0)
   # necessary, since BMix does not return this parameter
   sequencing_depth <- SNVs(object, which = snvs_name) |>
     get_local_sequencing_depths() |>
-    transmute(.data$sample_id, .data$VAF, sequencing_DP = .data$median_DP)
+    transmute(.data$sample_id, .data$f, sequencing_DP = .data$median_DP)
 
   non_neutral_tail_mut_counts <- residuals |>
-    mutate(n = if_else(.data$VAF > upper_VAF_limit, 0, round(.data$powerlaw_resid_clones))) |>
-    select("sample_id", "VAF_interval", "n")
+    mutate(n = if_else(.data$f > upper_f_limit, 0, round(.data$powerlaw_resid_clones))) |>
+    select("sample_id", "f_interval", "n")
   snvs_to_cluster <- SNVs(object, which = snvs_name) |>
-    nest_by(.data$sample_id, .data$VAF_interval) |>
-    inner_join(non_neutral_tail_mut_counts, by = c("sample_id", "VAF_interval")) |>
+    nest_by(.data$sample_id, .data$f_interval) |>
+    inner_join(non_neutral_tail_mut_counts, by = c("sample_id", "f_interval")) |>
     reframe(
       slice_sample(.data$data, n = .data$n)
     )
@@ -39,26 +37,26 @@ fit_subclones_bmix <- function(object,
     reframe(fit_binomial_models_BMix(.data$data, N, pb, verbose)) |>
     mutate(model = "binomial_clones_BMix", .after = "sample_id") |>
     mutate(
-      VAF = round(.data$cellularity, digits = 2),
+      f = round(.data$cellularity, digits = 2),
       best = TRUE
     ) |>
-    left_join(sequencing_depth, by = c("sample_id", "VAF")) |>
-    select(-"VAF")
+    left_join(sequencing_depth, by = c("sample_id", "f")) |>
+    select(-"f")
 
   best_models <- models |>
     filter(.data$best) |>
     nest_by(.data$sample_id, .key = "clones")
 
   clonal_predictions <- residuals |>
-    select("sample_id", "VAF_interval", "VAF") |>
-    nest_by(.data$sample_id, .key = "VAFs") |>
+    select("sample_id", "f_interval", "f") |>
+    nest_by(.data$sample_id, .key = "intervals") |>
     inner_join(best_models, by = "sample_id") |>
-    reframe(get_binomial_predictions(.data$clones, .data$VAFs)) |>
-    select(-"VAF")
+    reframe(get_binomial_predictions(.data$clones, .data$intervals)) |>
+    select(-"f")
 
   residuals <- residuals |>
     select(-"model_resid") |>
-    left_join(clonal_predictions, by = c("sample_id", "VAF_interval")) |>
+    left_join(clonal_predictions, by = c("sample_id", "f_interval")) |>
     mutate(
       model_pred = .data$powerlaw_pred + .data$binom_pred,
       model_resid = .data$SFS - .data$model_pred

@@ -1,4 +1,4 @@
-sample_id	VAF_interval	VAF	n	M(f)	1/f
+sample_id	f_interval	f	n	M(f)	1/f
 TCGA-AC-A23H-01	(0.99,1]	0.995	0	0	1.005
 TCGA-AC-A23H-01	(0.98,0.99]	0.985	0	0	1.0152
 TCGA-AC-A23H-01	(0.97,0.98]	0.975	0	0	1.0256

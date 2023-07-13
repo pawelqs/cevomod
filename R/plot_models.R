@@ -56,7 +56,7 @@ plot_models.cevodata <- function(object,
       ylim = max(.data$SFS) * 1.2,
       powerlaw_pred = case_when(
         .data$powerlaw_pred > .data$ylim ~ Inf,
-        .data$VAF < 0 ~ Inf,
+        .data$f < 0 ~ Inf,
         TRUE ~ .data$powerlaw_pred
       )
     ) |>
@@ -65,7 +65,7 @@ plot_models.cevodata <- function(object,
   model_layers <- list(
     if (show_neutral_tail && neutral_lm_fitted) {
       geom_area(
-        aes(.data$VAF, .data$powerlaw_pred),
+        aes(.data$f, .data$powerlaw_pred),
         data = resid,
         fill = neutral_tail_fill, color = neutral_tail_color,
         alpha = neutral_tail_alpha,
@@ -75,7 +75,7 @@ plot_models.cevodata <- function(object,
     },
     if (show_binomial_layer && subclones_fitted) {
       geom_line(
-        aes(.data$VAF, .data$binom_pred),
+        aes(.data$f, .data$binom_pred),
         data = resid,
         size = 1, color = binomial_layer_color, linetype = "dashed"
       )
@@ -89,7 +89,7 @@ plot_models.cevodata <- function(object,
         ) |>
         filter(!is.na(.data$pred))
       geom_area(
-        aes(.data$VAF, .data$pred, group = .data$component),
+        aes(.data$f, .data$pred, group = .data$component),
         data = dt,
         position = "identity",
         size = 1, alpha = 0.3, color = "black", show.legend = FALSE
@@ -97,7 +97,7 @@ plot_models.cevodata <- function(object,
     },
     if (show_final_fit && neutral_lm_fitted && subclones_fitted) {
       geom_line(
-        aes(.data$VAF, .data$model_pred),
+        aes(.data$f, .data$model_pred),
         data = resid |> filter(.data$powerlaw_pred < .data$ylim),
         size = final_fit_size, color = final_fit_color
       )
@@ -114,8 +114,8 @@ plot_clones <- function(clones) {
   clones |>
     get_binomial_predictions() |>
     select(-"binom_pred") |>
-    pivot_longer(-.data$VAF) |>
-    ggplot(aes(.data$VAF, .data$value, group = .data$name)) +
+    pivot_longer(-.data$f) |>
+    ggplot(aes(.data$f, .data$value, group = .data$name)) +
     geom_point()
 }
 
@@ -131,9 +131,9 @@ plot_clones <- function(clones) {
 geom_powerlaw <- function(A, alpha, mapping, ylim = 1000, color = "#54b4FA", ...) {
   . <- NULL
   geom_line(
-    join_aes(aes(.data$VAF, .data$y), mapping),
+    join_aes(aes(.data$f, .data$y), mapping),
     data = . %>%
-      mutate(y = A * 1 / .data$VAF ^ alpha) %>%
+      mutate(y = A * 1 / .data$f ^ alpha) %>%
       filter(.data$y <= ylim, .data$y > 0),
     linewidth = 1.5,
     color = color,
@@ -162,7 +162,7 @@ compare_models <- function(object, model_names, column_name,
     bind_rows(.id = "model_name") |>
     left_join(ylimits, by = "sample_id") |>
     left_join(object$metadata, by = "sample_id") |>
-    filter(!!sym(column_name) < .data$ylim, .data$VAF >= 0)
+    filter(!!sym(column_name) < .data$ylim, .data$f >= 0)
 
   plot_SFS(object, geom = "bar", ...) +
     geom_line(

@@ -1,9 +1,11 @@
 data("tcga_brca_test")
+set_cevomod_verbosity(0)
+
 
 test_that("Comparing multiple models works", {
   object <- tcga_brca_test |>
-    fit_powerlaw_tail_fixed(verbose = FALSE) |>
-    fit_powerlaw_tail_optim(verbose = FALSE)
+    fit_powerlaw_tail_fixed() |>
+    fit_powerlaw_tail_optim()
   model_names <- c("powerlaw_fixed", "powerlaw_optim")
   column_name <- "powerlaw_pred"
   expect_warning({

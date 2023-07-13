@@ -115,7 +115,7 @@ identify_non_neutral_tail_mutations.singlepatient_cevodata <- function(
 get_binomial_model_predictions <- function(object, sample_id, zero_interval = NULL) {
   binom_predictions <- get_residuals(object, models_name = "binomial_models") |>
     filter(.data$sample_id == .env$sample_id) |>
-    select("VAF_interval", "binom_pred") |>
+    select("f_interval", "binom_pred") |>
     deframe()
   zero_pred <- if (!is.null(zero_interval)) set_names(0, zero_interval) else NULL
   c(zero_pred, binom_predictions)
@@ -226,17 +226,17 @@ solve_basic <- function(mutations_mat, row_predictions, col_predictions,
           rows = calc_scaling_factors(rowSums(mc_mat), row_predictions)[-1],
           cols = calc_scaling_factors(colSums(mc_mat), col_predictions)[-1]
         ) |>
-        map(enframe, name = "VAF_interval", value = "factor") |>
+        map(enframe, name = "f_interval", value = "factor") |>
         bind_rows(.id = "dim") |>
         shuffle()
 
       for (k in seq_along(scaling_factors$dim)) {
         if (scaling_factors$dim[k] == "rows") {
-          row <- scaling_factors$VAF_interval[k]
+          row <- scaling_factors$f_interval[k]
           new_values <- mc_mat[row, ] * scaling_factors$factor[k]
           mc_mat[row, ] <- pmin(new_values, limits$upper[row, ])
         } else if (scaling_factors$dim[k] == "cols") {
-          col <- scaling_factors$VAF_interval[k]
+          col <- scaling_factors$f_interval[k]
           new_values <- mc_mat[, col] * scaling_factors$factor[k]
           mc_mat[, col] <- pmin(new_values, limits$upper[, col])
         }
@@ -499,7 +499,7 @@ selection_prob_mat_to_long_tiblle <- function(selection_probability_mat)  {
 
 get_single_sample_selection_probability <- function(object) {
   binom_res <- get_residuals(object, models_name = "binomial_models") |>
-    select("sample_id", "VAF_interval", "SFS", "binom_pred")
+    select("sample_id", "f_interval", "SFS", "binom_pred")
   metadata <- object$metadata[c("patient_id", "sample_id", "sample")]
 
   selection_prob_tbl <- metadata |>
@@ -507,16 +507,16 @@ get_single_sample_selection_probability <- function(object) {
     transmute(
       .data$patient_id,
       .data$sample,
-      .data$VAF_interval,
+      .data$f_interval,
       `1sample_selection_prob` = .data$binom_pred / .data$SFS
     )
 
   SNVs(object) |>
-    cut_f_intervals() |>
+    cut_f_intervals(column = "CCF") |>
     unite_mutation_id() |>
     left_join(metadata, by = "sample_id") |>
-    select("patient_id", "sample", "mutation_id", "VAF_interval") |>
-    left_join(selection_prob_tbl, by = c("patient_id", "sample", "VAF_interval")) |>
+    select("patient_id", "sample", "mutation_id", "f_interval") |>
+    left_join(selection_prob_tbl, by = c("patient_id", "sample", "f_interval")) |>
     pivot_wider(names_from = "sample", values_from = "1sample_selection_prob") |>
     select("patient_id", "mutation_id", all_of(metadata$sample))
 }

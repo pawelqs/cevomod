@@ -19,7 +19,7 @@ snvs <- mutations %>%
   left_join(variant_classification) %>%
   transmute(
     sample_id = Tumor_Sample_Barcode,
-    chrom = Chromosome,
+    chrom = str_c("chr", Chromosome),
     pos = Start_Position,
     gene_symbol = Hugo_Symbol,
     ref = Reference_Allele,
@@ -48,7 +48,7 @@ cna_hg19 <- read_tsv("/mnt/dane/data/cbioportal/brca_tcga_pan_can_atlas_2018/dat
 cnvs <- cna_hg19 |>
   transmute(
     sample_id = ID,
-    chrom,
+    chrom = str_c("chr", chrom),
     start = loc.start,
     end = loc.end,
     log_ratio = NA_real_,
@@ -63,9 +63,18 @@ cnvs <- cna_hg19 |>
 
 samples_data <- tibble(
   sample_id = unique(snvs$sample_id),
-  patient_id = sample_id,
+  patient_id = str_sub(sample_id, 1, 12),
   sample = "tumor"
 )
+
+
+clinical <- read_tsv(
+  "/mnt/dane/data/cbioportal/brca_tcga_pan_can_atlas_2018/data_clinical_patient.txt",
+  comment = "#"
+) |>
+  mutate(sex = str_to_lower(SEX)) |>
+  select(patient_id = PATIENT_ID, sex) |>
+  filter(patient_id %in% samples_data$patient_id)
 
 TMB <- snvs %>%
   group_by(sample_id) %>%
@@ -87,6 +96,7 @@ tcga_brca <- init_cevodata("TCGA-BRCA data", genome = "hg37") |>
   add_CNV_data(cnvs, name = "TCGA") |>
   add_sample_data(samples_data) |>
   add_sample_data(TMB) |>
+  add_patient_data(clinical) |>
   filter(TMB > 200)
 
 top_mutated_patients <- TMB %>%
@@ -96,8 +106,8 @@ top_mutated_patients <- TMB %>%
 
 tcga_brca_test <- tcga_brca |>
   filter(sample_id %in% top_mutated_patients) |>
-  calc_mutation_frequencies() |>
-  prepare_SNVs() |>
+  # calc_mutation_frequencies(method = "use_VAF") |>
+  intervalize_mutation_frequencies() |>
   calc_SFS() |>
   calc_cumulative_tails() |>
   calc_Mf_1f() |>

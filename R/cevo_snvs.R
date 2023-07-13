@@ -30,7 +30,7 @@ as_cevo_snvs <- function(snvs) {
   snvs |>
     select(
       "sample_id", "chrom", "pos", "gene_symbol",
-      "ref", "alt", "ref_reads", "alt_reads", "VAF", "impact",
+      "ref", "alt", "ref_reads", "alt_reads", "impact", "VAF",
       everything()
     ) |>
     new_cevo_snvs()

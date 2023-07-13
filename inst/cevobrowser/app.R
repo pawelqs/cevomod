@@ -1,5 +1,5 @@
 library(cevomod)
-library(cevoDatasets)
+# library(cevoDatasets)
 library(shiny)
 library(shinyWidgets)
 library(shinydashboard)
@@ -8,8 +8,8 @@ library(tibble)
 library(ggplot2)
 
 theme_set(theme_minimal())
-datasets <- readr::read_rds(
-  "~/.cevoDatasets/data.Rds"
+datasets <- list(
+  test_data = test_data_fitted
 )
 default_dataset <- names(datasets)[[1]]
 

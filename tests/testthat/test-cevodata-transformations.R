@@ -1,3 +1,5 @@
+set_cevomod_verbosity(0)
+
 data("tcga_brca_test")
 snvs <- SNVs(tcga_brca_test)
 cnvs <- CNVs(tcga_brca_test)
@@ -14,8 +16,9 @@ test_that("Filtering cevodata works", {
     add_CNV_data(cnvs = cnvs, "tcga2") |>
     add_SNV_data(snvs = snvs, "tcga") |>
     add_sample_data(meta) |>
+    intervalize_mutation_frequencies() |>
     calc_SFS() |>
-    calc_Mf_1f(verbose = FALSE)
+    calc_Mf_1f()
   cd$misc_by_sample[["slot1"]] <- meta$sample_id |>
     set_names(meta$sample_id) |>
     map(~c(1, 2, 3))
