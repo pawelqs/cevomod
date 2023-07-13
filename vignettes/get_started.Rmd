@@ -7,7 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# cevodata
+# Data preparation
+
+## `<cevodata>` S3 class
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -16,9 +18,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-The main data structure used by cevomod is the S3 class cevodata. The easiest way to prepare the object is to create an empty object using the `init_cevodata()` constructor and populate it with data using the `add_*_data()` methods.
+Most of the cevomod functions use the `<cevodata>` S3 class which is designed to store both, the data and the cevomod result. The `<cevodata>` object can be easily created using the  `init_cevodata(name)` constructor and populated with data using the `add_*_data()` methods.
 
-Let's use the list of SNV variants and the metadata from the small attached artificial dataset `test_data`
+In this tutorial we will use the `test_data` dataset provided with cevomod, which contains 3 male samples and 1 female sample.
 
 ```{r setup}
 suppressPackageStartupMessages({
@@ -26,23 +28,29 @@ suppressPackageStartupMessages({
   library(tidyverse)
 })
 
+theme_set(theme_minimal())
 snvs <- SNVs(test_data)
+cnvs <- CNVs(test_data)
 sample_data <- test_data$metadata
 ```
+
+SNVs tibble should contain at least sample_id, chrom, pos and VAF columns. Any other columns are optional.
 
 ```{r}
 snvs
 ```
 
+We will use also some sample metadata which associates samples to patients and stores the data on patients' sex and samples' purity.
+
 ```{r}
 sample_data
 ```
 
-Most of the cevomod functions are pipe-oriented, so we can create and populate the object through the small pipeline:
+cevomod functions are pipe-oriented (in general), so we can create and populate the object through the small pipeline:
 
 ```{r}
 cd <- init_cevodata(name = "Demo data") |> 
-  add_SNV_data(snvs, name = "snvs") |> 
+  add_SNV_data(snvs) |> 
   add_sample_data(sample_data)
 
 cd
@@ -51,21 +59,76 @@ cd
 `name` can be any string that is informative for the user.
 
 
-# VAF spectra
+## Variant Frequency Spectra
 
-cevomod models are fitted to the Variant Allele Frequency Spectra of the samples. Spectra can be displayed with the `plot_SFS()` function (SFS - *Site Frequency Spectrum*). Most of the cevomod plotting functions return a ggplot object which can be easily modified. Additional aesthetics can be added with the `aes()` function. Since the `metadata` is left-joined to the plot data, the metadata columns can be directly used in the `eas()` call. 
+*cevomod* fits models to the distributions of variant frequencies in the sample. Variant Allele Frequency is a basic measure of variant frequency provided by next-generation sequencing and it's equal to the fraction of reads supporting the alternate allele in all reads covering the mutation site
+
+$$VAF = \frac{alt\_reads}{alt\_reads + ref\_reads}$$
+
+VAF spectra can be plotted using the `plot_SFS()` function (SFS - *Site Frequency Spectrum*). Like most of the cevomod plotting functions, `plot_SFS()` returns a ggplot object which can be easily modified. Additional aesthetics can be added using the `aes()` and it can make use of the columns in the metadata tibble, which is left-joined to the plot data.
 
 ```{r}
 plot_SFS(cd) +
   aes(fill = sex) +
   scale_fill_manual(values = c(male = "#DD4124", female = "#00496F")) +
-  labs(title = "Variant Allele Frequency Spectrum")
+  labs(title = "Variant Allele Frequency Spectra")
 ```
 
+We can see that there are clear peaks of clonal mutations in all 4 samples. In 3 of them, the average frequency of the clonal variants equals 0.5, corresponding to a sample purity of 1. In Sample 2, the average frequency of clonal mutations is lower, which is in line with the lower purity of this sample:
 
-# Preparation
+```{r}
+cd$metadata |> 
+  select(sample_id, purity)
+```
 
-Before fitting the models, we need to binarize the VAF values and adds the column `f_interval`. By default, the number of bins is equal to the median sequencing coverage of the variants in the sample. This allows to reduce aliasing noise in samples with low sequencing depth and to analyze samples with higher coverage with higher resolution. The desired number of bins can also be specified manually using the `bins` argument.
+We can also notice small groups of mutations with VAF close to 1.0, which likely result from the looses of heterozygocity.
+
+
+## Calculation of the Cancer Cell Fraction (optional)
+
+Although VAF is often used to model cancer evolution from the bulk sequencing data, it is not an accurate measure of the true mutation frequency. VAF values are affected by sample purity and copy number alterations, as we saw in the VAF spectrum above. If we have the reliable measurements of sample purity and copy number values, we can take them into account and calculate the Cancer Cell Fraction (CCF), fraction of cancer cells in which the mutation is present. A convenient formula for calculating CCF was published by Dentro et al. in [*Principles of Reconstructing the Subclonal Architecture of Cancers* (2015)](https://doi.org/10.1101/cshperspect.a026625). To calculate CCF, cevomod requires the `purity` column in the metadata tibble and the CNVs tibble with the following columns:
+
+- sample_id
+- chrom
+- start
+- end
+- total_cn - containing information about the total number of sequence copies,
+- normal_cn - containing information about the sequence ploidy in normal cells.
+
+```{r}
+cnvs
+```
+
+We can add the CNV data to the cevodata object using the `add_CNV_data()` function.
+
+```{r}
+cd <- cd |> 
+  add_CNV_data(cnvs)
+
+cd
+```
+
+Now the CCF values can be calculated using the `calc_mutation_frequencies()` function:
+
+```{r}
+cd <- cd |> 
+  calc_mutation_frequencies()
+```
+
+which will add CCF and CCF/2 columns to the SNVs tibble. cevomod will use the CCF/2 values by default starting from now.
+
+```{r}
+plot_SFS(cd) +
+  aes(fill = sex) +
+  scale_fill_manual(values = c(male = "#DD4124", female = "#00496F"))
+```
+
+In the new mutation frequency spectra, we can see that an average CCF/2 values of clonal peaks are now equal to 0.5 in all samples, and that no mutation has the CCF/2 value close to 1.
+
+
+## Intervalization of variant frequencies
+
+Before fitting the models, we need to binarize the mutation frequency values, which we can do using the `intervalize_mutation_frequencies()` function. cevomod will use CCF/2 values if CCF has been calculated before, and VAF if the CCF column does not is not found in the tibble. `intervalize_mutation_frequencies()` adds the `f` and `f_interval` column to the SNVs tibble. By default, the number of bins is equal to the median sequencing coverage of the variants in the sample. This allows to reduce aliasing noise in samples with low sequencing depth and to analyze samples with higher coverage with higher resolution. The desired number of bins can also be specified manually using the `bins` argument. We will also calculate the SFS spectra in this step, so the downstream functions do not have to do it on their own.
 
 ```{r}
 cd <- cd |> 
@@ -75,6 +138,9 @@ cd <- cd |>
 SNVs(cd) |> 
   glimpse()
 ```
+
+
+Now we are ready to fit the cevomod models.
 
 # Model fitting
 
@@ -93,7 +159,7 @@ cd <- cd |>
 cd
 ```
 
-The fitted models can be listed with:
+A list of all fitted models can be obtained with:
 
 ```{r}
 get_model_names(cd)
@@ -129,7 +195,7 @@ The fitted models can be visualized with the `plot_models()` function:
 plot_models(cd) +
   aes(fill = sex) +
   scale_fill_manual(values = c(male = "#DD4124", female = "#00496F")) +
-  labs(title = "Variant Allele Frequency Spectrum")
+  labs(title = "cevomod models")
 ```
 
 The model fitted to sample 2 is very inaccurate. The slope of the distribution is too steep to be approximated by the power-law exponent of 2. This sample should not be fitted with the model with the fixed power-law component. We will ignore this fit when estimating the evolutionary parameters.
