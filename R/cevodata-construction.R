@@ -257,6 +257,33 @@ add_sample_data.cevodata <- function(object, data, ...) {
 }
 
 
+#' Choose purity measure
+#'
+#' <cevodata> metadata can contain purity measures in columns other than 'purity'.
+#' T his function can be used to set 'purity' values using values from requested
+#' column
+#'
+#' @param cd <cevodata> object
+#' @param name Name of the metadata column with chosen purity values
+#' @param verbose Verbose?
+#' @export
+use_purity <- function(cd, name, verbose = get_cevomod_verbosity()) {
+  if (name %not in% names(cd$metadata)) {
+    stop(
+      "`name` should be a name of the column in the metadata tibble, ",
+      "which should be used as purity measure"
+    )
+  } else {
+    msg("Using '", name, "' as default purity measure", verbose = verbose)
+    if (!is.null(cd$metadata[["purity"]])) {
+      cd$metadata$prev_purity <- cd$metadata$purity
+    }
+    cd$metadata$purity <- cd$metadata[[name]]
+    cd
+  }
+}
+
+
 is_cevodata_singlepatient <- function(object) {
   n_patients <- count_patients(object)
   if (is.na(n_patients)) {
