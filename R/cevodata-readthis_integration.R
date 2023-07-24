@@ -59,6 +59,62 @@ add_to_cevodata.cevo_ASCAT <- function(data, cd,
   cd |>
     add_CNV_data(data$cnvs, name = name) |>
     add_sample_data(sample_data) |>
-    use_purity("ascat_purity")
+    use_purity("ascat_purity", verbose = verbose)
 }
 
+
+#' @export
+add_to_cevodata.cevo_FACETS <- function(data, cd,
+                                        name = "FACETS",
+                                        verbose = get_cevomod_verbosity(),
+                                        ...) {
+  cnvs <- data |>
+    select(-"Purity", -"Ploidy")
+  sample_data <- data |>
+    select("sample_id", facets_purity = "Purity", facets_ploidy = "Ploidy") |>
+    unique()
+  cd |>
+    add_CNV_data(data, name = name) |>
+    add_sample_data(sample_data) |>
+    use_purity("facets_purity", verbose = verbose)
+}
+
+
+#' @export
+add_to_cevodata.cevo_Mutect <- function(data, cd, name = "Mutect", ...) {
+  patient_ids_present <- "patient_id" %in% names(data)
+
+  if (patient_ids_present) {
+    sample_data <- data |>
+      select("patient_id", "sample_id") |>
+      unique()
+    data$patient_id <- NULL
+  }
+
+  cd <- add_SNV_data(cd, data, name = name)
+  if (patient_ids_present) {
+    cd <- add_sample_data(cd, sample_data)
+  }
+
+  cd
+}
+
+
+#' @export
+add_to_cevodata.cevo_Strelka <- function(data, cd, name = "Strelka", ...) {
+  patient_ids_present <- "patient_id" %in% names(data)
+
+  if (patient_ids_present) {
+    sample_data <- data |>
+      select("patient_id", "sample_id") |>
+      unique()
+    data$patient_id <- NULL
+  }
+
+  cd <- add_SNV_data(cd, data, name = name)
+  if (patient_ids_present) {
+    cd <- add_sample_data(cd, sample_data)
+  }
+
+  cd
+}
