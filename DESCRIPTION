@@ -60,6 +60,7 @@ Depends:
     R (>= 2.10)
 Remotes: 
     caravagnalab/mobster,
-    caravagnalab/BMix
+    caravagnalab/BMix,
+    pawelqs/readthis
 LazyData: true
 URL: https://pawelqs.github.io/cevomod/, https://github.com/pawelqs/cevomod
