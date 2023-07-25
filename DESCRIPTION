@@ -1,6 +1,6 @@
 Package: cevomod
 Title: Cancer Evolution Models
-Version: 2.0.0
+Version: 2.1.0
 Authors@R: 
     person("Paweł", "Kuś", , "kpawel2210@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-4367-9821"))
@@ -29,7 +29,8 @@ Suggests:
     shinyWidgets,
     testthat (>= 3.0.0),
     tidyverse,
-    vdiffr
+    vdiffr,
+    readthis
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
@@ -59,6 +60,7 @@ Depends:
     R (>= 2.10)
 Remotes: 
     caravagnalab/mobster,
-    caravagnalab/BMix
+    caravagnalab/BMix,
+    pawelqs/readthis
 LazyData: true
 URL: https://pawelqs.github.io/cevomod/, https://github.com/pawelqs/cevomod

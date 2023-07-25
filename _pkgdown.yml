@@ -21,6 +21,7 @@ reference:
   - starts_with("add_")
   - starts_with("default_")
   - set_cancer_type
+  - use_purity
 - title: cevodata transformations
 - contents:
   - filter.cevodata
