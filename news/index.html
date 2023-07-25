@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,6 +53,10 @@
       <small>Source: <a href="https://github.com/pawelqs/cevomod/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.1.0" id="cevomod-210">cevomod 2.1.0<a class="anchor" aria-label="anchor" href="#cevomod-210"></a></h2>
+<ul><li>cevomod is integrated with a helper <a href="https://pawelqs.github.io/readthis/index.html" class="external-link">readthis</a> package, designed for bulk reading of variant files from algorithms such as Mutect2, Strelka, ASCAT, or FACETS, in the cevomod-friendly data format. Objects returned by <code>readthis::read_*()</code> functions can be added to the cevodata object using a general <code><a href="../reference/readthis-integration.html">add_data()</a></code> function.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.0.0" id="cevomod-200">cevomod 2.0.0<a class="anchor" aria-label="anchor" href="#cevomod-200"></a></h2>
 <ul><li>cevomod functions can no utilize VAF or CCF (Cancer Cell Fraction) as a measure of mutation frequency. CCF is calculated using the formula introduced in <a href="https://doi.org/10.1101/cshperspect.a026625" class="external-link">Dentro et al. <em>Principles of Reconstructing the Subclonal Architecture of Cancers</em> (2015)</a>
