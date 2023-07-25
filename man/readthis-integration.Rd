@@ -8,7 +8,7 @@
 \usage{
 add_data(cd, data, ...)
 
-add_to_cevodata(data, cd, name, ...)
+add_to_cevodata(data, cd, name, verbose, ...)
 }
 \arguments{
 \item{cd}{\if{html}{\out{<cevodata>}} object}

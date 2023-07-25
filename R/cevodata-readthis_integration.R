@@ -44,7 +44,7 @@ add_data <- function(cd, data, ...) {
 #'   of methods for different classes of `data`. These methods are called by
 #'   add_data() function.
 #' @export
-add_to_cevodata <- function(data, cd, name, ...) {
+add_to_cevodata <- function(data, cd, name, verbose, ...) {
   UseMethod("add_to_cevodata")
 }
 
@@ -81,7 +81,10 @@ add_to_cevodata.cevo_FACETS <- function(data, cd,
 
 
 #' @export
-add_to_cevodata.cevo_Mutect <- function(data, cd, name = "Mutect", ...) {
+add_to_cevodata.cevo_Mutect <- function(data, cd,
+                                        name = "Mutect",
+                                        verbose = get_cevomod_verbosity(),
+                                        ...) {
   patient_ids_present <- "patient_id" %in% names(data)
 
   if (patient_ids_present) {
@@ -101,7 +104,10 @@ add_to_cevodata.cevo_Mutect <- function(data, cd, name = "Mutect", ...) {
 
 
 #' @export
-add_to_cevodata.cevo_Strelka <- function(data, cd, name = "Strelka", ...) {
+add_to_cevodata.cevo_Strelka <- function(data, cd,
+                                         name = "Strelka",
+                                         verbose = get_cevomod_verbosity(),
+                                         ...) {
   patient_ids_present <- "patient_id" %in% names(data)
 
   if (patient_ids_present) {
