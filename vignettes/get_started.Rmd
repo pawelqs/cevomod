@@ -58,6 +58,8 @@ cd
 
 `name` can be any string that is informative for the user.
 
+*To facilitate the use of cevomod with the data from popular variant callers such as Mutect2, Strelka2, ASCAT, or FACETS, we have implemented a * [readthis](https://pawelqs.github.io/readthis/index.html) *package. readthis functions are designed for bulk reading of many output variant files (they accept a path to a single file, named vector of file paths, or a path to a directory containing many files). Data objects read with readthis functions can be added to the cevodata object with a single call of general* `add_data()` *function. For more information see the* [readthis page](https://pawelqs.github.io/readthis/index.html).
+
 
 ## Variant Frequency Spectra
 

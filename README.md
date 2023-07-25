@@ -26,9 +26,9 @@ devtools::install_github("pawelqs/cevomod")
 ```
 
 
-## Chnages in version 2.0.0
-
-Starting with version 2.0.0, cevomod can use either VAF or CCF (Cancer Cell Fraction) as a measure of mutation frequency. CCF is a measure of mutation frequency corrected for tumor purity and copy number alterations. CCF can be calculated prior to mutation frequency intervalization using the `calc_mutation_frequencies()` function and requires information on total copy number in tumor and normal tissue and sample purity (tumor cell content). See the Vignettes for more examples.
+## Last changes
+* **v2.1.0** - cevomod is integrated with a helper [readthis](https://pawelqs.github.io/readthis/index.html) package, designed for bulk reading of variant files from algorithms such as Mutect2, Strelka, ASCAT, or FACETS, in the cevomod-friendly data format. Objects returned by `readthis::read_*()` functions can be added to the cevodata object using a general `add_data()` function.
+* **v2.0.0** - Starting with version 2.0.0, cevomod can use either VAF or CCF (Cancer Cell Fraction) as a measure of mutation frequency. CCF is a measure of mutation frequency corrected for tumor purity and copy number alterations. CCF can be calculated prior to mutation frequency intervalization using the `calc_mutation_frequencies()` function and requires information on total copy number in tumor and normal tissue and sample purity (tumor cell content). See the Vignettes for more examples.
 
 To see the previous changes in the package see the [Changelog](https://pawelqs.github.io/cevomod/news/index.html)
 

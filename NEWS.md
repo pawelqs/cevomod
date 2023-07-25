@@ -1,4 +1,8 @@
 
+## cevomod 2.1.0
+* cevomod is integrated with a helper [readthis](https://pawelqs.github.io/readthis/index.html) package, designed for bulk reading of variant files from algorithms such as Mutect2, Strelka, ASCAT, or FACETS, in the cevomod-friendly data format. Objects returned by `readthis::read_*()` functions can be added to the cevodata object using a general `add_data()` function.
+
+
 ## cevomod 2.0.0
 * cevomod functions can no utilize VAF or CCF (Cancer Cell Fraction) as a measure
   of mutation frequency. CCF is calculated using the formula introduced in [Dentro et al. *Principles of Reconstructing the Subclonal Architecture of Cancers* (2015)](https://doi.org/10.1101/cshperspect.a026625)
