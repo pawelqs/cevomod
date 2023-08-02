@@ -105,16 +105,38 @@ dentro_2015_correction <- function(tbl) {
 #'
 #' @return <cevodata> object
 #' @export
-intervalize_mutation_frequencies <- function(object,
-                                             which_snvs = default_SNVs(object),
-                                             column = get_frequency_measure_name(object, which_snvs),
-                                             bins = NULL,
-                                             verbose = get_cevomod_verbosity()) {
-  msg("Calculating f intervals, using ", column, " column", verbose = verbose)
+intervalize_mutation_frequencies <- function(object, ...) {
+  UseMethod("intervalize_mutation_frequencies")
+}
+
+
+
+#' @rdname intervalize_mutation_frequencies
+#' @export
+intervalize_mutation_frequencies.cevodata <- function(object,
+                                                      which_snvs = default_SNVs(object),
+                                                      column = get_frequency_measure_name(object, which_snvs),
+                                                      bins = NULL,
+                                                      verbose = get_cevomod_verbosity(),
+                                                      ...) {
   snvs <- SNVs(object, which_snvs) |>
-    cut_f_intervals(bins = bins, column = column)
+    intervalize_mutation_frequencies(column, bins, verbose)
   object |>
     add_SNV_data(snvs, name = which_snvs)
+}
+
+
+#' @rdname intervalize_mutation_frequencies
+#' @export
+intervalize_mutation_frequencies.cevo_snvs <- function(object,
+                                                       column = get_frequency_measure_name(object),
+                                                       bins = NULL,
+                                                       verbose = get_cevomod_verbosity(),
+                                                       ...) {
+  msg("Calculating f intervals, using ", column, " column", verbose = verbose)
+  object |>
+    cut_f_intervals(bins = bins, column = column) |>
+    as_cevo_snvs()
 }
 
 
