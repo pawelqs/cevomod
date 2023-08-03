@@ -98,6 +98,7 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
 
     bootstrap_name <- str_c(name, "_bootstraps")
     object$models[[bootstrap_name]] <- bootstrap_models
+    object <- calc_powerlaw_model_residuals(object, bootstrap_name)
     object$models[[name]] <- models
     object <- calc_powerlaw_model_residuals(object, name)
     object$active_models <- name
@@ -147,6 +148,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
   bootstrap_models <- object$models |>
     set_names(object$id) |>
     bind_rows(.id = "resample_id")
+  class(bootstrap_models) <- c("cevo_bootstrap_powerlaw_models", class(bootstrap_models))
 
   models <- conf_intervals |>
     pivot_wider(
