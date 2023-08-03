@@ -135,7 +135,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
         peak_detection_upper_limit = peak_detection_upper_limit,
         reward_upper_limit = reward_upper_limit,
         control = control,
-        verbose = verbose - 1
+        verbose = verbose_down(verbose)
       )
     })
 
@@ -163,6 +163,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
       alpha = alpha.estimate,
       alpha.lower, alpha.upper
     )
+  class(models) <- c("cevo_powerlaw_models", class(models))
 
   lst(bootstrap_models, models)
 }
