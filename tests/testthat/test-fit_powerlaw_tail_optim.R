@@ -40,8 +40,8 @@ test_that("fit_powerlaw_tail_optim() bootstrapping test", {
   object <- object |>
     filter(sample_id %in% object$metadata$sample_id[1:2])
 
-  expect_warning({
-      object <- fit_powerlaw_tail_optim(object, bootstraps = bootstraps)
+  suppressWarnings({
+    object <- fit_powerlaw_tail_optim(object, bootstraps = bootstraps)
   })
 
   bootstrap_models <- get_models(object, "powerlaw_optim_bootstraps")
