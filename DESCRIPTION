@@ -30,7 +30,8 @@ Suggests:
     testthat (>= 3.0.0),
     tidyverse,
     vdiffr,
-    readthis
+    readthis,
+    rsample
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 

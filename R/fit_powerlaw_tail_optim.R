@@ -1,5 +1,5 @@
 
-#' Fitting Tung Durrett models
+#' Fitting power-law tails with aptimum exponent value
 #'
 #' `fit_powerlaw_tail_optim()` uses `stats::optim` to find optimal A and alpha
 #' whch maximizes SFS area under the powerlaw curve (*sampled* region of SFS and
@@ -35,12 +35,14 @@ fit_powerlaw_tail_optim <- function(object, ...) {
 
 #' @rdname powerlaw_optim
 #' @inheritParams get_non_zero_SFS_range
-#' @param peak_detection_upper_limit upper f value up to which the main peak is searched
-#' @param reward_upper_limit mutations under the curve up to this limit will be rewarded
+#' @param peak_detection_upper_limit Upper f value up to which the main peak is searched
+#' @param reward_upper_limit Mutations under the curve up to this limit will be rewarded
+#' @param bootstraps Number of bootstrap samples, or NULL to make no resampling
 #' @export
 fit_powerlaw_tail_optim.cevodata <- function(object,
                                              name = "powerlaw_optim",
                                              # pct_left = 0, pct_right = 0.98,
+                                             bootstraps = FALSE,
                                              allowed_zero_bins = 2,
                                              y_treshold = 1,
                                              y_threshold_pct = 0.01,
@@ -50,10 +52,116 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                              verbose = get_cevomod_verbosity(),
                                              ...) {
+
+  if (!bootstraps) {
+    sfs <- get_SFS(object, name = "SFS")
+    models <- fit_powerlaw_tail_optim(
+      sfs,
+      name = name,
+      allowed_zero_bins = allowed_zero_bins,
+      y_treshold = y_treshold,
+      y_threshold_pct = y_threshold_pct,
+      av_filter = av_filter,
+      peak_detection_upper_limit = peak_detection_upper_limit,
+      reward_upper_limit = reward_upper_limit,
+      control = control,
+      verbose = verbose
+    )
+    object$models[[name]] <- models
+    object <- calc_powerlaw_model_residuals(object, name)
+    object$active_models <- name
+    object
+  } else {
+    rlang::check_installed("rsample", reason = "to perform bootstrap sampling of SNVs")
+    splitted_snvs <- SNVs(object) |>
+      nest_by(.data$sample_id, .keep = TRUE) |>
+      deframe() |>
+      map(as_cevo_snvs)
+
+    res <- splitted_snvs |>
+      map(function(snvs) {
+        resamples <- snvs |>
+          rsample::bootstraps(times = bootstraps)
+        resamples$sfs <- resamples$splits |>
+          map(rsample::analysis) |>
+          map(intervalize_mutation_frequencies) |>
+          map(calc_SFS)
+        resamples$models <- resamples$sfs |>
+          map(~fit_powerlaw_tail_optim(
+            .x,
+            name = name,
+            allowed_zero_bins = allowed_zero_bins,
+            y_treshold = y_treshold,
+            y_threshold_pct = y_threshold_pct,
+            av_filter = av_filter,
+            peak_detection_upper_limit = peak_detection_upper_limit,
+            reward_upper_limit = reward_upper_limit,
+            control = control,
+            verbose = verbose
+          ))
+        resamples$tidy_models <- resamples$models |>
+          map(~pivot_longer(.x, all_of(c("A", "alpha")), names_to = "term", values_to = "estimate"))
+
+        conf_intervals <- rsample::int_pctl(resamples, tidy_models)
+
+        model_params_wide <- conf_intervals |>
+          pivot_wider(
+            names_from = "term",
+            values_from = ".lower":".upper",
+            names_glue = "{term}{.value}",
+            names_vary = "slowest"
+          ) |>
+          transmute(
+            A = A.estimate,
+            A.lower, A.upper,
+            alpha = alpha.estimate,
+            alpha.lower, alpha.upper
+          )
+
+        res <- list()
+        res$bootstrap_models <- resamples$models |>
+          set_names(resamples$id) |>
+          bind_rows(.id = "resample_id")
+        res$models <- res$bootstrap_models |>
+          select("sample_id":"component") |>
+          unique() |>
+          cbind(model_params_wide)
+        res
+    })
+    bootstrap_models <- res |>
+      map("bootstrap_models") |>
+      bind_rows(.id = "sample_id")
+    models <- res |>
+      map("models") |>
+      bind_rows(.id = "sample_id")
+    bootstrap_name <- str_c(name, "_bootstraps")
+    object$models[[bootstrap_name]] <- bootstrap_models
+    object$models[[name]] <- models
+    object <- calc_powerlaw_model_residuals(object, name)
+    object$active_models <- name
+    object
+  }
+}
+
+
+
+#' @rdname powerlaw_optim
+#' @export
+fit_powerlaw_tail_optim.cevo_SFS_tbl <- function(object,
+                                                 name = "powerlaw_optim",
+                                                 allowed_zero_bins = 2,
+                                                 y_treshold = 1,
+                                                 y_threshold_pct = 0.01,
+                                                 av_filter = c(1/3, 1/3, 1/3),
+                                                 peak_detection_upper_limit = 0.3,
+                                                 reward_upper_limit = 0.4,
+                                                 control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
+                                                 verbose = get_cevomod_verbosity(),
+                                                 ...) {
   msg("Fitting optimized power-law models...", verbose = verbose)
   start_time <- Sys.time()
 
-  sfs <- get_SFS(object, name = "SFS")
+  sfs <- object
   bounds <- sfs |>
     get_non_zero_SFS_range(
       allowed_zero_bins = allowed_zero_bins,
@@ -109,12 +217,9 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
   class(models) <- c("cevo_powerlaw_models", class(models))
 
   msg("Models fitted in ", Sys.time() - start_time, " seconds", verbose = verbose)
-
-  object$models[[name]] <- models
-  object <- calc_powerlaw_model_residuals(object, name)
-  object$active_models <- name
-  object
+  models
 }
+
 
 
 td_optim <- function(init_A, init_alpha, data,
