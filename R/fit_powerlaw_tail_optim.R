@@ -52,7 +52,6 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                              verbose = get_cevomod_verbosity(),
                                              ...) {
-
   if (!bootstraps) {
     sfs <- get_SFS(object, name = "SFS")
     models <- fit_powerlaw_tail_optim(
@@ -73,67 +72,30 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
     object
   } else {
     rlang::check_installed("rsample", reason = "to perform bootstrap sampling of SNVs")
-    splitted_snvs <- SNVs(object) |>
-      nest_by(.data$sample_id, .keep = TRUE) |>
-      deframe() |>
-      map(as_cevo_snvs)
+    sfs_resamples <- calc_SFS_resamples(object, times = bootstraps, verbose = verbose)
 
-    res <- splitted_snvs |>
-      map(function(snvs) {
-        resamples <- snvs |>
-          rsample::bootstraps(times = bootstraps)
-        resamples$sfs <- resamples$splits |>
-          map(rsample::analysis) |>
-          map(intervalize_mutation_frequencies) |>
-          map(calc_SFS)
-        resamples$models <- resamples$sfs |>
-          map(~fit_powerlaw_tail_optim(
-            .x,
-            name = name,
-            allowed_zero_bins = allowed_zero_bins,
-            y_treshold = y_treshold,
-            y_threshold_pct = y_threshold_pct,
-            av_filter = av_filter,
-            peak_detection_upper_limit = peak_detection_upper_limit,
-            reward_upper_limit = reward_upper_limit,
-            control = control,
-            verbose = verbose
-          ))
-        resamples$tidy_models <- resamples$models |>
-          map(~pivot_longer(.x, all_of(c("A", "alpha")), names_to = "term", values_to = "estimate"))
+    models <- sfs_resamples |>
+      map(
+        fit_powerlaw_tail_optim,
+        name = name,
+        allowed_zero_bins = allowed_zero_bins,
+        y_treshold = y_treshold,
+        y_threshold_pct = y_threshold_pct,
+        av_filter = av_filter,
+        peak_detection_upper_limit = peak_detection_upper_limit,
+        reward_upper_limit = reward_upper_limit,
+        control = control,
+        verbose = verbose
+    )
 
-        conf_intervals <- rsample::int_pctl(resamples, tidy_models)
-
-        model_params_wide <- conf_intervals |>
-          pivot_wider(
-            names_from = "term",
-            values_from = ".lower":".upper",
-            names_glue = "{term}{.value}",
-            names_vary = "slowest"
-          ) |>
-          transmute(
-            A = A.estimate,
-            A.lower, A.upper,
-            alpha = alpha.estimate,
-            alpha.lower, alpha.upper
-          )
-
-        res <- list()
-        res$bootstrap_models <- resamples$models |>
-          set_names(resamples$id) |>
-          bind_rows(.id = "resample_id")
-        res$models <- res$bootstrap_models |>
-          select("sample_id":"component") |>
-          unique() |>
-          cbind(model_params_wide)
-        res
-    })
-    bootstrap_models <- res |>
+    bootstrap_models <- models |>
       map("bootstrap_models") |>
-      bind_rows(.id = "sample_id")
-    models <- res |>
+      bind_rows()
+
+    models <- models |>
       map("models") |>
       bind_rows(.id = "sample_id")
+
     bootstrap_name <- str_c(name, "_bootstraps")
     object$models[[bootstrap_name]] <- bootstrap_models
     object$models[[name]] <- models
@@ -143,6 +105,67 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
   }
 }
 
+
+#' @rdname powerlaw_optim
+#' @export
+fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
+                                                        name = "powerlaw_optim",
+                                                        allowed_zero_bins = 2,
+                                                        y_treshold = 1,
+                                                        y_threshold_pct = 0.01,
+                                                        av_filter = c(1/3, 1/3, 1/3),
+                                                        peak_detection_upper_limit = 0.3,
+                                                        reward_upper_limit = 0.4,
+                                                        control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
+                                                        verbose = get_cevomod_verbosity(),
+                                                        ...) {
+  msg("Bootstrapping ", unique(object$sfs[[1]]$sample_id), " sample", verbose = verbose)
+  pb <- if (verbose) progress_bar$new(total = nrow(object)) else NULL
+
+  object$models <- object$sfs |>
+    map(function(sfs) {
+      if (!is.null(pb)) pb$tick()
+      fit_powerlaw_tail_optim(
+        sfs,
+        name = name,
+        allowed_zero_bins = allowed_zero_bins,
+        y_treshold = y_treshold,
+        y_threshold_pct = y_threshold_pct,
+        av_filter = av_filter,
+        peak_detection_upper_limit = peak_detection_upper_limit,
+        reward_upper_limit = reward_upper_limit,
+        control = control,
+        verbose = verbose - 1
+      )
+    })
+
+  object$tidy_models <- object$models |>
+    map(~pivot_longer(.x, all_of(c("A", "alpha")), names_to = "term", values_to = "estimate"))
+
+  conf_intervals <- rsample::int_pctl(object, tidy_models)
+
+  bootstrap_models <- object$models |>
+    set_names(object$id) |>
+    bind_rows(.id = "resample_id")
+
+  models <- conf_intervals |>
+    pivot_wider(
+      names_from = "term",
+      values_from = ".lower":".upper",
+      names_glue = "{term}{.value}",
+      names_vary = "slowest"
+    ) |>
+    transmute(
+      model = name,
+      component = "powerlaw tail",
+      A = A.estimate,
+      A.lower, A.upper,
+      alpha = alpha.estimate,
+      alpha.lower, alpha.upper
+    )
+
+  lst(bootstrap_models, models)
+}
 
 
 #' @rdname powerlaw_optim
