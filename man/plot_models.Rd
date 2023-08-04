@@ -25,19 +25,19 @@ plot_models(object, ...)
 )
 }
 \arguments{
-\item{object}{cevodata object}
+\item{object}{\verb{<cevodata>} object}
 
-\item{...}{other arguments passed to plot_SFS()}
+\item{...}{Other arguments passed to plot_SFS()}
 
-\item{models_name}{models name}
+\item{models_name}{Name of the models to plot}
 
-\item{show_neutral_tail}{TRUE,}
+\item{show_neutral_tail}{\verb{<lgl>}}
 
-\item{show_binomial_layer}{FALSE,}
+\item{show_binomial_layer}{\verb{<lgl>}}
 
-\item{show_subclones}{TRUE,}
+\item{show_subclones}{\verb{<lgl>}}
 
-\item{show_final_fit}{TRUE,}
+\item{show_final_fit}{\verb{<lgl>}}
 
 \item{params_neutral_tail}{List of non-default params for neutral tail geom}
 
@@ -50,9 +50,9 @@ geom}
 
 \item{params_final_fit}{List of non-default params for final fit geom}
 
-\item{nrow}{passed to facet_wrap}
+\item{nrow}{Passed to facet_wrap}
 
-\item{ncol}{passed to facet_wrap}
+\item{ncol}{Passed to facet_wrap}
 }
 \description{
 Plot cevodata models

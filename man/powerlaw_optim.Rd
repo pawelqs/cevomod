@@ -60,7 +60,8 @@ fit_powerlaw_tail_optim(object, ...)
 
 \item{name}{name in the models' slot}
 
-\item{bootstraps}{Number of bootstrap samples, or NULL to make no resampling}
+\item{bootstraps}{Number of bootstrap samples, or FALSE to make no resampling.
+\strong{This option significantly extendis the model fitting time!!}}
 
 \item{allowed_zero_bins}{number of allowed empty bins in the interval}
 

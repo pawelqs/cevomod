@@ -37,7 +37,8 @@ fit_powerlaw_tail_optim <- function(object, ...) {
 #' @inheritParams get_non_zero_SFS_range
 #' @param peak_detection_upper_limit Upper f value up to which the main peak is searched
 #' @param reward_upper_limit Mutations under the curve up to this limit will be rewarded
-#' @param bootstraps Number of bootstrap samples, or NULL to make no resampling
+#' @param bootstraps Number of bootstrap samples, or FALSE to make no resampling.
+#'   **This option significantly extendis the model fitting time!!**
 #' @export
 fit_powerlaw_tail_optim.cevodata <- function(object,
                                              name = "powerlaw_optim",

@@ -1,12 +1,14 @@
 
+## ------------------------- plot_models() function ---------------------------
+
 #' Plot cevodata models
-#' @param object cevodata object
-#' @param models_name models name
-#' @param show_neutral_tail TRUE,
-#' @param show_binomial_layer FALSE,
-#' @param show_subclones TRUE,
-#' @param show_final_fit TRUE,
-#' @param ... other arguments passed to plot_SFS()
+#' @param object `<cevodata>` object
+#' @param models_name Name of the models to plot
+#' @param show_neutral_tail `<lgl>`
+#' @param show_binomial_layer `<lgl>`
+#' @param show_subclones `<lgl>`
+#' @param show_final_fit `<lgl>`
+#' @param ... Other arguments passed to plot_SFS()
 #' @name plot_models
 
 
@@ -26,8 +28,8 @@ plot_models <- function(object, ...) {
 #' @param params_binomial List of non-default params for binomial geom
 #' @param params_subclones List of non-default params for subclones geom
 #' @param params_final_fit List of non-default params for final fit geom
-#' @param nrow passed to facet_wrap
-#' @param ncol passed to facet_wrap
+#' @param nrow Passed to facet_wrap
+#' @param ncol Passed to facet_wrap
 #' @export
 plot_models.cevodata <- function(object,
                                  models_name = active_models(object),
@@ -169,6 +171,7 @@ geom_line_final_fit <- function(resid, params) {
 }
 
 
+## --------------------------- Other functions --------------------------------
 
 plot_clones <- function(clones) {
   clones |>
