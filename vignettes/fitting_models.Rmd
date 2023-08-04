@@ -104,3 +104,31 @@ cd |>
   get_selection_coefficients()
 ```
 
+
+# Bootstrapping
+
+Since version 2.2.0 `fit_powerlaw_tail_optim()` function has a new `bootstraps` argument which can be either `FALSE` or an integer number indicating the number of bootstrap samples. Bootstrapping is performed using [tidyverse/rsample](https://rsample.tidymodels.org/) package and requires it to be installed.
+
+**Bootstrapping significantly extends the model fitting time!**
+
+If `bootstraps` is an integer greater than 1, the SNVs from the default assay are split by sample_id, resampled N times, new SFS spectra are computed, and N models are fitted for each sample. The resampled models are stored in the `<model_name>_bootstraps` slot (residuals for each resample are stored in the `misc` slot with the same name), and the summarized model with confidence intervals is stored in the `model_name` slot.
+
+For demonstration purposes, we will bootstrap for 2 samples and with only 2 resamples.
+
+```{r}
+cd <- cd |> 
+  filter(sample_id %in% cd$metadata$sample_id[1:2]) |> 
+  fit_powerlaw_tail_optim(name = "bs_model", bootstraps = 2)
+
+get_model_names(cd)
+```
+
+```{r}
+get_models(cd, "bs_model_bootstraps")
+```
+
+```{r}
+get_models(cd, "bs_model")
+```
+
+Resampled models can be plotted in the same way as non-resampled models using the `plot_models()` function.

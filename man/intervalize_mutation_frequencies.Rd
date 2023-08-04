@@ -2,18 +2,33 @@
 % Please edit documentation in R/prepare_snvs.R
 \name{intervalize_mutation_frequencies}
 \alias{intervalize_mutation_frequencies}
+\alias{intervalize_mutation_frequencies.cevodata}
+\alias{intervalize_mutation_frequencies.cevo_snvs}
 \title{Intervalize the mutation frequencies}
 \usage{
-intervalize_mutation_frequencies(
+intervalize_mutation_frequencies(object, ...)
+
+\method{intervalize_mutation_frequencies}{cevodata}(
   object,
   which_snvs = default_SNVs(object),
   column = get_frequency_measure_name(object, which_snvs),
   bins = NULL,
-  verbose = get_cevomod_verbosity()
+  verbose = get_cevomod_verbosity(),
+  ...
+)
+
+\method{intervalize_mutation_frequencies}{cevo_snvs}(
+  object,
+  column = get_frequency_measure_name(object),
+  bins = NULL,
+  verbose = get_cevomod_verbosity(),
+  ...
 )
 }
 \arguments{
 \item{object}{\if{html}{\out{<cevodata>}} object}
+
+\item{...}{Other args}
 
 \item{which_snvs}{Which SNVs to use}
 

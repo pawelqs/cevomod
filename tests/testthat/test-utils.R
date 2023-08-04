@@ -17,3 +17,11 @@ test_that("segment() function works", {
   vec <- c(T, T, T, F, F, T, F, F)
   expect_equal(segment(vec), c(0, 0, 0, 1, 1, 2, 3, 3))
 })
+
+
+test_that("verbose_down() works", {
+  expect_equal(verbose_down(TRUE), FALSE)
+  expect_equal(verbose_down(FALSE), FALSE)
+  expect_equal(verbose_down(2), 1)
+  expect_equal(verbose_down(3), 2)
+})

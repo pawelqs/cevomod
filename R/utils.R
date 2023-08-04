@@ -45,6 +45,17 @@ msg <- function(...,
 }
 
 
+verbose_down <- function(verbose) {
+  if (isTRUE(verbose) || isFALSE(verbose) || verbose == 0) {
+    FALSE
+  } else if (is.numeric(verbose) && verbose > 0) {
+    verbose - 1
+  } else {
+    stop("Verbose should be logical or positive")
+  }
+}
+
+
 require_packages <- function(...) {
   pkgs <- list(...)
   missing <- !map_lgl(pkgs, requireNamespace, quietly = TRUE)
