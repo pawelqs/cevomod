@@ -14,13 +14,11 @@ plot_models(object, ...)
   show_binomial_layer = FALSE,
   show_subclones = TRUE,
   show_final_fit = TRUE,
-  neutral_tail_alpha = 0.3,
-  neutral_tail_size = 0.5,
-  neutral_tail_fill = "white",
-  neutral_tail_color = "gray90",
-  binomial_layer_color = "black",
-  final_fit_color = "red",
-  final_fit_size = 1,
+  params_neutral_tail = list(),
+  params_bootstraps = list(),
+  params_binomial = list(),
+  params_subclones = list(),
+  params_final_fit = list(),
   nrow = NULL,
   ncol = NULL,
   ...
@@ -41,19 +39,16 @@ plot_models(object, ...)
 
 \item{show_final_fit}{TRUE,}
 
-\item{neutral_tail_alpha}{0.3}
+\item{params_neutral_tail}{List of non-default params for neutral tail geom}
 
-\item{neutral_tail_size}{0.5}
+\item{params_bootstraps}{List of non-default params for neutral tail bootstraps
+geom}
 
-\item{neutral_tail_fill}{"white"}
+\item{params_binomial}{List of non-default params for binomial geom}
 
-\item{neutral_tail_color}{"gray90"}
+\item{params_subclones}{List of non-default params for subclones geom}
 
-\item{binomial_layer_color}{"black"}
-
-\item{final_fit_color}{"red"}
-
-\item{final_fit_size}{1}
+\item{params_final_fit}{List of non-default params for final fit geom}
 
 \item{nrow}{passed to facet_wrap}
 
