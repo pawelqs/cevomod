@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -245,10 +245,67 @@ object:</p>
 <span><span class="co">#&gt;   sample_id mutation_rate_williams component  N_mutations subclone_frequency</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   104.  Subclone 1         726              0.982</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   104.  Subclone 2         784              0.235</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    78.8 Subclone 1         822              0.999</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4                    78.8 Subclone 2         366              0.177</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   104.  Subclone 2         783              0.231</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    78.8 Subclone 1         826              0.998</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4                    78.8 Subclone 2         365              0.176</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: emergence_time &lt;dbl&gt;, time_end &lt;dbl&gt;, selection &lt;dbl&gt;</span></span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="bootstrapping">Bootstrapping<a class="anchor" aria-label="anchor" href="#bootstrapping"></a>
+</h2>
+<p>Since version 2.2.0 <code><a href="../reference/powerlaw_optim.html">fit_powerlaw_tail_optim()</a></code> function
+has a new <code>bootstraps</code> argument which can be either
+<code>FALSE</code> or an integer number indicating the number of
+bootstrap samples. Bootstrapping is performed using <a href="https://rsample.tidymodels.org/" class="external-link">tidyverse/rsample</a> package and
+requires it to be installed.</p>
+<p><strong>Bootstrapping significantly extends the model fitting
+time!</strong></p>
+<p>If <code>bootstraps</code> is an integer greater than 1, the SNVs
+from the default assay are split by sample_id, resampled N times, new
+SFS spectra are computed, and N models are fitted for each sample. The
+resampled models are stored in the
+<code>&lt;model_name&gt;_bootstraps</code> slot (residuals for each
+resample are stored in the <code>misc</code> slot with the same name),
+and the summarized model with confidence intervals is stored in the
+<code>model_name</code> slot.</p>
+<p>For demonstration purposes, we will bootstrap for 2 samples and with
+only 2 resamples.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="va">cd</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">cd</span><span class="op">$</span><span class="va">metadata</span><span class="op">$</span><span class="va">sample_id</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/powerlaw_optim.html">fit_powerlaw_tail_optim</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"bs_model"</span>, bootstraps <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #5FAFD7;">Splitting SNVs by sample_id</span></span></span>
+<span><span class="co">#&gt; <span style="color: #5FAFD7;">Resampling SNVs and calculating SFSs</span></span></span>
+<span><span class="co">#&gt; <span style="color: #5FAFD7;">Fitting models to Sample 1 resamples</span></span></span>
+<span><span class="co">#&gt; Warning: Recommend at least 1000 non-missing bootstrap resamples for terms:</span></span>
+<span><span class="co">#&gt; `A`, `alpha`.</span></span>
+<span><span class="co">#&gt; <span style="color: #5FAFD7;">Fitting models to Sample 3 resamples</span></span></span>
+<span><span class="co">#&gt; Warning: Recommend at least 1000 non-missing bootstrap resamples for terms:</span></span>
+<span><span class="co">#&gt; `A`, `alpha`.</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/get_model_names.html">get_model_names</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "SFS"                      "powerlaw_fixed"          </span></span>
+<span><span class="co">#&gt; [3] "powerlaw_optim"           "powerlaw_optim_subclones"</span></span>
+<span><span class="co">#&gt; [5] "powerlaw_fixed_subclones" "bs_model_bootstraps"     </span></span>
+<span><span class="co">#&gt; [7] "bs_model"</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="va">cd</span>, <span class="st">"bs_model_bootstraps"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 9</span></span></span>
+<span><span class="co">#&gt;   resample_id sample_id model    component       A alpha convergence value best </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bootstrap1  Sample 1  bs_model powerlaw t…  53.5  1.92           0  962. TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Bootstrap2  Sample 1  bs_model powerlaw t…  59.2  1.88           0  957. TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bootstrap1  Sample 3  bs_model powerlaw t… 110.   2.01           0 <span style="text-decoration: underline;">1</span>580. TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Bootstrap2  Sample 3  bs_model powerlaw t… 105.   2.03           0 <span style="text-decoration: underline;">1</span>615. TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="va">cd</span>, <span class="st">"bs_model"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 9</span></span></span>
+<span><span class="co">#&gt;   sample_id model  component     A A.lower A.upper alpha alpha.lower alpha.upper</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  bs_mo… powerlaw…  56.4    53.7    59.1  1.90        1.88        1.92</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3  bs_mo… powerlaw… 108.    105.    110.   2.02        2.01        2.03</span></span></code></pre></div>
+<p>Resampled models can be plotted in the same way as non-resampled
+models using the <code><a href="../reference/plot_models.html">plot_models()</a></code> function.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

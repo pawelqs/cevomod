@@ -7,7 +7,7 @@ are does not count). Penalty for the negative error depends on the number of
 points with the negative error value. Penalty value is the sum of error values
 to the power of x, where x is the length of the vector of negative error values.
 This allows the powerlaw curve to detach from the SFS for 1 or two bins, but
-then the penalty rises extremely."><title>Fitting Tung Durrett models — powerlaw_optim • cevomod</title><!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png"><link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png"><link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png"><link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png"><link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png"><link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Fitting Tung Durrett models — powerlaw_optim"><meta property="og:description" content="fit_powerlaw_tail_optim() uses stats::optim to find optimal A and alpha
+then the penalty rises extremely."><title>Fitting power-law tails with aptimum exponent value — powerlaw_optim • cevomod</title><!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png"><link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png"><link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png"><link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png"><link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png"><link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Fitting power-law tails with aptimum exponent value — powerlaw_optim"><meta property="og:description" content="fit_powerlaw_tail_optim() uses stats::optim to find optimal A and alpha
 whch maximizes SFS area under the powerlaw curve (sampled region of SFS and
 the range of f values below the maximum SFS value does not count) and
 minimizes negative error - where the curve is above the real SFS (sampled
@@ -26,7 +26,7 @@ then the penalty rises extremely."><meta property="og:image" content="https://pa
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,7 @@ then the penalty rises extremely."><meta property="og:image" content="https://pa
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Fitting Tung Durrett models</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Fitting power-law tails with aptimum exponent value</h1>
       <small class="dont-index">Source: <a href="https://github.com/pawelqs/cevomod/blob/HEAD/R/fit_powerlaw_tail_optim.R" class="external-link"><code>R/fit_powerlaw_tail_optim.R</code></a></small>
       <div class="d-none name"><code>powerlaw_optim.Rd</code></div>
     </div>
@@ -87,6 +87,37 @@ then the penalty rises extremely.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fit_powerlaw_tail_optim</span><span class="op">(</span><span class="va">object</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for cevodata</span></span>
+<span><span class="fu">fit_powerlaw_tail_optim</span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"powerlaw_optim"</span>,</span>
+<span>  bootstraps <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  allowed_zero_bins <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  y_treshold <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  y_threshold_pct <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span>  av_filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span>,</span>
+<span>  peak_detection_upper_limit <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  reward_upper_limit <span class="op">=</span> <span class="fl">0.4</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>maxit <span class="op">=</span> <span class="fl">1000</span>, ndeps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fu"><a href="get_cevomod_verbosity.html">get_cevomod_verbosity</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for cevo_SFS_bootstraps</span></span>
+<span><span class="fu">fit_powerlaw_tail_optim</span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"powerlaw_optim"</span>,</span>
+<span>  allowed_zero_bins <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  y_treshold <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  y_threshold_pct <span class="op">=</span> <span class="fl">0.01</span>,</span>
+<span>  av_filter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span>,</span>
+<span>  peak_detection_upper_limit <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  reward_upper_limit <span class="op">=</span> <span class="fl">0.4</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>maxit <span class="op">=</span> <span class="fl">1000</span>, ndeps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fu"><a href="get_cevomod_verbosity.html">get_cevomod_verbosity</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for cevo_SFS_tbl</span></span>
 <span><span class="fu">fit_powerlaw_tail_optim</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"powerlaw_optim"</span>,</span>
@@ -116,6 +147,11 @@ then the penalty rises extremely.</p>
 <dd><p>name in the models' slot</p></dd>
 
 
+<dt>bootstraps</dt>
+<dd><p>Number of bootstrap samples, or FALSE to make no resampling.
+<strong>This option significantly extendis the model fitting time!!</strong></p></dd>
+
+
 <dt>allowed_zero_bins</dt>
 <dd><p>number of allowed empty bins in the interval</p></dd>
 
@@ -134,11 +170,11 @@ height of the higherst peak will be considered empty</p></dd>
 
 
 <dt>peak_detection_upper_limit</dt>
-<dd><p>upper f value up to which the main peak is searched</p></dd>
+<dd><p>Upper f value up to which the main peak is searched</p></dd>
 
 
 <dt>reward_upper_limit</dt>
-<dd><p>mutations under the curve up to this limit will be rewarded</p></dd>
+<dd><p>Mutations under the curve up to this limit will be rewarded</p></dd>
 
 
 <dt>control</dt>
@@ -157,7 +193,7 @@ height of the higherst peak will be considered empty</p></dd>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TCGA-AC-A23H-01"</span>,<span class="st">"TCGA-AN-A046-01"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">fit_powerlaw_tail_optim</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5FAFD7;">Fitting optimized power-law models...</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5FAFD7;">Models fitted in 1.88676881790161 seconds</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5FAFD7;">Models fitted in 1.47547578811646 seconds</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

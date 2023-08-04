@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,13 +70,11 @@
 <span>  show_binomial_layer <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  show_subclones <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  show_final_fit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  neutral_tail_alpha <span class="op">=</span> <span class="fl">0.3</span>,</span>
-<span>  neutral_tail_size <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  neutral_tail_fill <span class="op">=</span> <span class="st">"white"</span>,</span>
-<span>  neutral_tail_color <span class="op">=</span> <span class="st">"gray90"</span>,</span>
-<span>  binomial_layer_color <span class="op">=</span> <span class="st">"black"</span>,</span>
-<span>  final_fit_color <span class="op">=</span> <span class="st">"red"</span>,</span>
-<span>  final_fit_size <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  params_neutral_tail <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  params_bootstraps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  params_binomial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  params_subclones <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  params_final_fit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  nrow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ncol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -86,67 +84,60 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>object</dt>
-<dd><p>cevodata object</p></dd>
+<dd><p><code>&lt;cevodata&gt;</code> object</p></dd>
 
 
 <dt>...</dt>
-<dd><p>other arguments passed to plot_SFS()</p></dd>
+<dd><p>Other arguments passed to plot_SFS()</p></dd>
 
 
 <dt>models_name</dt>
-<dd><p>models name</p></dd>
+<dd><p>Name of the models to plot</p></dd>
 
 
 <dt>show_neutral_tail</dt>
-<dd><p>TRUE,</p></dd>
+<dd><p><code>&lt;lgl&gt;</code></p></dd>
 
 
 <dt>show_binomial_layer</dt>
-<dd><p>FALSE,</p></dd>
+<dd><p><code>&lt;lgl&gt;</code></p></dd>
 
 
 <dt>show_subclones</dt>
-<dd><p>TRUE,</p></dd>
+<dd><p><code>&lt;lgl&gt;</code></p></dd>
 
 
 <dt>show_final_fit</dt>
-<dd><p>TRUE,</p></dd>
+<dd><p><code>&lt;lgl&gt;</code></p></dd>
 
 
-<dt>neutral_tail_alpha</dt>
-<dd><p>0.3</p></dd>
+<dt>params_neutral_tail</dt>
+<dd><p>List of non-default params for neutral tail geom</p></dd>
 
 
-<dt>neutral_tail_size</dt>
-<dd><p>0.5</p></dd>
+<dt>params_bootstraps</dt>
+<dd><p>List of non-default params for neutral tail bootstraps
+geom</p></dd>
 
 
-<dt>neutral_tail_fill</dt>
-<dd><p>"white"</p></dd>
+<dt>params_binomial</dt>
+<dd><p>List of non-default params for binomial geom</p></dd>
 
 
-<dt>neutral_tail_color</dt>
-<dd><p>"gray90"</p></dd>
+<dt>params_subclones</dt>
+<dd><p>List of non-default params for subclones geom</p></dd>
 
 
-<dt>binomial_layer_color</dt>
-<dd><p>"black"</p></dd>
-
-
-<dt>final_fit_color</dt>
-<dd><p>"red"</p></dd>
-
-
-<dt>final_fit_size</dt>
-<dd><p>1</p></dd>
+<dt>params_final_fit</dt>
+<dd><p>List of non-default params for final fit geom</p></dd>
 
 
 <dt>nrow</dt>
-<dd><p>passed to facet_wrap</p></dd>
+<dd><p>Passed to facet_wrap</p></dd>
 
 
 <dt>ncol</dt>
-<dd><p>passed to facet_wrap</p></dd>
+<dd><p>Passed to facet_wrap</p></dd>
 
 </dl></div>
 
