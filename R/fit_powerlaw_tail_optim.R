@@ -121,7 +121,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
                                                         control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                                         verbose = get_cevomod_verbosity(),
                                                         ...) {
-  msg("Bootstrapping ", unique(object$sfs[[1]]$sample_id), " sample", verbose = verbose)
+  msg("Fitting models to ", unique(object$sfs[[1]]$sample_id), " resamples", verbose = verbose)
   pb <- if (verbose) progress_bar$new(total = nrow(object)) else NULL
 
   object$models <- object$sfs |>
