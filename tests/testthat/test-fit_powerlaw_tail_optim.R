@@ -48,6 +48,7 @@ test_that("fit_powerlaw_tail_optim() bootstrapping test", {
   expect_equal(nrow(bootstrap_models), 4)
   expect_true(all(bootstrap_models$value > 1990))
   expect_s3_class(bootstrap_models, "cevo_powerlaw_models")
+  expect_s3_class(bootstrap_models, "cevo_bootstrap_powerlaw_models")
 
   models <- get_models(object, "powerlaw_optim")
   expected_columns <- c(
