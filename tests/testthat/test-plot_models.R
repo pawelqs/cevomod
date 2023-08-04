@@ -29,7 +29,6 @@ test_that("plot_models() works for bs_powerlaw_model_bootstraps", {
   nrow <- NULL
   ncol <- NULL
 
-
   suppressWarnings({
     p <- plot_models(test_data_fitted, models_name = "bs_powerlaw_model_bootstraps")
   })
