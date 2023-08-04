@@ -46,7 +46,7 @@ msg <- function(...,
 
 
 verbose_down <- function(verbose) {
-  if (isTRUE(verbose) || verbose == 0) {
+  if (isTRUE(verbose) || isFALSE(verbose) || verbose == 0) {
     FALSE
   } else if (is.numeric(verbose) && verbose > 0) {
     verbose - 1
