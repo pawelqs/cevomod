@@ -81,6 +81,36 @@ calc_SFS.cevo_snvs <- function(object,
 }
 
 
+calc_SFS_resamples <- function(cd, times, verbose = get_cevomod_verbosity()) {
+  rlang::check_installed("rsample", reason = "to perform bootstrap sampling of SNVs")
+  msg("Splitting SNVs by sample_id", verbose = verbose)
+
+  splitted_snvs <- SNVs(cd) |>
+    nest_by(.data$sample_id, .keep = TRUE) |>
+    deframe() |>
+    map(as_cevo_snvs)
+
+  msg("Resampling SNVs and calculating SFSs", verbose = verbose)
+  pb <- if (verbose) progress_bar$new(total = length(splitted_snvs)) else NULL
+  pass_verbose <- verbose_down(verbose)
+
+  resamples <- splitted_snvs |>
+    map(function(snvs) {
+      if (!is.null(pb)) pb$tick()
+      resamples <- rsample::bootstraps(snvs, times = times)
+      resamples$sfs <- resamples$splits |>
+        map(rsample::analysis) |>
+        map(intervalize_mutation_frequencies, verbose = pass_verbose) |>
+        map(calc_SFS, verbose = pass_verbose)
+      resamples$splits <- NULL
+      class(resamples) <- c("cevo_SFS_bootstraps", class(resamples))
+      resamples
+    })
+
+  resamples
+}
+
+
 #' @describeIn sfs Plot SFS
 #' @export
 plot_SFS <- function(object, ...) {

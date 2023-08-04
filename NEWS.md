@@ -1,4 +1,7 @@
 
+## cevomod 2.2.0
+* fit_powerlaw_tail_fixed() has a bootstrap option
+
 ## cevomod 2.1.0
 * cevomod is integrated with a helper [readthis](https://pawelqs.github.io/readthis/index.html) package, designed for bulk reading of variant files from algorithms such as Mutect2, Strelka, ASCAT, or FACETS, in the cevomod-friendly data format. Objects returned by `readthis::read_*()` functions can be added to the cevodata object using a general `add_data()` function.
 

@@ -19,7 +19,7 @@ calc_powerlaw_model_residuals <- function(object, models_name, ...) {
   from_to_cols_present <- all(c("from", "to") %in% optional_cols)
   powerlaw_models <- powerlaw_models |>
     filter(!is.na(.data$A), !is.na(.data$alpha)) |>
-    select("sample_id", "A", "alpha", all_of(optional_cols))
+    select("sample_id", any_of("resample_id"), "A", "alpha", all_of(optional_cols))
   sfs <- get_SFS(object)
   nbins <- summarise(sfs, nbins = n() - 1, .by = "sample_id") # zero bin does not count
 
@@ -30,7 +30,7 @@ calc_powerlaw_model_residuals <- function(object, models_name, ...) {
     mutate(
       neutr = if (from_to_cols_present) {
         .data$f >= .data$from & .data$f <= .data$to
-        } else NA,
+      } else NA,
     ) |>
     mutate(
       powerlaw_pred = calc_powerlaw_curve(.data$f, .data$A, .data$alpha, .data$nbins),

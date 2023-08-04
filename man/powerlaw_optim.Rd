@@ -4,11 +4,42 @@
 \alias{powerlaw_optim}
 \alias{fit_powerlaw_tail_optim}
 \alias{fit_powerlaw_tail_optim.cevodata}
-\title{Fitting Tung Durrett models}
+\alias{fit_powerlaw_tail_optim.cevo_SFS_bootstraps}
+\alias{fit_powerlaw_tail_optim.cevo_SFS_tbl}
+\title{Fitting power-law tails with aptimum exponent value}
 \usage{
 fit_powerlaw_tail_optim(object, ...)
 
 \method{fit_powerlaw_tail_optim}{cevodata}(
+  object,
+  name = "powerlaw_optim",
+  bootstraps = FALSE,
+  allowed_zero_bins = 2,
+  y_treshold = 1,
+  y_threshold_pct = 0.01,
+  av_filter = c(1/3, 1/3, 1/3),
+  peak_detection_upper_limit = 0.3,
+  reward_upper_limit = 0.4,
+  control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
+  verbose = get_cevomod_verbosity(),
+  ...
+)
+
+\method{fit_powerlaw_tail_optim}{cevo_SFS_bootstraps}(
+  object,
+  name = "powerlaw_optim",
+  allowed_zero_bins = 2,
+  y_treshold = 1,
+  y_threshold_pct = 0.01,
+  av_filter = c(1/3, 1/3, 1/3),
+  peak_detection_upper_limit = 0.3,
+  reward_upper_limit = 0.4,
+  control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
+  verbose = get_cevomod_verbosity(),
+  ...
+)
+
+\method{fit_powerlaw_tail_optim}{cevo_SFS_tbl}(
   object,
   name = "powerlaw_optim",
   allowed_zero_bins = 2,
@@ -29,6 +60,9 @@ fit_powerlaw_tail_optim(object, ...)
 
 \item{name}{name in the models' slot}
 
+\item{bootstraps}{Number of bootstrap samples, or FALSE to make no resampling.
+\strong{This option significantly extendis the model fitting time!!}}
+
 \item{allowed_zero_bins}{number of allowed empty bins in the interval}
 
 \item{y_treshold}{bins with less mutations will be considered empty}
@@ -38,9 +72,9 @@ height of the higherst peak will be considered empty}
 
 \item{av_filter}{average filter values to be applied to f}
 
-\item{peak_detection_upper_limit}{upper f value up to which the main peak is searched}
+\item{peak_detection_upper_limit}{Upper f value up to which the main peak is searched}
 
-\item{reward_upper_limit}{mutations under the curve up to this limit will be rewarded}
+\item{reward_upper_limit}{Mutations under the curve up to this limit will be rewarded}
 
 \item{control}{control param of stats::optim()}
 
