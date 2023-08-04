@@ -28,6 +28,8 @@ intervalize_mutation_frequencies(object, ...)
 \arguments{
 \item{object}{\if{html}{\out{<cevodata>}} object}
 
+\item{...}{Other args}
+
 \item{which_snvs}{Which SNVs to use}
 
 \item{column}{Which frequency measure column to intervalize? By default, uses

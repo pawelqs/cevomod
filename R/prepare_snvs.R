@@ -101,6 +101,7 @@ dentro_2015_correction <- function(tbl) {
 #' @param column Which frequency measure column to intervalize? By default, uses
 #'   the CCF/2  if it is found in the SNV tibble, and VAF otherwise
 #' @param bins Number of interval bins
+#' @param ... Other args
 #' @param verbose Verbose?
 #'
 #' @return <cevodata> object

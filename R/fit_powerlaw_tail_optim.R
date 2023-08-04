@@ -143,7 +143,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
   object$tidy_models <- object$models |>
     map(~pivot_longer(.x, all_of(c("A", "alpha")), names_to = "term", values_to = "estimate"))
 
-  conf_intervals <- rsample::int_pctl(object, tidy_models)
+  conf_intervals <- rsample::int_pctl(object, .data$tidy_models)
 
   bootstrap_models <- object$models |>
     set_names(object$id) |>
@@ -160,10 +160,10 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
     transmute(
       model = name,
       component = "powerlaw tail",
-      A = A.estimate,
-      A.lower, A.upper,
-      alpha = alpha.estimate,
-      alpha.lower, alpha.upper
+      A = .data$A.estimate,
+      .data$A.lower, .data$A.upper,
+      alpha = .data$alpha.estimate,
+      .data$alpha.lower, .data$alpha.upper
     )
   class(models) <- c("cevo_powerlaw_models", class(models))
 
