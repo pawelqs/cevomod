@@ -101,11 +101,11 @@ heatmap_granges <- function(granges, meta_field,
     select("score", "cum") %>%
     deframe()
 
-  if (verbose) {
-    print("Proportion of ranges present in N GRanges:")
+  msg("Kept sites present in ", keep_sites_present_in, "/", length(granges), " GRanges", verbose = verbose)
+  msg("Kept ", range_fractions[as.character(keep_sites_present_in)], " of all sites", verbose = verbose)
+  if (verbose_down(verbose)) {
+    msg("Proportion of ranges present in N GRanges:", verbose = TRUE)
     print(range_fractions)
-    print(sprintf("Kept sites present in %d/%d GRanges", keep_sites_present_in, length(granges)))
-    print(sprintf("Kept %f of all sites", range_fractions[as.character(keep_sites_present_in)]))
   }
 
   common_ranges <- ranges_cov %>%
