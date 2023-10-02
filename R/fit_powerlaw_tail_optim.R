@@ -203,6 +203,8 @@ fit_powerlaw_tail_optim.cevo_SFS_tbl <- function(object,
   data <- sfs |>
     left_join(bounds, by = "sample_id") |>
     filter(.data$f > .data$lower_bound, .data$f < .data$higher_bound) |>
+    mutate(length = n(), .by = "sample_id") |>
+    filter(length >= 3) |>
     select("sample_id", "f", "y") |>
     mutate(
       y = .data$y |>
