@@ -86,14 +86,14 @@ Drier mutations can be easily annotated on the VAF plots using the layer_mutatio
 
 ```{r, fig.width=10, fig.height=6}
 plot_SFS(cd) +
-  layer_mutations(cd, drivers = "BRCA")
+  layer_mutations(cd, mapping = aes(x = VAF), drivers = "BRCA")
 ```
 
 Also, custom list of genes can be provided with the `genes` argument:
 
 ```{r, fig.width=10, fig.height=6}
 plot_SFS(cd) +
-  layer_mutations(cd, genes = c("TP53", "BRCA1"))
+  layer_mutations(cd, mapping = aes(x = VAF), genes = c("TP53", "BRCA1"))
 ```
 
 ## Mutation plots
