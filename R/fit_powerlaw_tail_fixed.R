@@ -22,6 +22,7 @@
 #'
 #' @param object SNVs tibble object
 #' @param rsq_treshold R-squared tresholds to keep model as neutral
+#' @param lm_length length of the linear model fits
 #' @param name name in the models' slot
 #' @param verbose verbose?
 #' @param ... other arguments
@@ -56,6 +57,7 @@ fit_powerlaw_tail_fixed <- function(object, ...) {
 #' @export
 fit_powerlaw_tail_fixed.cevodata <- function(object,
                                              rsq_treshold = 0.98,
+                                             lm_length = 0.05,
                                              name = "powerlaw_fixed",
                                              pct_left = 0.05, pct_right = 0.95,
                                              verbose = get_cevomod_verbosity(),
@@ -78,7 +80,7 @@ fit_powerlaw_tail_fixed.cevodata <- function(object,
     reframe(
       model = "powerlaw_fixed",
       component = "Neutral tail",
-      fit_optimal_lm(.data$data, rsq_treshold, pb)
+      fit_optimal_lm(.data$data, rsq_treshold, lm_length = lm_length, pb)
     )
   class(models) <- c("cevo_powerlaw_models", class(models))
 
@@ -89,7 +91,7 @@ fit_powerlaw_tail_fixed.cevodata <- function(object,
 }
 
 
-fit_optimal_lm <- function(data, rsq_treshold = 0.98, pb = NULL) {
+fit_optimal_lm <- function(data, rsq_treshold = 0.98, lm_length = 0.05, pb = NULL) {
   min_val <- min(data$f)
   max_val <- max(data$f)
   grid <- expand_grid(
@@ -98,7 +100,7 @@ fit_optimal_lm <- function(data, rsq_treshold = 0.98, pb = NULL) {
     ) |>
     mutate(length = .data$to - .data$from)
 
-  desired_length <- if ((max_val - min_val) >= 0.05) 0.05 else max(grid$length)
+  desired_length <- if ((max_val - min_val) >= lm_length) lm_length else max(grid$length)
   grid <- grid |>
     filter(near(.data$length, desired_length))
 

@@ -12,6 +12,7 @@ fit_powerlaw_tail_fixed(object, ...)
 \method{fit_powerlaw_tail_fixed}{cevodata}(
   object,
   rsq_treshold = 0.98,
+  lm_length = 0.05,
   name = "powerlaw_fixed",
   pct_left = 0.05,
   pct_right = 0.95,
@@ -27,6 +28,8 @@ layer_lm_fits(cd, model_name = "powerlaw_fixed", ...)
 \item{...}{other params passed to geom_segment()}
 
 \item{rsq_treshold}{R-squared tresholds to keep model as neutral}
+
+\item{lm_length}{length of the linear model fits}
 
 \item{name}{name in the models' slot}
 
