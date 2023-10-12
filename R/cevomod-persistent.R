@@ -28,7 +28,7 @@ set_containers_dir <- function(dir) {
 }
 
 
-#' Get the verbosity level
+#' Get the containers directory
 #' @export
 get_containers_dir <- function() {
   get_settings()$containers_dir

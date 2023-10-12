@@ -2,10 +2,10 @@
 % Please edit documentation in R/cevomod-persistent.R
 \name{get_containers_dir}
 \alias{get_containers_dir}
-\title{Get the verbosity level}
+\title{Get the containers directory}
 \usage{
 get_containers_dir()
 }
 \description{
-Get the verbosity level
+Get the containers directory
 }
