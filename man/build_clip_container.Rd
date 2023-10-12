@@ -2,13 +2,20 @@
 % Please edit documentation in R/containers.R
 \name{build_clip_container}
 \alias{build_clip_container}
-\title{Build Apptainer container for CliP}
+\title{Build the CliP Apptainer container}
 \usage{
 build_clip_container(out_dir = NULL, force = FALSE)
 }
 \arguments{
-\item{out_dir}{path to save the CliP.sif file}
+\item{out_dir}{Path}
 }
 \description{
-Build Apptainer container for CliP
+CliP.sif is saved to
+\itemize{
+\item out_dir, if provided
+\item if out_dir is NULL but the containers_dir was set using the \code{\link[=set_containers_dir]{set_containers_dir()}},
+image will be saved to the set containers_dir.
+\item if out_dir is NULL and  the containers_dir was not set, image will
+be saved to the current working dir.
+}
 }

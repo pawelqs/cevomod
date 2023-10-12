@@ -1,7 +1,14 @@
 
 
-#' Build Apptainer container for CliP
-#' @param out_dir path to save the CliP.sif file
+#' Build the CliP Apptainer container
+#'
+#' CliP.sif is saved to
+#'   - out_dir, if provided
+#'   - if out_dir is NULL but the containers_dir was set using the [set_containers_dir()],
+#'     image will be saved to the set containers_dir.
+#'   - if out_dir is NULL and  the containers_dir was not set, image will
+#'     be saved to the current working dir.
+#' @param out_dir Path
 #' @export
 build_clip_container <- function(out_dir = NULL, force = FALSE) {
   if (!is_apptainer_installed()) {
