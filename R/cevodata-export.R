@@ -120,17 +120,24 @@ save_clip_files <- function(clip_data, out_dir) {
   if (!dir.exists(out_dir)) {
     dir.create(out_dir)
   }
-  iwalk(
+
+  files <- imap(
     clip_data,
     function(x, sample_id) {
-      write_tsv(x$snvs, file.path(out_dir, str_c(sample_id, ".snv.tsv")))
-      write_tsv(x$cnvs, file.path(out_dir, str_c(sample_id, ".cnv.tsv")))
-      write_file(
-        as.character(x$purities),
-        file.path(out_dir, str_c(sample_id, ".purity.tsv"))
-      )
+      # sample_id2 <- str_replace(sample_id, " ", "_")
+      snvs_file <- file.path(out_dir, str_c(sample_id, ".snv.tsv"))
+      cnvs_file <- file.path(out_dir, str_c(sample_id, ".cnv.tsv"))
+      purity_file <- file.path(out_dir, str_c(sample_id, ".purity.tsv"))
+
+      write_tsv(x$snvs, snvs_file)
+      write_tsv(x$cnvs, cnvs_file)
+      write_file(as.character(x$purities), purity_file)
+
+      tibble(sample_id, snvs_file, cnvs_file, purity_file)
     }
   )
+
+  invisible(bind_rows(files))
 }
 
 
