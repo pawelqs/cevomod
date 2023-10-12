@@ -28,7 +28,9 @@ build_clip_container <- function(out_dir = NULL, force = FALSE) {
 
 
 is_apptainer_installed <- function() {
-  system("apptainer --version") == 0
+  rlang::check_installed("processx", reason = "to interact with system")
+  x <- processx::run("apptainer", args = "--version")
+  x$status == 0
 }
 
 
