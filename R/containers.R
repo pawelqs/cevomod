@@ -3,7 +3,7 @@
 #' Build Apptainer container for CliP
 #' @param out_dir path to save the CliP.sif file
 #' @export
-build_CliP_container <- function(out_dir = NULL, force = FALSE) {
+build_clip_container <- function(out_dir = NULL, force = FALSE) {
   if (!is_apptainer_installed()) {
     stop("Apptainer needs to be installed to build the containers")
   }
