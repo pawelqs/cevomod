@@ -3,29 +3,58 @@
 #' Fit clonal and subclonal components of the model to the residuals of the
 #' power-law model
 #'
-#' @param object object
-#' @param N numbers of clones to for models
-#' @param powerlaw_model_name residual of which powerlaw model to use?
+#' @param object cevodata object
+#' @param N Vector of numbers of clones to for models
+#' @param powerlaw_model_name Residual of which powerlaw model to use?
 #'   powerlaw_fixed/powerlaw_optim
-#' @param snvs_name which snvs to to use?
-#' @param method clustering method to use: BMix and mclust are currently supported.
-#'   While mclust is a 3-4 times faster method, the BMix method is more accurate
-#'   and usually fast enough.
+#' @param snvs_name Which snvs to to use?
+#' @param snvs_name Which cnvs to to use?
+#' @param method Clustering method to use. Currently supported methods:
+#'   - mclust - the fastest method, approximately 3-4 times faster than BMix,
+#'     but uses a gaussian mixture modelling
+#'   - BMix - is more accurate, considers subclones as binomial clusters,
+#'     slightly slower
+#'   - CliP - Clonal structure identification through penalizing pairwise
+#'     differences
 #' @param upper_f_limit ignore variants with f higher than
-#' @param verbose verbose?
+#' @param verbose Verbose?
 #' @name fit_subclones
 NULL
 
 
 
-#' @rdname fit_subclones
+#' @describeIn fit_subclones Provides a common interface for all other methods,
+#'   runs the selected method and passes all the required arguments down.
+#' @examples
+#' \dontrun{
+#' # Using BMix
+#' fit_subclones(test_data_fitted)
+#' # or
+#' fit_subclones_bmix(test_data_fitted)
+#'
+#' # Using mclust
+#' fit_subclones(test_data_fitted, method = "mclust")
+#' # or
+#' fit_subclones_mclust(test_data_fitted)
+#'
+#' # Using CliP
+#' set_containers_dir(selected_dir)
+#' build_clip_container()
+#' fit_subclones(test_data_fitted, method = "CliP")
+#' # or
+#' fit_subclones_clip(test_data_fitted)
+#' }
 #' @export
 fit_subclones <- function(object,
                           N = 1:3,
                           powerlaw_model_name = active_models(object),
                           snvs_name = default_SNVs(object),
+                          cnvs_name = default_CNVs(object),
                           method = "BMix",
                           upper_f_limit = 0.75,
+                          clip_sif = NULL,
+                          clip_input = file.path(tempdir(), "clip_input"),
+                          clip_output = file.path(tempdir(), "clip_output"),
                           verbose = get_cevomod_verbosity()) {
   if (method == "BMix") {
     object <- object |>
@@ -33,10 +62,12 @@ fit_subclones <- function(object,
   } else if (method == "mclust") {
     object <- object |>
       fit_subclones_mclust(N, powerlaw_model_name, snvs_name, upper_f_limit, verbose)
+  } else if (method == "CliP") {
+    object <- object |>
+      fit_subclones_clip(powerlaw_model_name, snvs_name, upper_f_limit, verbose)
   } else {
-    stop("Currently supported methods are: BMix and mclust")
+    stop("Currently supported methods are: BMix, CliP, and mclust")
   }
-
 
   object
 }

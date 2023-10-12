@@ -9,6 +9,11 @@ powerlaw_model_name <- "powerlaw_optim"
 upper_f_limit <- 0.75
 snvs_name <- "snvs"
 
+# For CliP interactive tests
+clip_input <- file.path(tempdir(), "clip_input")
+clip_output <- file.path(tempdir(), "clip_output")
+clip_sif <- NULL
+
 
 test_that("fit_subclones() mclust works", {
   res <- object |>
