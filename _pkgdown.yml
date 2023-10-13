@@ -31,6 +31,7 @@ reference:
 - title: Other transformations
 - contents:
   - annotate_mutation_contexts
+  - unite_mutation_id
   - cut_f_intervals
   - filter_SNVs_by_regions
   - shuffle
@@ -72,12 +73,14 @@ reference:
   - test_data_fitted
 - title: Other functions
 - contents:
-  - set_cevomod_verbosity
-  - generate_neutral_snvs
-  - "`%not in%`"
+  - build_clip_container
   - fill_na
   - fix_powerlaw_N_mutations
+  - generate_neutral_snvs
+  - set_cevomod_verbosity
+  - set_containers_dir
   - to_clip
+  - "`%not in%`"
 - title: internal
   contents:
     - colors
