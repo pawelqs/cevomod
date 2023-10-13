@@ -2,14 +2,16 @@
 settings_dir <- tools::R_user_dir("cevomod", which = "config")
 settings_file <- file.path(settings_dir, "settings.rds")
 
+default_settings <- list(
+  containers_dir = NULL
+)
+
 
 get_settings <- function() {
   if (file.exists(settings_file)) {
     readRDS(settings_file)
   } else {
-    list(
-      containers_dir = NULL
-    )
+    default_settings
   }
 }
 
