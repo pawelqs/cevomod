@@ -2,13 +2,16 @@
 % Please edit documentation in R/cevomod-persistent.R
 \name{set_containers_dir}
 \alias{set_containers_dir}
-\title{Set the containers directory}
+\alias{get_containers_dir}
+\title{Get/Set the containers directory}
 \usage{
 set_containers_dir(dir)
+
+get_containers_dir()
 }
 \arguments{
 \item{dir}{Path for containers}
 }
 \description{
-Set the containers directory
+Get/Set the containers directory
 }

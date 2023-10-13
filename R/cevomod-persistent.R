@@ -14,7 +14,7 @@ get_settings <- function() {
 }
 
 
-#' Set the containers directory
+#' Get/Set the containers directory
 #' @param dir Path for containers
 #' @export
 set_containers_dir <- function(dir) {
@@ -28,7 +28,7 @@ set_containers_dir <- function(dir) {
 }
 
 
-#' Get the containers directory
+#' @rdname set_containers_dir
 #' @export
 get_containers_dir <- function() {
   get_settings()$containers_dir
