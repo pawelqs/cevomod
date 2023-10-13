@@ -1,5 +1,3 @@
-
-
 #' Build the CliP Apptainer container
 #'
 #' CliP.sif is saved to
