@@ -1,11 +1,11 @@
 
 settings_dir <- tools::R_user_dir("cevomod", which = "config")
-settings_file <- file.path(settings_dir, "settings.yml")
+settings_file <- file.path(settings_dir, "settings.rds")
 
 
 get_settings <- function() {
   if (file.exists(settings_file)) {
-    yaml::read_yaml(settings_file)
+    readRDS(settings_file)
   } else {
     list(
       containers_dir = NULL
@@ -24,7 +24,7 @@ set_containers_dir <- function(dir) {
   if(!dir.exists(settings_dir)) {
     dir.create(settings_dir)
   }
-  yaml::write_yaml(settings, settings_file)
+  write_rds(settings, settings_file)
 }
 
 
