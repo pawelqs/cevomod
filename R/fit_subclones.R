@@ -64,7 +64,7 @@ fit_subclones <- function(object,
       fit_subclones_mclust(N, powerlaw_model_name, snvs_name, upper_f_limit, verbose)
   } else if (method == "CliP") {
     object <- object |>
-      fit_subclones_clip(powerlaw_model_name, snvs_name, upper_f_limit, verbose)
+      fit_subclones_clip(powerlaw_model_name, snvs_name, cnvs_name, upper_f_limit, verbose = verbose)
   } else {
     stop("Currently supported methods are: BMix, CliP, and mclust")
   }

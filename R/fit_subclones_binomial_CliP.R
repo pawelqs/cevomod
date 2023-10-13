@@ -58,8 +58,8 @@ fit_subclones_clip <- function(object,
     run_clip,
     clip_sif = clip_sif,
     out_dir = clip_output,
-    verbose = verbose,
-    .progress = TRUE
+    verbose = verbose > 0,
+    .progress = verbose > 0
   )
 
   clip_res <- readthis::read_clip_best_lambda(clip_output)
