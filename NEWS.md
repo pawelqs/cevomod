@@ -1,6 +1,6 @@
 
 ## cevomod 2.3.0
-* subclones can be fitted using [CliP](https://github.com/wwylab/CliP) [CliP: subclonal architecture reconstruction of cancer cells in DNA sequencing data using a penalized likelihood model](https://www.biorxiv.org/content/10.1101/2021.03.31.437383v1) (`fit_subclones(method = "CliP")`). This option requires that the Apptainer is installed. CliP container image can be build with `build_clip_container()`
+* subclones can be fitted using [CliP](https://github.com/wwylab/CliP) [(Jiang et al., CliP: subclonal architecture reconstruction of cancer cells in DNA sequencing data using a penalized likelihood model, bioRxiv 2021)](https://www.biorxiv.org/content/10.1101/2021.03.31.437383v1) (`fit_subclones(method = "CliP")`). This option requires that the Apptainer is installed. CliP container image can be build with `build_clip_container()`
 
 ## cevomod 2.2.0
 * fit_powerlaw_tail_fixed() has a bootstrap option
