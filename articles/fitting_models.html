@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -183,16 +183,16 @@ mutation rate.</p>
 </h2>
 <p>In cevomod, the binomial components for clonal and subclonal variants
 are fitted to the positive part of the power-law model residuals. By
-default, they are fitted using the <a href="https://github.com/caravagnalab/BMix" class="external-link">BMix</a> package, although
-an alternative method using mclust is also available. In the default
-method, we randomly subsample the SNVs and Indels in each spectrum bin
-to the number given by the power-law component residual. Then, we employ
-the BMix to fit the VAF distribution of these variants with a mixture of
-1 to 3 binomial distributions (clone plus subclones), accounting for the
-variant’s sequencing depth. The best model is selected based on the
-Bayesian Information Criterium (BIC).</p>
+default, they are fitted using the <a href="https://github.com/caravagnalab/BMix" class="external-link">BMix</a> package (<a href="https://www.nature.com/articles/s41588-020-0675-5" class="external-link">Caravagna et
+al., 2020</a>), although an alternative methods are available. In the
+default method, we randomly subsample the SNVs and Indels in each
+spectrum bin to the number given by the power-law component residual.
+Then, we employ the BMix to fit the VAF distribution of these variants
+with a mixture of 1 to 3 binomial distributions (clone plus subclones),
+accounting for the variant’s sequencing depth. The best model is
+selected based on the Bayesian Information Criterium (BIC).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_subclones.html">fit_subclones_bmix</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fit_subclones.html">fit_subclones</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #5FAFD7;">Fitting binomial models using BMix</span></span></span>
 <span><span class="co">#&gt; Warning: replacing previous import 'cli::num_ansi_colors' by</span></span>
 <span><span class="co">#&gt; 'crayon::num_ansi_colors' when loading 'BMix'</span></span>
@@ -225,7 +225,7 @@ object:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="va">cd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op">!=</span> <span class="st">"Sample 2"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="../reference/fit_subclones.html">fit_subclones_bmix</a></span><span class="op">(</span>powerlaw_model_name <span class="op">=</span> <span class="st">"powerlaw_fixed"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/fit_subclones.html">fit_subclones</a></span><span class="op">(</span>powerlaw_model_name <span class="op">=</span> <span class="st">"powerlaw_fixed"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #5FAFD7;">Fitting binomial models using BMix</span></span></span>
 <span></span>
 <span><span class="va">cd</span> <span class="op">|&gt;</span> </span>
@@ -244,11 +244,50 @@ object:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 8</span></span></span>
 <span><span class="co">#&gt;   sample_id mutation_rate_williams component  N_mutations subclone_frequency</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   104.  Subclone 1         726              0.982</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   104.  Subclone 2         783              0.231</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    78.8 Subclone 1         826              0.998</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4                    78.8 Subclone 2         365              0.176</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   104.  Subclone 1         724              0.982</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   104.  Subclone 2         784              0.235</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    78.8 Subclone 1         824              0.999</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4                    78.8 Subclone 2         366              0.180</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: emergence_time &lt;dbl&gt;, time_end &lt;dbl&gt;, selection &lt;dbl&gt;</span></span></span></code></pre></div>
+<div class="section level3">
+<h3 id="alternative-methods-for-fitting-clones-and-subclones">Alternative methods for fitting clones and subclones<a class="anchor" aria-label="anchor" href="#alternative-methods-for-fitting-clones-and-subclones"></a>
+</h3>
+<p>There are 2 alternative methods for fitting clonal and subclonal
+components of the model.</p>
+<ul>
+<li>CliP (using <code>fit_subclones(method = "CliP")</code> or
+<code>fit_subclomes_clip()</code>) - uses the <a href="https://github.com/wwylab/CliP" class="external-link">CliP</a> method published by (<a href="https://www.biorxiv.org/content/10.1101/2021.03.31.437383v1" class="external-link">Jiang
+et al., 2021</a>). Running CliP requires that <strong><a href="https://apptainer.org/" class="external-link">Apptainer</a> is installed</strong> and
+<strong>does not require installation of CliP and depenencies</strong>.
+<em>cevomod</em> prepares the CliP input files, runs the container and
+reads the CliP output files back to <em>cevomod</em>. The container
+needs to be build <em>a priori</em> with
+<code><a href="../reference/build_clip_container.html">build_clip_container()</a></code>, which uses the image definition
+file <a href="https://github.com/pawelqs/cevomod/inst/CliP.def" class="external-link">CliP.def</a>.
+All of this can be done with a few lines of code:</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/set_containers_dir.html">set_containers_dir</a></span><span class="op">(</span><span class="st">"~/containers/"</span><span class="op">)</span></span>
+<span><span class="co"># get_containers_dir() to see the current containers dir</span></span>
+<span><span class="fu"><a href="../reference/build_clip_container.html">build_clip_container</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/fit_subclones.html">fit_subclones</a></span><span class="op">(</span><span class="va">cd</span>, method <span class="op">=</span> <span class="st">"CliP"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## OR the image can be built in the current working directory</span></span>
+<span><span class="fu"><a href="../reference/build_clip_container.html">build_clip_container</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/fit_subclones.html">fit_subclones</a></span><span class="op">(</span><span class="va">cd</span>, method <span class="op">=</span> <span class="st">"CliP"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## OR in any custom directory</span></span>
+<span><span class="fu"><a href="../reference/build_clip_container.html">build_clip_container</a></span><span class="op">(</span><span class="st">"/custom/path/"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/fit_subclones.html">fit_subclones</a></span><span class="op">(</span><span class="va">cd</span>, method <span class="op">=</span> <span class="st">"CliP"</span>, clip_sif <span class="op">=</span> <span class="st">"/custom/path/CliP.sif"</span><span class="op">)</span></span></code></pre></div>
+<p>See the <code><a href="../reference/fit_subclones.html">fit_subclones()</a></code> help page for more details.</p>
+<ul>
+<li>mclust (using <code>fit_subclones(method = "mclust")</code> or
+<code>fit_subclomes_mclust()</code>) - fits the power-law component
+residuals with a Gaussian mixtures using the (<a href="https://mclust-org.github.io/mclust/" class="external-link">mclust</a>) package (<a href="https://journal.r-project.org/archive/2016/RJ-2016-021/index.html" class="external-link">Scrucca
+et al., 2016</a>). This is a faster but approximate method for
+recognition of clones and subclones.</li>
+</ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="bootstrapping">Bootstrapping<a class="anchor" aria-label="anchor" href="#bootstrapping"></a>
@@ -270,7 +309,7 @@ and the summarized model with confidence intervals is stored in the
 <code>model_name</code> slot.</p>
 <p>For demonstration purposes, we will bootstrap for 2 samples and with
 only 2 resamples.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="va">cd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">cd</span><span class="op">$</span><span class="va">metadata</span><span class="op">$</span><span class="va">sample_id</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/powerlaw_optim.html">fit_powerlaw_tail_optim</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"bs_model"</span>, bootstraps <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -288,22 +327,22 @@ only 2 resamples.</p>
 <span><span class="co">#&gt; [3] "powerlaw_optim"           "powerlaw_optim_subclones"</span></span>
 <span><span class="co">#&gt; [5] "powerlaw_fixed_subclones" "bs_model_bootstraps"     </span></span>
 <span><span class="co">#&gt; [7] "bs_model"</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="va">cd</span>, <span class="st">"bs_model_bootstraps"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 9</span></span></span>
 <span><span class="co">#&gt;   resample_id sample_id model    component       A alpha convergence value best </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bootstrap1  Sample 1  bs_model powerlaw t…  53.5  1.92           0  962. TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Bootstrap2  Sample 1  bs_model powerlaw t…  59.2  1.88           0  957. TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bootstrap1  Sample 3  bs_model powerlaw t… 110.   2.01           0 <span style="text-decoration: underline;">1</span>580. TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Bootstrap2  Sample 3  bs_model powerlaw t… 105.   2.03           0 <span style="text-decoration: underline;">1</span>615. TRUE</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bootstrap1  Sample 1  bs_model powerlaw t…  44.8  1.97           0  912. TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Bootstrap2  Sample 1  bs_model powerlaw t…  62.2  1.87           0  989. TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bootstrap1  Sample 3  bs_model powerlaw t… 107.   2.03           0 <span style="text-decoration: underline;">1</span>557. TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Bootstrap2  Sample 3  bs_model powerlaw t… 117.   1.99           0 <span style="text-decoration: underline;">1</span>582. TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="va">cd</span>, <span class="st">"bs_model"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 9</span></span></span>
 <span><span class="co">#&gt;   sample_id model  component     A A.lower A.upper alpha alpha.lower alpha.upper</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  bs_mo… powerlaw…  56.4    53.7    59.1  1.90        1.88        1.92</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3  bs_mo… powerlaw… 108.    105.    110.   2.02        2.01        2.03</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  bs_mo… powerlaw…  53.5    45.2    61.7  1.92        1.87        1.97</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3  bs_mo… powerlaw… 112.    107.    116.   2.01        1.99        2.03</span></span></code></pre></div>
 <p>Resampled models can be plotted in the same way as non-resampled
 models using the <code><a href="../reference/plot_models.html">plot_models()</a></code> function.</p>
 </div>

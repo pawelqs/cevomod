@@ -58,6 +58,9 @@
     <loc>https://pawelqs.github.io/cevomod/reference/assays.html</loc>
   </url>
   <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/build_clip_container.html</loc>
+  </url>
+  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/calc_mutation_frequencies.html</loc>
   </url>
   <url>
@@ -262,6 +265,9 @@
     <loc>https://pawelqs.github.io/cevomod/reference/set_cevomod_verbosity.html</loc>
   </url>
   <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/set_containers_dir.html</loc>
+  </url>
+  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/sfs.html</loc>
   </url>
   <url>
@@ -287,6 +293,9 @@
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/to_clip.html</loc>
+  </url>
+  <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/unite_mutation_id.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/update.cevodata.html</loc>

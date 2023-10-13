@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -152,6 +152,11 @@
         <dd>Annotate mutation context and types for mutation signatures analysis</dd>
       </dl><dl><dt>
           
+          <code><a href="unite_mutation_id.html">unite_mutation_id()</a></code> 
+        </dt>
+        <dd>Unite many columns to create mutation_id column</dd>
+      </dl><dl><dt>
+          
           <code><a href="cut_f_intervals.html">cut_f_intervals()</a></code> 
         </dt>
         <dd>Get mutation frequency intervals</dd>
@@ -214,7 +219,7 @@
         <dd>Fit Mobster models</dd>
       </dl><dl><dt>
           
-          <code><a href="fit_subclones.html">fit_subclones()</a></code> <code><a href="fit_subclones.html">fit_subclones_bmix()</a></code> <code><a href="fit_subclones.html">fit_subclones_mclust()</a></code> 
+          <code><a href="fit_subclones.html">fit_subclones()</a></code> <code><a href="fit_subclones.html">fit_subclones_bmix()</a></code> <code><a href="fit_subclones.html">fit_subclones_clip()</a></code> <code><a href="fit_subclones.html">fit_subclones_mclust()</a></code> 
         </dt>
         <dd>Fit clonal and subclonal components of the model to the residuals of the
 power-law model</dd>
@@ -299,6 +304,11 @@ power-law model</dd>
           <code><a href="get_sample_sequencing_depths.html">get_sample_sequencing_depths()</a></code> 
         </dt>
         <dd>Get sample sequencing depths</dd>
+      </dl><dl><dt>
+          
+          <code><a href="set_containers_dir.html">set_containers_dir()</a></code> <code><a href="set_containers_dir.html">get_containers_dir()</a></code> 
+        </dt>
+        <dd>Get/Set the containers directory</dd>
       </dl><dl><dt>
           
           <code><a href="sfs.html">calc_SFS()</a></code> <code><a href="sfs.html">plot_SFS()</a></code> <code><a href="sfs.html">get_SFS()</a></code> 
@@ -517,19 +527,9 @@ https://doi.org/10.1016/j.cell.2018.02.060</dd>
 
       <dl><dt>
           
-          <code><a href="set_cevomod_verbosity.html">set_cevomod_verbosity()</a></code> 
+          <code><a href="build_clip_container.html">build_clip_container()</a></code> 
         </dt>
-        <dd>Change the verbosity level</dd>
-      </dl><dl><dt>
-          
-          <code><a href="generate_neutral_snvs.html">generate_neutral_snvs()</a></code> 
-        </dt>
-        <dd>Generate neutral SNVs</dd>
-      </dl><dl><dt>
-          
-          <code><a href="grapes-not-in-grapes.html">`%not in%`</a></code> 
-        </dt>
-        <dd>Not in operator</dd>
+        <dd>Build the CliP Apptainer container</dd>
       </dl><dl><dt>
           
           <code><a href="fill_na.html">fill_na()</a></code> 
@@ -542,9 +542,29 @@ https://doi.org/10.1016/j.cell.2018.02.060</dd>
         <dd>Fill N_mutations column for powerlaw models</dd>
       </dl><dl><dt>
           
+          <code><a href="generate_neutral_snvs.html">generate_neutral_snvs()</a></code> 
+        </dt>
+        <dd>Generate neutral SNVs</dd>
+      </dl><dl><dt>
+          
+          <code><a href="set_cevomod_verbosity.html">set_cevomod_verbosity()</a></code> 
+        </dt>
+        <dd>Change the verbosity level</dd>
+      </dl><dl><dt>
+          
+          <code><a href="set_containers_dir.html">set_containers_dir()</a></code> <code><a href="set_containers_dir.html">get_containers_dir()</a></code> 
+        </dt>
+        <dd>Get/Set the containers directory</dd>
+      </dl><dl><dt>
+          
           <code><a href="to_clip.html">to_clip()</a></code> 
         </dt>
         <dd>Export cevodata to CliP input</dd>
+      </dl><dl><dt>
+          
+          <code><a href="grapes-not-in-grapes.html">`%not in%`</a></code> 
+        </dt>
+        <dd>Not in operator</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,6 +88,7 @@
 <span></span>
 <span><span class="fu">layer_mutations</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
+<span>  mapping <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  genes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  drivers <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_labels <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -133,6 +134,10 @@ be taken from <code>driver_genes</code></p></dd>
 <dt>filter_fun</dt>
 <dd><p>Function for filtering mutations:
 variant_classification_filter() or impact_filter()</p></dd>
+
+
+<dt>mapping</dt>
+<dd><p>aes()</p></dd>
 
 
 <dt>show_labels</dt>

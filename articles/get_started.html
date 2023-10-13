@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -344,7 +344,10 @@ do it on their own.</p>
 component and one or more binomial components, which are fitted
 sequentially.</p>
 <p>In this example, we first fit the power-law model with an exponent of
-2, and then the mixture of binomial models.</p>
+2, and then the mixture of binomial models. By default, clonal and
+subclonal components are fitted using <a href="https://github.com/caravagnalab/BMix" class="external-link">BMix</a> package (<a href="https://www.nature.com/articles/s41588-020-0675-5" class="external-link">Caravagna et
+al., 2020</a>). See other methods for fitting these components in <a href="https://pawelqs.github.io/cevomod/articles/fitting_models.html#binomial-components">Fitting
+models/Binomial components</a> vignette.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="va">cd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/powerlaw_fixed_model.html">fit_powerlaw_tail_fixed</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -483,9 +486,9 @@ object:</p>
 <span><span class="co">#&gt;   sample_id mutation_rate_williams component  N_mutations subclone_frequency</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   104.  Subclone 1         727              0.982</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   104.  Subclone 2         783              0.232</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    78.8 Subclone 1         824              0.998</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4                    78.8 Subclone 2         366              0.182</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   104.  Subclone 2         783              0.233</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    78.8 Subclone 1         822              0.999</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4                    78.8 Subclone 2         366              0.176</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: emergence_time &lt;dbl&gt;, time_end &lt;dbl&gt;, selection &lt;dbl&gt;</span></span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

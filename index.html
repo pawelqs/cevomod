@@ -35,7 +35,7 @@
     
     <a class="navbar-brand me-2" href="index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,8 +87,20 @@
 <!--[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) -->
 
 <p><em>cevomod</em> is a package that implements methods for analyzing cancer evolution from the Next Generation Sequencing data.</p>
-<p>The modeling approach implemented in <em>cevomod</em> was inspired by the <a href="https://caravagnalab.github.io/mobster/index.html" class="external-link">MOBSTER</a> package, which models the distribution of Variant Allele Frequencies in the sample with a mixture of power-law-shaped and binomial distributions. However, MOBSTER fails to recognize the power-law component (the so-called neutral tail) in Whole Exome Sequencing data or data with insufficient sequencing coverage. cevomod implements methods that can fit the model to the data with significant loss of neutral tail variants.</p>
+<p>The modeling approach implemented in <em>cevomod</em> was inspired by the <a href="https://caravagnalab.github.io/mobster/index.html" class="external-link">MOBSTER</a> package (<a href="https://www.nature.com/articles/s41588-020-0675-5" class="external-link">Caravagna et al., 2020</a>), which models the distribution of Variant Allele Frequencies in the sample with a mixture of power-law-shaped and binomial distributions. However, MOBSTER fails to recognize the power-law component (the so-called neutral tail) in Whole Exome Sequencing data or data with insufficient sequencing coverage. cevomod implements methods that can fit the model to the data with significant loss of neutral tail variants.</p>
 <p><img src="reference/figures/introduction_figure.svg"></p>
+<p>In <em>cevomod</em>, the power-law and binomial components of the model are fitted sequentially. The power-law components are fitted first, and the binomial components are fitted to the residuals of the power-law components. There are two types of the power-law models:</p>
+<ul>
+<li>with the power-law exponents equal to 2, as expected in the exponentially growing populations according to (<a href="https://pubmed.ncbi.nlm.nih.gov/23471293/" class="external-link">Durrett, 2013</a>) and (<a href="https://www.nature.com/articles/ng.3489" class="external-link">Williams et al., 2016</a>),</li>
+<li>and with the power-law exponent that best fits the data.</li>
+</ul>
+<p>There are also several methods for fitting the clonal and subclonal components:</p>
+<ul>
+<li>using Gaussian mixtures (<a href="https://mclust-org.github.io/mclust/" class="external-link">mclust</a>) (<a href="https://journal.r-project.org/archive/2016/RJ-2016-021/index.html" class="external-link">Scrucca et al., 2016</a>),</li>
+<li>using binomial distributions (<a href="https://github.com/caravagnalab/BMix" class="external-link">BMix</a>) (<a href="https://www.nature.com/articles/s41588-020-0675-5" class="external-link">Caravagna et al., 2020</a>),</li>
+<li>and by penalizing pairwise differences (<a href="https://github.com/wwylab/CliP" class="external-link">CliP</a>) (<a href="https://www.biorxiv.org/content/10.1101/2021.03.31.437383v1" class="external-link">Jiang et al., 2021</a>).</li>
+</ul>
+<p>See the model fitting details in the <a href="https://pawelqs.github.io/cevomod/articles/get_started.html">Get Started</a> and <a href="https://pawelqs.github.io/cevomod/articles/fitting_models.html">Fitting models</a> vignettes.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -101,6 +113,9 @@
 <h2 id="last-changes">Last changes<a class="anchor" aria-label="anchor" href="#last-changes"></a>
 </h2>
 <ul>
+<li>
+<strong>v2.3.0</strong> - subclones can be fitted using <a href="https://github.com/wwylab/CliP" class="external-link">CliP</a> (<a href="https://www.biorxiv.org/content/10.1101/2021.03.31.437383v1" class="external-link">Jiang et al., 2021</a>) (<code>fit_subclones(method = "CliP")</code>). This option requires that the Apptainer is installed. CliP container image can be build with <code><a href="reference/build_clip_container.html">build_clip_container()</a></code>
+</li>
 <li>
 <strong>v2.2.0</strong> - fit_powerlaw_tail_fixed() has a bootstrap option. See the details in <a href="https://pawelqs.github.io/cevomod/articles/fitting_models.html#bootstrapping">Fitting models #Bootstrapping</a> vignette</li>
 <li>
