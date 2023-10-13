@@ -75,11 +75,10 @@ In Sample 2, the power-law exponent equals 4, much higher than in 3 other sample
 
 # Binomial components
 
-In cevomod, the binomial components for clonal and subclonal variants are fitted to the positive part of the power-law model residuals. By default, they are fitted using the [BMix](https://github.com/caravagnalab/BMix) package, although an alternative method using mclust is also available. In the default method, we randomly subsample the SNVs and Indels in each spectrum bin to the number given by the power-law component residual. Then, we employ the BMix to fit the VAF distribution of these variants with a mixture of 1 to 3 binomial distributions (clone plus subclones), accounting for the variant's sequencing depth. The best model is selected based on the Bayesian Information Criterium (BIC).
-
+In cevomod, the binomial components for clonal and subclonal variants are fitted to the positive part of the power-law model residuals. By default, they are fitted using the [BMix](https://github.com/caravagnalab/BMix) package ([Caravagna et al., 2020](https://www.nature.com/articles/s41588-020-0675-5)), although an alternative methods are available. In the default method, we randomly subsample the SNVs and Indels in each spectrum bin to the number given by the power-law component residual. Then, we employ the BMix to fit the VAF distribution of these variants with a mixture of 1 to 3 binomial distributions (clone plus subclones), accounting for the variant's sequencing depth. The best model is selected based on the Bayesian Information Criterium (BIC).
 
 ```{r}
-cd <- fit_subclones_bmix(cd)
+cd <- fit_subclones(cd)
 
 plot_models(cd)
 ```
@@ -93,7 +92,7 @@ For example, one can get filter Sample 2 out from the cevodata object:
 ```{r}
 cd <- cd |> 
   filter(sample_id != "Sample 2") |> 
-  fit_subclones_bmix(powerlaw_model_name = "powerlaw_fixed")
+  fit_subclones(powerlaw_model_name = "powerlaw_fixed")
 
 cd |> 
   get_models() |> 
@@ -103,6 +102,31 @@ cd |>
   get_models() |> 
   get_selection_coefficients()
 ```
+
+## Alternative methods for fitting clones and subclones
+
+There are 2 alternative methods for fitting clonal and subclonal components of the model.
+
+- CliP (using `fit_subclones(method = "CliP")` or `fit_subclomes_clip()`) - uses the [CliP](https://github.com/wwylab/CliP) method published by ([Jiang et al., 2021](https://www.biorxiv.org/content/10.1101/2021.03.31.437383v1)). Running CliP requires that **[Apptainer](https://apptainer.org/) is installed** and **does not require installation of CliP and depenencies**. *cevomod* prepares the CliP input files, runs the container and reads the CliP output files back to *cevomod*. The container needs to be build *a priori* with `build_clip_container()`, which uses the image definition file [CliP.def](https://github.com/pawelqs/cevomod/inst/CliP.def). All of this can be done with a few lines of code:
+
+```{r eval=FALSE}
+set_containers_dir("~/containers/")
+# get_containers_dir() to see the current containers dir
+build_clip_container()
+fit_subclones(cd, method = "CliP")
+
+## OR the image can be built in the current working directory
+build_clip_container()
+fit_subclones(cd, method = "CliP")
+
+## OR in any custom directory
+build_clip_container("/custom/path/")
+fit_subclones(cd, method = "CliP", clip_sif = "/custom/path/CliP.sif")
+```
+
+See the `fit_subclones()` help page for more details.
+
+- mclust (using `fit_subclones(method = "mclust")` or `fit_subclomes_mclust()`) - fits the power-law component residuals with a Gaussian mixtures using the ([mclust](https://mclust-org.github.io/mclust/)) package ([Scrucca et al., 2016](https://journal.r-project.org/archive/2016/RJ-2016-021/index.html)). This is a faster but approximate method for recognition of clones and subclones.
 
 
 # Bootstrapping
