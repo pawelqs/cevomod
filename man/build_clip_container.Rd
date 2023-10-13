@@ -8,6 +8,8 @@ build_clip_container(out_dir = NULL, force = FALSE)
 }
 \arguments{
 \item{out_dir}{Path}
+
+\item{force}{Force build in image exists}
 }
 \description{
 CliP.sif is saved to

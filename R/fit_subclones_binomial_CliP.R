@@ -10,7 +10,7 @@
 #' @param clip_sif Apptainer image file with CliP. If NULL, cevomod seeks for
 #'   the CliP.sif file in the containers_dir (if set before) and in the current
 #'   working directory. The container should be build with [build_clip_container()].
-#' @param clip_intput Path to store the CliP input files
+#' @param clip_input Path to store the CliP input files
 #' @param clip_output Path to store the CliP output files
 #' @export
 fit_subclones_clip <- function(object,
@@ -66,14 +66,14 @@ fit_subclones_clip <- function(object,
 
   models <- clip_res$subclonal_structure |>
     transmute(
-      sample_id,
+      .data$sample_id,
       model = "subclones CliP",
-      component = if_else(cluster_index == 0, "Clone", str_c("Subclone ", cluster_index)),
-      N_mutations = num_SNV,
+      component = if_else(.data$cluster_index == 0, "Clone", str_c("Subclone ", .data$cluster_index)),
+      N_mutations = .data$num_SNV,
       cellularity = .data$cellular_prevalence/2,
-      f = round(cellularity, digits = 2),
-      lambda,
-      best = best_lambda
+      f = round(.data$cellularity, digits = 2),
+      .data$lambda,
+      best = .data$best_lambda
     ) |>
     left_join(sequencing_depth, by = c("sample_id", "f")) |>
     select(-"f")

@@ -9,6 +9,7 @@
 #'   - if out_dir is NULL and  the containers_dir was not set, image will
 #'     be saved to the current working dir.
 #' @param out_dir Path
+#' @param force Force build in image exists
 #' @export
 build_clip_container <- function(out_dir = NULL, force = FALSE) {
   if (!is_apptainer_installed()) {

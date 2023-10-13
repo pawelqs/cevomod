@@ -62,7 +62,9 @@ fit_subclones_mclust(
 \item{powerlaw_model_name}{Residual of which powerlaw model to use?
 powerlaw_fixed/powerlaw_optim}
 
-\item{snvs_name}{Which cnvs to to use?}
+\item{snvs_name}{Which snvs to to use?}
+
+\item{cnvs_name}{Which cnvs to to use?}
 
 \item{method}{Clustering method to use. Currently supported methods:
 \itemize{
@@ -80,11 +82,11 @@ differences
 the CliP.sif file in the containers_dir (if set before) and in the current
 working directory. The container should be build with \code{\link[=build_clip_container]{build_clip_container()}}.}
 
+\item{clip_input}{Path to store the CliP input files}
+
 \item{clip_output}{Path to store the CliP output files}
 
 \item{verbose}{Verbose?}
-
-\item{clip_intput}{Path to store the CliP input files}
 }
 \description{
 Fit clonal and subclonal components of the model to the residuals of the

@@ -8,7 +8,7 @@
 #' @param powerlaw_model_name Residual of which powerlaw model to use?
 #'   powerlaw_fixed/powerlaw_optim
 #' @param snvs_name Which snvs to to use?
-#' @param snvs_name Which cnvs to to use?
+#' @param cnvs_name Which cnvs to to use?
 #' @param method Clustering method to use. Currently supported methods:
 #'   - mclust - the fastest method, approximately 3-4 times faster than BMix,
 #'     but uses a gaussian mixture modelling
