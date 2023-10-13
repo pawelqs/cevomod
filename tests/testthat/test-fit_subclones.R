@@ -9,6 +9,13 @@ powerlaw_model_name <- "powerlaw_optim"
 upper_f_limit <- 0.75
 snvs_name <- "snvs"
 
+# For CliP interactive tests
+cnvs_name <- default_CNVs(object)
+clip_input <- file.path(tempdir(), "clip_input")
+clip_output <- file.path(tempdir(), "clip_output")
+clip_sif <- NULL
+verbose <- get_cevomod_verbosity()
+
 
 test_that("fit_subclones() mclust works", {
   res <- object |>
@@ -30,6 +37,19 @@ test_that("fit_subclones() bmix works", {
     is.null(res$models$powerlaw_optim_subclones)
   )
 })
+
+
+### Do not push this test to github, since it requires that apptainer
+### is installed
+# test_that("fit_subclones() clip works", {
+#   res <- object |>
+#     fit_subclones(method = "CliP", verbose = TRUE)
+#
+#   expect_false(
+#     is.null(res$models$powerlaw_optim_subclones)
+#   )
+# })
+
 
 
 fit_binomial_models_cols <- c("N", "component", "cellularity", "N_mutations", "BIC")

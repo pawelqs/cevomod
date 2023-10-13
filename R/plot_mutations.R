@@ -108,20 +108,23 @@ filter_SNVs <- function(dt, genes = NULL, drivers = NULL) {
 
 
 #' @describeIn mutation_plots Adds mutations to SFS plots
+#' @param mapping aes()
 #' @param color color
 #' @param size size
 #' @param show_labels `lgl` use ggrepel to label the mutations?
 #' @param ... other arguments passed to geom_point()
 #' @export
 layer_mutations <- function(object,
+                            mapping = NULL,
                             genes = NULL, drivers = NULL, show_labels = TRUE,
                             color = "black", size = 3, shape = "impact",
                             filter_fun = guess_filter_fun(shape), ...) {
   dt <- SNVs(object)
+  default_mapping <- aes(shape = .data[[shape]])
   list(
     scale_shape_manual(values = c(2, 4, 3, 5)),
     geom_point(
-      aes(x = .data$VAF, shape = .data[[shape]]),
+      mapping = mapping,
       data = dt %>%
         filter_SNVs(genes, drivers) %>%
         filter_fun(),
@@ -133,8 +136,9 @@ layer_mutations <- function(object,
     ),
     if (show_labels) {
       rlang::check_installed("ggrepel", reason = "to label driver mutations on the plot")
+      default_mapping <- aes(shape = .data[[shape]], label = .data$gene_symbol)
       ggrepel::geom_label_repel(
-        aes(x = .data$VAF, shape = .data[[shape]], label = .data$gene_symbol),
+        mapping = join_aes(default_mapping, mapping),
         data = dt %>%
           filter_SNVs(genes, drivers) %>%
           filter_fun(),

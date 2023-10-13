@@ -1,0 +1,42 @@
+BootStrap: docker
+From: rocker/r-ver:4.0.0
+
+%post
+   apt -y update
+
+   # Install python
+   apt install software-properties-common -y
+   add-apt-repository ppa:deadsnakes/ppa
+   apt -y update
+   apt install python3.8 python3-pip python3.8-distutils git -y
+   ln `which python3.8` /usr/bin/python
+   # python -m ensurepip --upgrade
+
+   # Install python dependencies
+   pip install numpy scipy pandas
+
+   # Install CliP
+   cd /opt
+   git clone https://github.com/pawelqs/CliP.git
+   cd CliP
+   git checkout add_out_dir_arg
+   python setup.py build
+
+%environment
+   export LC_ALL=C
+   export PATH=/usr/games:$PATH
+
+%runscript
+   date | R --version
+
+%test
+    R --version
+    python --version
+
+%labels
+    Author Pawel Kus
+    Version v1.0.0
+
+%help
+    This container contains everything that is needed to run clonality analysis
+    using CliP package

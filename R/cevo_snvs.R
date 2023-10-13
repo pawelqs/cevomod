@@ -103,8 +103,13 @@ count_mutation_types <- function(snvs) {
 }
 
 
-unite_mutation_id <- function(snvs) {
-  unite(snvs, "mutation_id", "chrom":"alt", sep = "-")
+#' Unite many columns to create mutation_id column
+#' @param snvs SNVs
+#' @param sep Separator
+#' @param remove Remove united columns?
+#' @export
+unite_mutation_id <- function(snvs, sep = "-", remove = TRUE) {
+  unite(snvs, "mutation_id", "chrom":"alt", sep = sep, remove = remove)
 }
 
 

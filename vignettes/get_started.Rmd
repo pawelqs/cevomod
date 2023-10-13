@@ -148,7 +148,7 @@ Now we are ready to fit the cevomod models.
 
 Once the SNVs are prepared, the models can be fitted using the `fit_*()` functions. Full models consist of the power-law component and one or more binomial components, which are fitted sequentially.
 
-In this example, we first fit the power-law model with an exponent of 2, and then the mixture of binomial models.
+In this example, we first fit the power-law model with an exponent of 2, and then the mixture of binomial models. By default, clonal and subclonal components are fitted using [BMix](https://github.com/caravagnalab/BMix) package ([Caravagna et al., 2020](https://www.nature.com/articles/s41588-020-0675-5)). See other methods for fitting these components in [Fitting models/Binomial components](https://pawelqs.github.io/cevomod/articles/fitting_models.html#binomial-components) vignette.
 
 ```{r}
 cd <- cd |> 

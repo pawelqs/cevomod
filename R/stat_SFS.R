@@ -17,7 +17,7 @@
 #' test_data |>
 #'   calc_SFS() |>
 #'   plot_SFS() +
-#'   layer_mutations(test_data, drivers = "BRCA")
+#'   layer_mutations(test_data, mapping = ggplot2::aes(x = VAF), drivers = "BRCA")
 #' @name sfs
 NULL
 
