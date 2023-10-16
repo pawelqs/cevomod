@@ -23,7 +23,7 @@ There are also several methods for fitting the clonal and subclonal components:
 
 - using Gaussian mixtures ([mclust](https://mclust-org.github.io/mclust/)) ([Scrucca et al., 2016](https://journal.r-project.org/archive/2016/RJ-2016-021/index.html)), 
 - using binomial distributions ([BMix](https://github.com/caravagnalab/BMix)) ([Caravagna et al., 2020](https://www.nature.com/articles/s41588-020-0675-5)), 
-- and by penalizing pairwise differences ([CliP](https://github.com/wwylab/CliP)) ([Jiang et al., 2021](https://www.biorxiv.org/content/10.1101/2021.03.31.437383v1)).
+- and by penalizing pairwise differences ([CliP](https://github.com/wwylab/CliP), via [Apptainer](https://apptainer.org/)) ([Jiang et al., 2021](https://www.biorxiv.org/content/10.1101/2021.03.31.437383v1)).
 
 See the model fitting details in the [Get Started](https://pawelqs.github.io/cevomod/articles/get_started.html) and [Fitting models](https://pawelqs.github.io/cevomod/articles/fitting_models.html) vignettes.
 
