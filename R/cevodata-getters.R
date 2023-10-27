@@ -312,3 +312,11 @@ get_patient_sex <- function(cd) {
   cd$metadata |>
     select("sample_id", "sex")
 }
+
+
+#' Get sample metadata
+#' @param cd cevodata object
+#' @export
+get_metadata <- function(cd) {
+  cd$metadata
+}
