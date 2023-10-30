@@ -42,11 +42,6 @@ plot_mutations.cevodata <- function(object, genes = NULL, drivers = NULL, mark_g
 
   elements <- list(
     if (y == "genes") aes(y = .data$gene_symbol, color = .data$sample_id),
-    if (y == "genes") {
-      scale_color_manual(
-        values = pnw_palette(name = "Starfish", n_distinct(genes_data$sample_id), type = "continuous")
-      )
-    },
     if (y == "samples") aes(y = .data$sample_id),
     if (nrow(mark_genes_data) > 0) geom_point(aes(color = .data$gene_symbol), data = mark_genes_data),
     if (nrow(mark_genes_data) > 0) scale_color_brewer(palette = "Dark2")
@@ -78,11 +73,6 @@ plot_mutations.tbl_df <- function(object, genes = NULL, drivers = NULL, mark_gen
 
   elements <- list(
     if (y == "genes") aes(y = .data$gene_symbol, color = .data$sample_id),
-    if (y == "genes") {
-      scale_color_manual(
-        values = pnw_palette(name = "Starfish", n_distinct(genes_data$sample_id), type = "continuous")
-      )
-    },
     if (y == "samples") aes(y = .data$sample_id),
     if (nrow(mark_genes_data) > 0) geom_point(aes(color = .data$gene_symbol), data = mark_genes_data),
     if (nrow(mark_genes_data) > 0) scale_color_brewer(palette = "Dark2")

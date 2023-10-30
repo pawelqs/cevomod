@@ -1,4 +1,7 @@
 
+## cevomod 2.4.0
+* code clean-up, unnecessary dependencies removed
+
 ## cevomod 2.3.0
 * subclones can be fitted using [CliP](https://github.com/wwylab/CliP) [(Jiang et al., 2021)](https://www.biorxiv.org/content/10.1101/2021.03.31.437383v1) (`fit_subclones(method = "CliP")`). This option requires that the Apptainer is installed. CliP container image can be build with `build_clip_container()`
 

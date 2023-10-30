@@ -37,10 +37,10 @@
 <polyline points='321.49,545.11 321.49,22.78 ' style='stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;' />
 <polyline points='443.82,545.11 443.82,22.78 ' style='stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;' />
 <polyline points='566.16,545.11 566.16,22.78 ' style='stroke-width: 1.07; stroke: #EBEBEB; stroke-linecap: butt;' />
-<polygon points='352.07,280.91 354.71,285.47 349.44,285.47 ' style='stroke-width: 0.71; stroke: none; fill: #24492E;' />
-<polygon points='177.03,444.14 179.66,448.70 174.39,448.70 ' style='stroke-width: 0.71; stroke: none; fill: #24492E;' />
-<polygon points='175.37,117.68 178.00,122.24 172.74,122.24 ' style='stroke-width: 0.71; stroke: none; fill: #24492E;' />
-<circle cx='130.08' cy='283.95' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #E69B99;' />
+<polygon points='352.07,280.91 354.71,285.47 349.44,285.47 ' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
+<polygon points='177.03,444.14 179.66,448.70 174.39,448.70 ' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
+<polygon points='175.37,117.68 178.00,122.24 172.74,122.24 ' style='stroke-width: 0.71; stroke: none; fill: #F8766D;' />
+<circle cx='130.08' cy='283.95' r='1.95' style='stroke-width: 0.71; stroke: none; fill: #00BFC4;' />
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
 <text x='47.42' y='450.20' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='29.35px' lengthAdjust='spacingAndGlyphs'>BRCA1</text>
@@ -54,8 +54,8 @@
 <text x='321.49' y='568.24' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='21.40px' lengthAdjust='spacingAndGlyphs'>VAF</text>
 <text transform='translate(13.05,283.95) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='65.45px' lengthAdjust='spacingAndGlyphs'>gene_symbol</text>
 <text x='607.06' y='231.81' style='font-size: 11.00px; font-family: sans;' textLength='50.15px' lengthAdjust='spacingAndGlyphs'>sample_id</text>
-<circle cx='615.70' cy='247.07' r='1.95' style='stroke-width: 0.71; stroke: #24492E; fill: #24492E;' />
-<circle cx='615.70' cy='264.35' r='1.95' style='stroke-width: 0.71; stroke: #E69B99; fill: #E69B99;' />
+<circle cx='615.70' cy='247.07' r='1.95' style='stroke-width: 0.71; stroke: #F8766D; fill: #F8766D;' />
+<circle cx='615.70' cy='264.35' r='1.95' style='stroke-width: 0.71; stroke: #00BFC4; fill: #00BFC4;' />
 <text x='629.82' y='250.10' style='font-size: 8.80px; font-family: sans;' textLength='75.82px' lengthAdjust='spacingAndGlyphs'>TCGA-AN-A046-01</text>
 <text x='629.82' y='267.38' style='font-size: 8.80px; font-family: sans;' textLength='79.22px' lengthAdjust='spacingAndGlyphs'>TCGA-EW-A2FV-01</text>
 <text x='607.06' y='303.62' style='font-size: 11.00px; font-family: sans;' textLength='32.41px' lengthAdjust='spacingAndGlyphs'>impact</text>
