@@ -3,7 +3,6 @@ library(cevomod)
 library(shiny)
 library(shinyWidgets)
 library(shinydashboard)
-library(paletteer)
 library(tibble)
 library(ggplot2)
 
@@ -249,7 +248,6 @@ server <- function(input, output) {
 
   output$overview_plot_private_shared <- renderPlot({
     plot_private_shared_mutations(rv$cd) +
-      scale_fill_paletteer_d("PNWColors::Bay") +
       theme(axis.text.x = element_text(angle = 45))
   })
 

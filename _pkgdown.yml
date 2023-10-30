@@ -60,7 +60,6 @@ reference:
   - hide_facet_labels
   - hide_legend
   - starts_with("layer_")
-  - print_palettes
   - has_keyword("palettes")
   - starts_with("plot")
   - rotate_x_labels
@@ -83,19 +82,13 @@ reference:
   - "`%not in%`"
 - title: internal
   contents:
-    - colors
     - count_mutation_types
     - count_mutations_by_component
-    - evaluate_MC_runs
-    - identify_non_neutral_tail_mutations
-    - list_continuous_palettes
-    - list_discrete_palettes
-    - list_pnw_palettes
     - tcga_brca_test
     - quick_save
+    - print.cevo_palettes
     - run_browser
     - run_cevomod
-    - theme_ellie
     - variant_classification
     - variant_classification_filter
 

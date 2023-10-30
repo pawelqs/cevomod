@@ -1,5 +1,4 @@
 ## code to prepare `sysdata` goes here
-library(paletteer)
 library(tidyverse)
 
 
@@ -23,7 +22,6 @@ variant_classification <- variant_classes %>%
 
 usethis::use_data(
   driver_genes, variant_classification,
-  palettes_d_names, palettes_c_names, palettes_dynamic_names,
   overwrite = TRUE, internal = TRUE
 )
 usethis::use_data(driver_genes, overwrite = TRUE)
