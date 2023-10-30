@@ -73,9 +73,6 @@
     <loc>https://pawelqs.github.io/cevomod/reference/cnv_plots.html</loc>
   </url>
   <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/colors.html</loc>
-  </url>
-  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/compare_models.html</loc>
   </url>
   <url>
@@ -92,9 +89,6 @@
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/driver_genes.html</loc>
-  </url>
-  <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/evaluate_MC_runs.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/evo_params.html</loc>
@@ -133,6 +127,9 @@
     <loc>https://pawelqs.github.io/cevomod/reference/get_frequency_measure_name.html</loc>
   </url>
   <url>
+    <loc>https://pawelqs.github.io/cevomod/reference/get_metadata.html</loc>
+  </url>
+  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/get_model_names.html</loc>
   </url>
   <url>
@@ -163,9 +160,6 @@
     <loc>https://pawelqs.github.io/cevomod/reference/hide_legend.html</loc>
   </url>
   <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/identify_non_neutral_tail_mutations.html</loc>
-  </url>
-  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/index.html</loc>
   </url>
   <url>
@@ -173,15 +167,6 @@
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/intervalize_mutation_frequencies.html</loc>
-  </url>
-  <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/list_continuous_palettes.html</loc>
-  </url>
-  <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/list_discrete_palettes.html</loc>
-  </url>
-  <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/list_pnw_palettes.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/merge.cevodata.html</loc>
@@ -208,9 +193,6 @@
     <loc>https://pawelqs.github.io/cevomod/reference/plot_neutral_A_coefficients.html</loc>
   </url>
   <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/plot_non_neutral_mutations_2D.html</loc>
-  </url>
-  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/plot_private_shared_mutations.html</loc>
   </url>
   <url>
@@ -229,7 +211,7 @@
     <loc>https://pawelqs.github.io/cevomod/reference/prepare_SNVs.html</loc>
   </url>
   <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/print_palettes.html</loc>
+    <loc>https://pawelqs.github.io/cevomod/reference/print.cevo_palettes.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/quick_save.html</loc>
@@ -250,13 +232,7 @@
     <loc>https://pawelqs.github.io/cevomod/reference/run_cevomod.html</loc>
   </url>
   <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/scale_color_pnw.html</loc>
-  </url>
-  <url>
     <loc>https://pawelqs.github.io/cevomod/reference/scale_fill_cevomod.html</loc>
-  </url>
-  <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/scale_fill_pnw.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/set_cancer_type.html</loc>
@@ -287,9 +263,6 @@
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/test_data_fitted.html</loc>
-  </url>
-  <url>
-    <loc>https://pawelqs.github.io/cevomod/reference/theme_ellie.html</loc>
   </url>
   <url>
     <loc>https://pawelqs.github.io/cevomod/reference/to_clip.html</loc>

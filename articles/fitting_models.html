@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">cevomod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -244,9 +244,9 @@ object:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 8</span></span></span>
 <span><span class="co">#&gt;   sample_id mutation_rate_williams component  N_mutations subclone_frequency</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   104.  Subclone 1         724              0.982</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   104.  Subclone 2         784              0.232</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    78.8 Subclone 1         821              0.998</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 3                   104.  Subclone 1         725              0.982</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3                   104.  Subclone 2         784              0.234</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample 4                    78.8 Subclone 1         824              0.998</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample 4                    78.8 Subclone 2         366              0.177</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: emergence_time &lt;dbl&gt;, time_end &lt;dbl&gt;, selection &lt;dbl&gt;</span></span></span></code></pre></div>
 <div class="section level3">
@@ -332,17 +332,17 @@ only 2 resamples.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 9</span></span></span>
 <span><span class="co">#&gt;   resample_id sample_id model    component       A alpha convergence value best </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bootstrap1  Sample 1  bs_model powerlaw t…  59.9  1.88           0  982. TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Bootstrap2  Sample 1  bs_model powerlaw t…  50.1  1.94           0  927. TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bootstrap1  Sample 3  bs_model powerlaw t… 106.   2.04           0 <span style="text-decoration: underline;">1</span>598. TRUE </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Bootstrap2  Sample 3  bs_model powerlaw t… 104.   2.05           0 <span style="text-decoration: underline;">1</span>587. TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bootstrap1  Sample 1  bs_model powerlaw t…  54.7  1.91           0  938. TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Bootstrap2  Sample 1  bs_model powerlaw t…  38.5  2.02           0  877. TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bootstrap1  Sample 3  bs_model powerlaw t… 104.   2.04           0 <span style="text-decoration: underline;">1</span>529. TRUE </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Bootstrap2  Sample 3  bs_model powerlaw t… 109.   2.03           0 <span style="text-decoration: underline;">1</span>587. TRUE</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_models.html">get_models</a></span><span class="op">(</span><span class="va">cd</span>, <span class="st">"bs_model"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 9</span></span></span>
 <span><span class="co">#&gt;   sample_id model  component     A A.lower A.upper alpha alpha.lower alpha.upper</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  bs_mo… powerlaw…  55.0    50.3    59.7  1.91        1.88        1.93</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3  bs_mo… powerlaw… 105.    104.    105.   2.04        2.04        2.05</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample 1  bs_mo… powerlaw…  46.6    38.9    54.3  1.96        1.91        2.02</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample 3  bs_mo… powerlaw… 106.    104.    109.   2.03        2.03        2.04</span></span></code></pre></div>
 <p>Resampled models can be plotted in the same way as non-resampled
 models using the <code><a href="../reference/plot_models.html">plot_models()</a></code> function.</p>
 </div>
