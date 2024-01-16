@@ -2,6 +2,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @import cevodata
 #' @import dplyr
 #' @import forcats
 #' @import ggplot2

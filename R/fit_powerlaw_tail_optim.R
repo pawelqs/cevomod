@@ -316,3 +316,37 @@ evaluate_td_models <- function(tbl) {
     mutate(best = row_number() == 1) |>
     ungroup()
 }
+
+
+#' Get range of non empty SFS bins
+#' @param sfs SFS
+#' @param allowed_zero_bins number of allowed empty bins in the interval
+#' @param y_treshold bins with less mutations will be considered empty
+#' @param y_threshold_pct bins that have less mutations than this param times the
+#'   height of the higherst peak will be considered empty
+#' @keywords internal
+get_non_zero_SFS_range <- function(sfs,
+                                   allowed_zero_bins = 1,
+                                   y_treshold = 1,
+                                   y_threshold_pct = 0.01) {
+  sfs |>
+    group_by(.data$sample_id) |>
+    mutate(
+      empty_bin = (.data$y < y_treshold) | (.data$y < max(.data$y) * y_threshold_pct),
+      segment_number = segment(.data$empty_bin),
+      empty_low_f_range = .data$empty_bin & .data$segment_number == 0
+    ) |>
+    filter(!.data$empty_low_f_range) |>
+    group_by(.data$sample_id, .data$segment_number) |>
+    mutate(
+      segment_length = n(),
+      keep = !.data$empty_bin | (.data$empty_bin & (.data$segment_length <= allowed_zero_bins))
+    ) |>
+    group_by(.data$sample_id) |>
+    mutate(new_segments = segment(.data$keep)) |>
+    filter(.data$new_segments == 0) |>
+    summarise(
+      from = min(.data$f),
+      to = max(.data$f)
+    )
+}

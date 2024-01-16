@@ -12,17 +12,10 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Suggests: 
     BMix,
-    circlize,
-    ComplexHeatmap,
-    GenomicRanges,
-    ggrepel,
-    grid,
     mobster,
     mutSignatures,
     neutralitytestr,
     knitr,
-    patchwork,
-    pheatmap,
     rmarkdown,
     shiny,
     shinydashboard,
@@ -30,12 +23,12 @@ Suggests:
     testthat (>= 3.0.0),
     tidyverse,
     vdiffr,
-    readthis,
     rsample,
     processx
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 
+    cevodata,
     cli,
     corrr,
     crayon,
@@ -44,7 +37,6 @@ Imports:
     ggplot2,
     mclust,
     plyranges,
-    prismatic,
     progress,
     purrr,
     readr,
@@ -60,6 +52,6 @@ Depends:
 Remotes: 
     caravagnalab/mobster,
     caravagnalab/BMix,
-    pawelqs/readthis
+    pawelqs/cevodata
 LazyData: true
 URL: https://pawelqs.github.io/cevomod/, https://github.com/pawelqs/cevomod
