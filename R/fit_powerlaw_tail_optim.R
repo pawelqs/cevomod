@@ -1,3 +1,4 @@
+# -------------------------- fit_powerlaw_tail_optim --------------------------
 
 #' Fitting power-law tails with aptimum exponent value
 #'
@@ -42,7 +43,6 @@ fit_powerlaw_tail_optim <- function(object, ...) {
 #' @export
 fit_powerlaw_tail_optim.cevodata <- function(object,
                                              name = "powerlaw_optim",
-                                             # pct_left = 0, pct_right = 0.98,
                                              bootstraps = FALSE,
                                              allowed_zero_bins = 2,
                                              y_treshold = 1,
@@ -51,11 +51,11 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
                                              peak_detection_upper_limit = 0.3,
                                              reward_upper_limit = 0.4,
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
-                                             verbose = get_cevomod_verbosity(),
+                                             verbose = get_verbosity(),
                                              ...) {
   if (!bootstraps) {
     sfs <- get_SFS(object, name = "SFS")
-    models <- fit_powerlaw_tail_optim(
+    coefs <- fit_powerlaw_tail_optim(
       sfs,
       name = name,
       allowed_zero_bins = allowed_zero_bins,
@@ -67,10 +67,18 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
       control = control,
       verbose = verbose
     )
-    object$models[[name]] <- models
-    object <- calc_powerlaw_model_residuals(object, name)
-    object$active_models <- name
-    object
+    residuals <- coefs |>
+      filter(.data$best) |>
+      calc_powerlaw_model_residuals(sfs)
+    info <- list(f_column = attr(sfs, "f_column"))
+
+    models <- lst(coefs, residuals, info)
+    class(models) <- c("cevo_powerlaw_models", "list")
+    add_models(object, models, name = name)
+    # object$models[[name]] <- models
+    # object <- calc_powerlaw_model_residuals(object, name)
+    # object$active_models <- name
+    # object
   } else {
     rlang::check_installed("rsample", reason = "to perform bootstrap sampling of SNVs")
     sfs_resamples <- calc_SFS_resamples(object, times = bootstraps, verbose = verbose)
@@ -103,7 +111,8 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
     object$models[[name]] <- models
     object <- calc_powerlaw_model_residuals(object, name)
     object$active_models <- name
-    object
+    # object
+    add_models(object, models, name = name)
   }
 }
 
@@ -119,7 +128,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
                                                         peak_detection_upper_limit = 0.3,
                                                         reward_upper_limit = 0.4,
                                                         control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
-                                                        verbose = get_cevomod_verbosity(),
+                                                        verbose = get_verbosity(),
                                                         ...) {
   rlang::check_installed("rsample", reason = "to perform bootstrap sampling of SNVs")
   msg("Fitting models to ", unique(object$sfs[[1]]$sample_id), " resamples", verbose = verbose)
@@ -184,7 +193,7 @@ fit_powerlaw_tail_optim.cevo_SFS_tbl <- function(object,
                                                  peak_detection_upper_limit = 0.3,
                                                  reward_upper_limit = 0.4,
                                                  control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
-                                                 verbose = get_cevomod_verbosity(),
+                                                 verbose = get_verbosity(),
                                                  ...) {
   msg("Fitting optimized power-law models...", verbose = verbose)
   start_time <- Sys.time()
@@ -251,6 +260,7 @@ fit_powerlaw_tail_optim.cevo_SFS_tbl <- function(object,
 }
 
 
+# --------------------------------- Helpers ------------------------------------
 
 td_optim <- function(init_A, init_alpha, data,
                      peak_detection_upper_limit = 0.3,
