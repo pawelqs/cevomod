@@ -49,7 +49,6 @@ calc_powerlaw_curve <- function(f, A, alpha, nbins) {
 NULL
 
 
-
 #' @describeIn plot_residuals Plot sampling rate
 #' @export
 plot_sampling_rate <- function(object, mapping = NULL, geom = geom_point, ...) {
@@ -65,7 +64,6 @@ plot_sampling_rate <- function(object, mapping = NULL, geom = geom_point, ...) {
     labs(y = "Sampling Rate") +
     theme_minimal()
 }
-
 
 
 #' @describeIn plot_residuals Plot residuals of the neutral model
