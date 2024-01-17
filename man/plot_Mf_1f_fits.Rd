@@ -4,7 +4,7 @@
 \alias{plot_Mf_1f_fits}
 \title{Plot M(f) ~ 1/f fits}
 \usage{
-plot_Mf_1f_fits(object, ...)
+plot_Mf_1f_fits(object, model_name = "powerlaw_fixed", ...)
 }
 \arguments{
 \item{object}{cevodata object}

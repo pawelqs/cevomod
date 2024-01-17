@@ -21,7 +21,7 @@ fit_powerlaw_tail_optim(object, ...)
   peak_detection_upper_limit = 0.3,
   reward_upper_limit = 0.4,
   control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
-  verbose = get_cevomod_verbosity(),
+  verbose = get_verbosity(),
   ...
 )
 
@@ -35,7 +35,7 @@ fit_powerlaw_tail_optim(object, ...)
   peak_detection_upper_limit = 0.3,
   reward_upper_limit = 0.4,
   control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
-  verbose = get_cevomod_verbosity(),
+  verbose = get_verbosity(),
   ...
 )
 
@@ -49,7 +49,7 @@ fit_powerlaw_tail_optim(object, ...)
   peak_detection_upper_limit = 0.3,
   reward_upper_limit = 0.4,
   control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
-  verbose = get_cevomod_verbosity(),
+  verbose = get_verbosity(),
   ...
 )
 }

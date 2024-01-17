@@ -21,7 +21,7 @@ fit_subclones(
   clip_sif = NULL,
   clip_input = file.path(tempdir(), "clip_input"),
   clip_output = file.path(tempdir(), "clip_output"),
-  verbose = get_cevomod_verbosity()
+  verbose = get_verbosity()
 )
 
 fit_subclones_bmix(
@@ -30,7 +30,7 @@ fit_subclones_bmix(
   powerlaw_model_name = active_models(object),
   snvs_name = default_SNVs(object),
   upper_f_limit = 0.75,
-  verbose = get_cevomod_verbosity()
+  verbose = get_verbosity()
 )
 
 fit_subclones_clip(
@@ -42,7 +42,7 @@ fit_subclones_clip(
   clip_sif = NULL,
   clip_input = file.path(tempdir(), "clip_input"),
   clip_output = file.path(tempdir(), "clip_output"),
-  verbose = get_cevomod_verbosity()
+  verbose = get_verbosity()
 )
 
 fit_subclones_mclust(
@@ -51,7 +51,7 @@ fit_subclones_mclust(
   powerlaw_model_name = active_models(object),
   snvs_name = default_SNVs(object),
   upper_f_limit = 0.75,
-  verbose = get_cevomod_verbosity()
+  verbose = get_verbosity()
 )
 }
 \arguments{

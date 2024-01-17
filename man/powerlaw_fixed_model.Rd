@@ -16,7 +16,7 @@ fit_powerlaw_tail_fixed(object, ...)
   name = "powerlaw_fixed",
   pct_left = 0.05,
   pct_right = 0.95,
-  verbose = get_cevomod_verbosity(),
+  verbose = get_verbosity(),
   ...
 )
 

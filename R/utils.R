@@ -103,13 +103,6 @@ run_browser <- function() {
 }
 
 
-#' @export
-print.cevo_snvs <- function(x, ...) {
-  msg("<cevo_snvs> tibble")
-  NextMethod()
-}
-
-
 #' Shuffle order of elements in object
 #' @param object object to shuffle
 #' @param ... other arguments
