@@ -60,15 +60,13 @@ fit_powerlaw_tail_fixed.cevodata <- function(object,
                                              lm_length = 0.05,
                                              name = "powerlaw_fixed",
                                              pct_left = 0.05, pct_right = 0.95,
-                                             verbose = get_cevomod_verbosity(),
+                                             verbose = get_verbosity(),
                                              ...) {
   msg("Fitting williams neutral models...", verbose = verbose)
 
   Mf_1f <- get_Mf_1f(object)
-  bounds <- get_f_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
-  # bounds <- get_non_zero_SFS_range(get_SFS(object), allowed_zero_bins = 2) |>
-  #   rename(lower_bound = "from", higher_bound = "to")
-
+  bounds <- SNVs(object) |>
+    get_f_range(pct_left = pct_left, pct_right = pct_right)
   data <- Mf_1f |>
     left_join(bounds, by = "sample_id") |>
     filter(.data$f > .data$lower_bound, .data$f < .data$higher_bound) |>
@@ -76,18 +74,20 @@ fit_powerlaw_tail_fixed.cevodata <- function(object,
     nest_by(.data$sample_id)
 
   pb <- if (verbose) progress_bar$new(total = nrow(data)) else NULL
-  models <- data |>
+  coefs <- data |>
     reframe(
       model = "powerlaw_fixed",
       component = "Neutral tail",
       fit_optimal_lm(.data$data, rsq_treshold, lm_length = lm_length, pb)
     )
-  class(models) <- c("cevo_powerlaw_models", class(models))
+  residuals <- coefs |>
+    filter(.data$best) |>
+    calc_powerlaw_model_residuals(sfs = get_SFS(object))
+  info <- list(f_column = attr(Mf_1f, "f_column"))
 
-  object$models[[name]] <- models
-  object$active_models <- name
-  object <- calc_powerlaw_model_residuals(object, models_name = name)
-  object
+  models <- lst(coefs, residuals, info)
+  class(models) <- c("cevo_powerlaw_models", "cv_subitem", "list")
+  add_models(object, models, name = name)
 }
 
 

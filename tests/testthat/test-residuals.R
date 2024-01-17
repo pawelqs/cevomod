@@ -1,6 +1,21 @@
 data("tcga_brca_test")
 
 
+test_that("Fitting powerlaw_fixed model returns the same residuals", {
+  coefs <- test_path("testdata", "tcga_brca_2samples.coefs_powerlaw_fixed.tsv") |>
+    read_tsv(show_col_types = FALSE) |>
+    filter(best)
+  sfs <- test_path("testdata", "tcga_brca_2samples.SFS.tsv") |>
+    read_tsv(show_col_types = FALSE)
+  expected <- test_path("testdata", "tcga_brca_2samples.residuals_powerlaw_fixed.tsv") |>
+    read_tsv(show_col_types = FALSE)
+
+  residuals <- calc_powerlaw_model_residuals(coefs, sfs)
+  expect_equal(residuals, expected)
+})
+
+
+
 test_that("calc_powerlaw_model_residuals returns powerlaw curves with similar numbers of mutations for different numbers of bins", {
   cd <- tcga_brca_test
   cd$active_models <- "powerlaw_fixed"

@@ -13,19 +13,17 @@ get_residuals <- function(cd, models_name = cd$active_model) {
 }
 
 
-calc_powerlaw_model_residuals <- function(object, models_name, ...) {
-  powerlaw_models <- get_models(object, models_name)
-  optional_cols <- c("from", "to", "b") |> intersect(colnames(powerlaw_models))
+calc_powerlaw_model_residuals <- function(powerlaw_coefs, sfs, ...) {
+  optional_cols <- c("from", "to", "b") |> intersect(colnames(powerlaw_coefs))
   from_to_cols_present <- all(c("from", "to") %in% optional_cols)
-  powerlaw_models <- powerlaw_models |>
+  powerlaw_coefs <- powerlaw_coefs |>
     filter(!is.na(.data$A), !is.na(.data$alpha)) |>
     select("sample_id", any_of("resample_id"), "A", "alpha", all_of(optional_cols))
-  sfs <- get_SFS(object)
   nbins <- summarise(sfs, nbins = n() - 1, .by = "sample_id") # zero bin does not count
 
   residuals <- sfs |>
     select("sample_id", "f_interval", "f", SFS = "y") |>
-    inner_join(powerlaw_models, by = "sample_id") |>
+    inner_join(powerlaw_coefs, by = "sample_id") |>
     left_join(nbins, by = "sample_id") |>
     mutate(
       neutr = if (from_to_cols_present) {
@@ -40,10 +38,8 @@ calc_powerlaw_model_residuals <- function(object, models_name, ...) {
       model_resid = .data$powerlaw_resid,
     ) |>
     select(-("nbins":"alpha"))
-
-  slot_name <- paste0("residuals_", models_name)
-  object$misc[[slot_name]] <- residuals
-  object
+  class(residuals) <- class(tibble())
+  residuals
 }
 
 

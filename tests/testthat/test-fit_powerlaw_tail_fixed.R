@@ -1,26 +1,40 @@
-data("tcga_brca_test")
-set_cevomod_verbosity(0)
+data("tcga_brca_fitted")
+verbose::verbose(cevoverse = 0)
 
 
 test_that("Fitting neutral partial models works", {
-  snvs <- SNVs(tcga_brca_test) |>
+  rsq_treshold <- 0.98
+  lm_length <- 0.05
+  name <- "powerlaw_fixed"
+  pct_left <- 0.05
+  pct_right <- 0.95
+  verbose <- get_verbosity()
+
+  snvs <- SNVs(tcga_brca_fitted) |>
     filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01"))
   object <- init_cevodata("Test") |>
     add_SNV_data(snvs) |>
     intervalize_mutation_frequencies() |>
     calc_Mf_1f() |>
     calc_SFS() |>
-    fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
-  path <- test_path("tcga_brca_partial_neutral_models.tsv")
-  expected <- read_tsv(path, col_types = "cccdddddddl") |>
+    fit_powerlaw_tail_fixed()
+  models <- get_models(object)
+
+  expected_coefs <- test_path("testdata", "tcga_brca_2samples.coefs_powerlaw_fixed.tsv") |>
+    read_tsv(col_types = "cccdddddddl") |>
     mutate(
       model = "powerlaw_fixed",
       component = "Neutral tail",
       .before = "from"
     )
-  class(expected) <- c("cevo_powerlaw_models", class(expected))
-  # write_tsv(object$models$powerlaw_fixed, path)
-  expect_equal(get_models(object, best_only = FALSE), expected)
+  expected_residuals <- test_path("testdata", "tcga_brca_2samples.residuals_powerlaw_fixed.tsv") |>
+    read_tsv(show_col_types = FALSE)
+  attr(expected_residuals, "f_column") <- "VAF"
+
+  expect_s3_class(models, c("cevo_powerlaw_models", "cv_subitem", "list"))
+  expect_equal(models$coefs, expected_coefs)
+  expect_equal(models$residuals, expected_residuals)
+  expect_equal(models$info, list(f_column = "VAF"))
 })
 
 
