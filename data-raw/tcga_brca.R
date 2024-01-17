@@ -113,7 +113,7 @@ tcga_brca_fitted <- tcga_brca_test |>
   calc_SFS() |>
   calc_cumulative_tails() |>
   calc_Mf_1f()
-  # fit_powerlaw_tail_fixed() |>
+  # fit_powerlaw_tail_fixed()
   # fit_subclones() |>
   # fit_powerlaw_tail_optim() |>
   # fit_subclones()
