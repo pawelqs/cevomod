@@ -2,6 +2,8 @@ data("tcga_brca_fitted")
 verbose::verbose(cevoverse = 0)
 
 
+# ---------------------------------- Fit ---------------------------------------
+
 test_that("Fitting neutral partial models works", {
   rsq_treshold <- 0.98
   lm_length <- 0.05
@@ -87,8 +89,11 @@ object <- init_cevodata("Test") |>
 
 
 test_that("calc_powerlaw_model_residuals() creates proper tibble", {
-  cd <- calc_powerlaw_model_residuals(object, "powerlaw_fixed")
-  resids <- get_residuals(cd, "powerlaw_fixed")
+  coefs <- get_models(object)$coefs |>
+    filter(best)
+  sfs <- get_SFS(object)
+  resids <- calc_powerlaw_model_residuals(coefs, sfs)
+  # resids <- get_residuals(cd, "powerlaw_fixed")
   expect_equal(nrow(resids), 101)
   expect_true(all(c("powerlaw_resid", "sampling_rate") %in% names(resids)))
   expect_equal(
@@ -99,3 +104,16 @@ test_that("calc_powerlaw_model_residuals() creates proper tibble", {
   expect_equal(is.na(resids) |> sum(), 1)
 })
 
+
+# ------------------------------- Plot -----------------------------------------
+
+test_that("plot_Mf_1f_fits() works", {
+  p <- plot_Mf_1f_fits(tcga_brca_fitted)
+  vdiffr::expect_doppelganger("plot-Mf-1f-fits", p)
+})
+
+
+test_that("plot_neutral_A_coefficients() works", {
+  p <- plot_neutral_A_coefficients(tcga_brca_fitted)
+  vdiffr::expect_doppelganger("plot-neutral-A-coefficients", p)
+})
