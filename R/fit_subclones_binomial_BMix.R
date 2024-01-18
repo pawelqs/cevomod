@@ -4,24 +4,31 @@
 fit_subclones_bmix <- function(object,
                                N = 1:3,
                                powerlaw_model_name = active_models(object),
+                               name = paste0(powerlaw_model_name, "_subclones"),
                                snvs_name = default_SNVs(object),
                                upper_f_limit = 0.75,
-                               verbose = get_cevomod_verbosity()) {
+                               verbose = get_verbosity()) {
   msg("Fitting binomial models using BMix", verbose = verbose)
   rlang::check_installed("BMix", reason = "to fit subclomes using BMix")
 
-  powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
-  residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
+  powerlaw_models <- get_models(object, powerlaw_model_name)
+  if ("cv_powerlaw_models" %not in% class(powerlaw_models)) {
+    stop(
+      powerlaw_model_name, " is not a powerlaw model, required to fit subclones.",
+      "Use another model"
+    )
+  }
+  residuals <- get_model_residuals(object, model_name = powerlaw_model_name) |>
     filter(.data$f >= 0)
   # necessary, since BMix does not return this parameter
-  sequencing_depth <- SNVs(object, which = snvs_name) |>
+  sequencing_depth <- SNVs(object, name = snvs_name) |>
     get_local_sequencing_depths() |>
     transmute(.data$sample_id, .data$f, sequencing_DP = .data$median_DP)
 
   non_neutral_tail_mut_counts <- residuals |>
     mutate(n = if_else(.data$f > upper_f_limit, 0, round(.data$powerlaw_resid_clones))) |>
     select("sample_id", "f_interval", "n")
-  snvs_to_cluster <- SNVs(object, which = snvs_name) |>
+  snvs_to_cluster <- SNVs(object, name = snvs_name) |>
     nest_by(.data$sample_id, .data$f_interval) |>
     inner_join(non_neutral_tail_mut_counts, by = c("sample_id", "f_interval")) |>
     reframe(
@@ -33,7 +40,7 @@ fit_subclones_bmix <- function(object,
     nest_by(.data$sample_id) |>
     mutate(data = list(as.data.frame(.data$data)))
   pb <- if (verbose) progress_bar$new(total = nrow(data)) else NULL
-  models <- data |>
+  coefs <- data |>
     reframe(fit_binomial_models_BMix(.data$data, N, pb, verbose)) |>
     mutate(model = "binomial_clones_BMix", .after = "sample_id") |>
     mutate(
@@ -43,14 +50,14 @@ fit_subclones_bmix <- function(object,
     left_join(sequencing_depth, by = c("sample_id", "f")) |>
     select(-"f")
 
-  best_models <- models |>
+  best_model_coefs <- coefs |>
     filter(.data$best) |>
     nest_by(.data$sample_id, .key = "clones")
 
   clonal_predictions <- residuals |>
     select("sample_id", "f_interval", "f") |>
     nest_by(.data$sample_id, .key = "intervals") |>
-    inner_join(best_models, by = "sample_id") |>
+    inner_join(best_model_coefs, by = "sample_id") |>
     reframe(get_binomial_predictions(.data$clones, .data$intervals)) |>
     select(-"f")
 
@@ -62,16 +69,18 @@ fit_subclones_bmix <- function(object,
       model_resid = .data$SFS - .data$model_pred
     )
 
-  models <- powerlaw_models |>
-    bind_rows(models) |>
+  coefs <- powerlaw_models$coefs |>
+    bind_rows(coefs) |>
     arrange(.data$sample_id, .data$best, .data$model)
 
-  models_name <- paste0(powerlaw_model_name, "_subclones")
-  resid_name <- paste0("residuals_", models_name)
-  object$models[[models_name]] <- models
-  object$misc[[resid_name]] <- residuals
-  object$active_models <- models_name
-  object
+  models <- lst(coefs, residuals, info = powerlaw_models$info)
+  # models_name <- paste0(powerlaw_model_name, "_subclones")
+  # resid_name <- paste0("residuals_", models_name)
+  # object$models[[models_name]] <- models
+  # object$misc[[resid_name]] <- residuals
+  # object$active_models <- models_name
+  # object
+  add_models(object, models, name)
 }
 
 
