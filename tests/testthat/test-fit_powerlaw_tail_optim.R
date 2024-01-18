@@ -25,39 +25,105 @@ test_that("fit_powerlaw_tail_optim() returns models with non-negative objective 
 })
 
 
-# test_that("fit_powerlaw_tail_optim() bootstrapping test", {
-#   name <- "powerlaw_optim"
-#   bootstraps <- 2
-#   allowed_zero_bins <- 2
-#   y_treshold <- 1
-#   y_threshold_pct <- 0.01
-#   av_filter <- c(1/3, 1/3, 1/3)
-#   peak_detection_upper_limit <- 0.3
-#   reward_upper_limit <- 0.4
-#   control <- list(maxit = 1000, ndeps = c(0.1, 0.01))
-#   verbose <- TRUE
-#   object <- object |>
-#     filter(sample_id %in% object$metadata$sample_id[1:2])
-#
-#   suppressWarnings({
-#     object <- fit_powerlaw_tail_optim(object, bootstraps = bootstraps)
-#   })
-#
-#   bootstrap_models <- get_models(object, "powerlaw_optim_bootstraps")
-#   expect_equal(nrow(bootstrap_models), 4)
-#   expect_true(all(bootstrap_models$value > 1990))
-#   expect_s3_class(bootstrap_models, "cevo_powerlaw_models")
-#   expect_s3_class(bootstrap_models, "cevo_bootstrap_powerlaw_models")
-#
-#   models <- get_models(object, "powerlaw_optim")
-#   expected_columns <- c(
-#     "sample_id", "model", "component",
-#     "A", "A.lower", "A.upper", "alpha", "alpha.lower", "alpha.upper"
-#   )
-#   expect_named(models, expected_columns)
-#   expect_equal(nrow(models), 2)
-#   expect_s3_class(models, "cevo_powerlaw_models")
-# })
+test_that("fit_powerlaw_tail_optim() bootstrapping test", {
+  name <- "powerlaw_optim"
+  bootstraps <- 2
+  allowed_zero_bins <- 2
+  y_treshold <- 1
+  y_threshold_pct <- 0.01
+  av_filter <- c(1/3, 1/3, 1/3)
+  peak_detection_upper_limit <- 0.3
+  reward_upper_limit <- 0.4
+  control <- list(maxit = 1000, ndeps = c(0.1, 0.01))
+  verbose <- get_verbosity()
+  object <- tcga_brca_fitted |>
+    intervalize_mutation_frequencies() |>
+    filter(sample_id %in% tcga_brca_fitted$metadata$sample_id[1:2])
+
+  suppressWarnings({
+    object <- fit_powerlaw_tail_optim(object, bootstraps = bootstraps)
+  })
+
+  models <- get_models(object)
+  expect_s3_class(models, "cevo_powerlaw_models")
+
+  # Models
+  expected_columns <- c(
+    "sample_id", "model", "component",
+    "A", "A.lower", "A.upper", "alpha", "alpha.lower", "alpha.upper"
+  )
+  expect_named(models$coefs, expected_columns)
+  expect_equal(nrow(models$coefs), 2)
+  # Bootstrap coefs
+  expect_equal(nrow(models$bootstrap_coefs), 4)
+  expect_true(all(models$bootstrap_models$value > 1990))
+  # Residuals
+  expect_equal(nrow(models$residuals), 176)
+  # Info
+  expect_equal(models$info, list(f_column = "VAF"))
+})
+
+
+# ---------------------- fit_powerlaw_tail_optim methods -----------------------
+
+
+test_that("fit_powerlaw_tail_optim.cevo_SFS_tbl() works", {
+  name <- "powerlaw_optim"
+  bootstraps <- FALSE
+  allowed_zero_bins <- 2
+  y_treshold <- 1
+  y_threshold_pct <- 0.01
+  av_filter <- c(1/3, 1/3, 1/3)
+  peak_detection_upper_limit <- 0.3
+  reward_upper_limit <- 0.4
+  control <- list(maxit = 1000, ndeps = c(0.1, 0.01))
+  verbose <- get_verbosity()
+
+  object <- tcga_brca_fitted |>
+    intervalize_mutation_frequencies() |>
+    get_SFS()
+
+  res <- fit_powerlaw_tail_optim(object)
+  expect_s3_class(res, c("cevo_powerlaw_models", "list"))
+  # expect_equal(res$coefs, 2)
+  expect_true(all(res$coefs$value > 1990))
+})
+
+
+test_that("fit_powerlaw_tail_optim.cevo_SFS_bootstraps() works", {
+  name <- "powerlaw_optim"
+  bootstraps <- 2
+  allowed_zero_bins <- 2
+  y_treshold <- 1
+  y_threshold_pct <- 0.01
+  av_filter <- c(1/3, 1/3, 1/3)
+  peak_detection_upper_limit <- 0.3
+  reward_upper_limit <- 0.4
+  control <- list(maxit = 1000, ndeps = c(0.1, 0.01))
+  verbose <- TRUE
+
+  object <- tcga_brca_fitted |>
+    intervalize_mutation_frequencies() |>
+    filter(sample_id %in% tcga_brca_fitted$metadata$sample_id[1:2]) |>
+    calc_SFS_resamples(times = bootstraps, verbose = verbose)
+  object <- object$`TCGA-AC-A23H-01`
+
+  suppressWarnings({
+    res <- fit_powerlaw_tail_optim(object, bootstraps = bootstraps)
+  })
+
+  expect_s3_class(res, "cevo_powerlaw_models")
+
+  expected_columns <- c(
+    "sample_id", "model", "component",
+    "A", "A.lower", "A.upper", "alpha", "alpha.lower", "alpha.upper"
+  )
+  expect_named(res$coefs, expected_columns)
+  expect_equal(nrow(res$coefs), 1)
+
+  expect_equal(nrow(res$bootstrap_coefs), 2)
+  expect_true(all(res$bootstrap_coefs$value > 1990))
+})
 
 
 # --------------------------------- Helpers ------------------------------------
@@ -114,3 +180,35 @@ test_that("get_non_zero_SFS_range() works", {
 
   expect_identical(res, expected)
 })
+
+
+test_that("Calculation of SFS with resampling works", {
+  cd <- cevodata::test_data
+  sfs_resamples <- calc_SFS_resamples(cd, times = 2)
+
+  expect_type(sfs_resamples, "list")
+  expect_equal(length(sfs_resamples), 4)
+
+  sfs_resamples |>
+    walk(expect_s3_class, "cevo_SFS_bootstraps")
+
+  attribs <- attributes(sfs_resamples$`Sample 1`$sfs[[1]])
+  expect_equal(attribs$f_column, "VAF")
+})
+
+
+test_that("Calculation of SFS with resampling works with CCF/2", {
+  cd <- cevodata::test_data |>
+    calc_mutation_frequencies()
+  sfs_resamples <- calc_SFS_resamples(cd, times = 2)
+
+  expect_type(sfs_resamples, "list")
+  expect_equal(length(sfs_resamples), 4)
+
+  sfs_resamples |>
+    walk(expect_s3_class, "cevo_SFS_bootstraps")
+
+  attribs <- attributes(sfs_resamples$`Sample 1`$sfs[[1]])
+  expect_equal(attribs$f_column, "CCF/2")
+})
+

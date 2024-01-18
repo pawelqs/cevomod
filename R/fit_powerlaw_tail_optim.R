@@ -55,7 +55,7 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
                                              ...) {
   if (!bootstraps) {
     sfs <- get_SFS(object, name = "SFS")
-    coefs <- fit_powerlaw_tail_optim(
+    models <- fit_powerlaw_tail_optim(
       sfs,
       name = name,
       allowed_zero_bins = allowed_zero_bins,
@@ -67,13 +67,13 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
       control = control,
       verbose = verbose
     )
-    residuals <- coefs |>
-      filter(.data$best) |>
-      calc_powerlaw_model_residuals(sfs)
-    info <- list(f_column = attr(sfs, "f_column"))
-
-    models <- lst(coefs, residuals, info)
-    class(models) <- c("cevo_powerlaw_models", "list")
+    # residuals <- coefs |>
+    #   filter(.data$best) |>
+    #   calc_powerlaw_model_residuals(sfs)
+    # info <- list(f_column = attr(sfs, "f_column"))
+    #
+    # models <- lst(coefs, residuals, info)
+    # class(models) <- c("cevo_powerlaw_models", "list")
     add_models(object, models, name = name)
     # object$models[[name]] <- models
     # object <- calc_powerlaw_model_residuals(object, name)
@@ -86,6 +86,7 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
     models <- sfs_resamples |>
       map(
         fit_powerlaw_tail_optim,
+        sfs = get_SFS(object),
         name = name,
         allowed_zero_bins = allowed_zero_bins,
         y_treshold = y_treshold,
@@ -96,31 +97,28 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
         control = control,
         verbose = verbose
     )
+    models <- merge_bootstrap_models(models)
 
-    bootstrap_models <- models |>
-      map("bootstrap_models") |>
-      bind_rows()
-
-    models <- models |>
-      map("models") |>
-      bind_rows(.id = "sample_id")
-
-    bootstrap_name <- str_c(name, "_bootstraps")
-    object$models[[bootstrap_name]] <- bootstrap_models
-    object <- calc_powerlaw_model_residuals(object, bootstrap_name)
-    object$models[[name]] <- models
-    object <- calc_powerlaw_model_residuals(object, name)
-    object$active_models <- name
+    # bootstrap_name <- str_c(name, "_bootstraps")
+    # object$models[[bootstrap_name]] <- bootstrap_models
+    # object <- calc_powerlaw_model_residuals(object, bootstrap_name)
+    # object$models[[name]] <- models
+    # object <- calc_powerlaw_model_residuals(object, name)
+    # object$active_models <- name
     # object
     add_models(object, models, name = name)
   }
 }
 
 
+#' @details
+#' Takes a single sample bootstrap SFS and fits a powerlaw model to it.
+#'
 #' @rdname powerlaw_optim
 #' @export
 fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
                                                         name = "powerlaw_optim",
+                                                        sfs = NULL,
                                                         allowed_zero_bins = 2,
                                                         y_treshold = 1,
                                                         y_threshold_pct = 0.01,
@@ -147,21 +145,24 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
         peak_detection_upper_limit = peak_detection_upper_limit,
         reward_upper_limit = reward_upper_limit,
         control = control,
+        calc_residuals = FALSE,
         verbose = verbose_down(verbose)
       )
     })
 
-  object$tidy_models <- object$models |>
+  object$tidy_coefs <- object$models |>
+    map("coefs") |>
     map(~pivot_longer(.x, all_of(c("A", "alpha")), names_to = "term", values_to = "estimate"))
 
-  conf_intervals <- rsample::int_pctl(object, .data$tidy_models)
+  conf_intervals <- rsample::int_pctl(object, tidy_coefs)
 
-  bootstrap_models <- object$models |>
+  bootstrap_coefs <- object$models |>
+    map("coefs") |>
     set_names(object$id) |>
     bind_rows(.id = "resample_id")
-  class(bootstrap_models) <- c("cevo_bootstrap_powerlaw_models", class(bootstrap_models))
+  # class(bootstrap_models) <- c("cevo_bootstrap_powerlaw_models", class(bootstrap_models))
 
-  models <- conf_intervals |>
+  coefs <- conf_intervals |>
     pivot_wider(
       names_from = "term",
       values_from = ".lower":".upper",
@@ -169,6 +170,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
       names_vary = "slowest"
     ) |>
     transmute(
+      sample_id = unique(object$sfs[[1]]$sample_id),
       model = name,
       component = "powerlaw tail",
       A = .data$A.estimate,
@@ -176,9 +178,17 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
       alpha = .data$alpha.estimate,
       .data$alpha.lower, .data$alpha.upper
     )
-  class(models) <- c("cevo_powerlaw_models", class(models))
 
-  lst(bootstrap_models, models)
+  residuals <- if (is.null(sfs)) {
+    tibble()
+  } else {
+    calc_powerlaw_model_residuals(coefs, sfs)
+  }
+  info <- list(f_column = attr(object$sfs[[1]], "f_column"))
+
+  models <- lst(coefs, bootstrap_coefs, residuals, info)
+  class(models) <- c("cevo_powerlaw_models", "list")
+  models
 }
 
 
@@ -193,6 +203,7 @@ fit_powerlaw_tail_optim.cevo_SFS_tbl <- function(object,
                                                  peak_detection_upper_limit = 0.3,
                                                  reward_upper_limit = 0.4,
                                                  control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
+                                                 calc_residuals = TRUE,
                                                  verbose = get_verbosity(),
                                                  ...) {
   msg("Fitting optimized power-law models...", verbose = verbose)
@@ -229,7 +240,7 @@ fit_powerlaw_tail_optim.cevo_SFS_tbl <- function(object,
     )
 
   pb <- if (verbose) progress_bar$new(total = nrow(data)) else NULL
-  models <- data |>
+  coefs <- data |>
     rowwise("sample_id") |>
     summarise(
       model = name,
@@ -253,8 +264,15 @@ fit_powerlaw_tail_optim.cevo_SFS_tbl <- function(object,
     select(-"opt") |>
     evaluate_td_models() |>
     filter(.data$best)
-  class(models) <- c("cevo_powerlaw_models", class(models))
+  residuals <- if (calc_residuals) {
+    calc_powerlaw_model_residuals(coefs, sfs)
+  } else {
+    tibble()
+  }
+  info <- list(f_column = attr(sfs, "f_column"))
 
+  models <- lst(coefs, residuals, info)
+  class(models) <- c("cevo_powerlaw_models", "list")
   msg("Models fitted in ", Sys.time() - start_time, " seconds", verbose = verbose)
   models
 }
@@ -359,4 +377,59 @@ get_non_zero_SFS_range <- function(sfs,
       from = min(.data$f),
       to = max(.data$f)
     )
+}
+
+
+calc_SFS_resamples <- function(cd, times, verbose = get_verbosity()) {
+  rlang::check_installed("rsample", reason = "to perform bootstrap sampling of SNVs")
+  msg("Splitting SNVs by sample_id", verbose = verbose)
+
+  splitted_snvs <- SNVs(cd) |>
+    nest_by(.data$sample_id, .keep = TRUE) |>
+    deframe() |>
+    map(as_cevo_snvs) |>
+    map(set_snvs_frequency_measure, get_snvs_frequency_measure(cd))
+
+  msg("Resampling SNVs and calculating SFSs", verbose = verbose)
+  pb <- if (verbose) progress_bar$new(total = length(splitted_snvs)) else NULL
+  pass_verbose <- verbose_down(verbose)
+
+  resamples <- splitted_snvs |>
+    map(function(snvs) {
+      if (!is.null(pb)) pb$tick()
+      resamples <- rsample::bootstraps(snvs, times = times)
+      resamples$sfs <- resamples$splits |>
+        map(rsample::analysis) |>
+        map(intervalize_mutation_frequencies, verbose = pass_verbose) |>
+        map(calc_SFS, verbose = pass_verbose)
+      resamples$splits <- NULL
+      class(resamples) <- c("cevo_SFS_bootstraps", class(resamples))
+      resamples
+    })
+
+  resamples
+}
+
+
+merge_bootstrap_models <- function(models) {
+  coefs <- models |>
+    map("coefs") |>
+    bind_rows(.id = "sample_id")
+
+  bootstrap_coefs <- models |>
+    map("bootstrap_coefs") |>
+    bind_rows()
+
+  residuals <- models |>
+    map("residuals") |>
+    bind_rows(.id = "sample_id")
+
+  f_column <- models |>
+    map("info") |>
+    map_chr("f_column") |>
+    unique()
+
+  models <- lst(coefs, bootstrap_coefs, residuals, info = lst(f_column))
+  class(models) <- c("cevo_powerlaw_models", "list")
+  models
 }
