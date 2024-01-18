@@ -21,7 +21,7 @@
 #' @examples
 #' data("tcga_brca_test")
 #' cd <- tcga_brca_test |>
-#'   dplyr::filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01")) |>
+#'   dplyr::filter(sample_id %in% c("TCGA-AC-A23H-01", "TCGA-AN-A046-01")) |>
 #'   fit_powerlaw_tail_optim()
 #' @name powerlaw_optim
 NULL
@@ -47,7 +47,7 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
                                              allowed_zero_bins = 2,
                                              y_treshold = 1,
                                              y_threshold_pct = 0.01,
-                                             av_filter = c(1/3, 1/3, 1/3),
+                                             av_filter = c(1, 1, 1) / 3,
                                              peak_detection_upper_limit = 0.3,
                                              reward_upper_limit = 0.4,
                                              control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
@@ -96,7 +96,7 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
         reward_upper_limit = reward_upper_limit,
         control = control,
         verbose = verbose
-    )
+      )
     models <- merge_bootstrap_models(models)
 
     # bootstrap_name <- str_c(name, "_bootstraps")
@@ -122,7 +122,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
                                                         allowed_zero_bins = 2,
                                                         y_treshold = 1,
                                                         y_threshold_pct = 0.01,
-                                                        av_filter = c(1/3, 1/3, 1/3),
+                                                        av_filter = c(1, 1, 1) / 3,
                                                         peak_detection_upper_limit = 0.3,
                                                         reward_upper_limit = 0.4,
                                                         control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
@@ -152,7 +152,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
 
   object$tidy_coefs <- object$models |>
     map("coefs") |>
-    map(~pivot_longer(.x, all_of(c("A", "alpha")), names_to = "term", values_to = "estimate"))
+    map(~ pivot_longer(.x, all_of(c("A", "alpha")), names_to = "term", values_to = "estimate"))
 
   conf_intervals <- rsample::int_pctl(object, tidy_coefs)
 
@@ -199,7 +199,7 @@ fit_powerlaw_tail_optim.cevo_SFS_tbl <- function(object,
                                                  allowed_zero_bins = 2,
                                                  y_treshold = 1,
                                                  y_threshold_pct = 0.01,
-                                                 av_filter = c(1/3, 1/3, 1/3),
+                                                 av_filter = c(1, 1, 1) / 3,
                                                  peak_detection_upper_limit = 0.3,
                                                  reward_upper_limit = 0.4,
                                                  control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
@@ -302,11 +302,10 @@ td_optim <- function(init_A, init_alpha, data,
 
 td_objective_function <- function(params, x, y,
                                   peak_detection_upper_limit = 0.3,
-                                  reward_upper_limit = 0.4
-                                  ) {
+                                  reward_upper_limit = 0.4) {
   A <- params[[1]]
   alpha <- params[[2]]
-  y1 <- A * 1/(x ^ alpha)
+  y1 <- A * 1 / (x^alpha)
   err <- y - y1
   err[err < -1000000] <- -1000000
 
