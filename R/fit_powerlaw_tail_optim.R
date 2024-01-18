@@ -43,18 +43,19 @@ fit_powerlaw_tail_optim <- function(object, ...) {
 #' @param bootstraps Number of bootstrap samples, or FALSE to make no resampling.
 #'   **This option significantly extendis the model fitting time!!**
 #' @export
-fit_powerlaw_tail_optim.cevodata <- function(object,
-                                             name = "powerlaw_optim",
-                                             bootstraps = FALSE,
-                                             allowed_zero_bins = 2,
-                                             y_treshold = 1,
-                                             y_threshold_pct = 0.01,
-                                             av_filter = c(1, 1, 1) / 3,
-                                             peak_detection_upper_limit = 0.3,
-                                             reward_upper_limit = 0.4,
-                                             control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
-                                             verbose = get_verbosity(),
-                                             ...) {
+fit_powerlaw_tail_optim.cevodata <- function(
+    object,
+    name = "powerlaw_optim",
+    bootstraps = FALSE,
+    allowed_zero_bins = 2,
+    y_treshold = 1,
+    y_threshold_pct = 0.01,
+    av_filter = c(1, 1, 1) / 3,
+    peak_detection_upper_limit = 0.3,
+    reward_upper_limit = 0.4,
+    control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
+    verbose = get_verbosity(),
+    ...) {
   if (!bootstraps) {
     sfs <- get_SFS(object, name = "SFS")
     models <- fit_powerlaw_tail_optim(
@@ -69,7 +70,6 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
       control = control,
       verbose = verbose
     )
-    add_models(object, models, name = name)
   } else {
     rlang::check_installed("rsample", reason = "for SNVs bootstrap sampling")
     sfs_resamples <- object |>
@@ -89,8 +89,8 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
         verbose = verbose
       )
     models <- merge_bootstrap_models(models)
-    add_models(object, models, name = name)
   }
+  add_models(object, models, name = name)
 }
 
 
