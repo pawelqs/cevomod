@@ -8,7 +8,7 @@
 #' @param powerlaw_model_name Residual of which powerlaw model to use?
 #'   powerlaw_fixed/powerlaw_optim
 #' @param snvs_name Which snvs to to use?
-#' @param cnvs_name Which cnvs to to use?
+#' @param cnas_name Which cnas to to use?
 #' @param method Clustering method to use. Currently supported methods:
 #'   - mclust - the fastest method, approximately 3-4 times faster than BMix,
 #'     but uses a gaussian mixture modelling
@@ -49,13 +49,13 @@ fit_subclones <- function(object,
                           N = 1:3,
                           powerlaw_model_name = active_models(object),
                           snvs_name = default_SNVs(object),
-                          cnvs_name = default_CNVs(object),
+                          cnas_name = default_CNAs(object),
                           method = "BMix",
                           upper_f_limit = 0.75,
                           clip_sif = NULL,
                           clip_input = file.path(tempdir(), "clip_input"),
                           clip_output = file.path(tempdir(), "clip_output"),
-                          verbose = get_cevomod_verbosity()) {
+                          verbose = get_verbosity()) {
   if (method == "BMix") {
     object <- object |>
       fit_subclones_bmix(N, powerlaw_model_name, snvs_name, upper_f_limit, verbose)
@@ -64,7 +64,7 @@ fit_subclones <- function(object,
       fit_subclones_mclust(N, powerlaw_model_name, snvs_name, upper_f_limit, verbose)
   } else if (method == "CliP") {
     object <- object |>
-      fit_subclones_clip(powerlaw_model_name, snvs_name, cnvs_name, upper_f_limit, verbose = verbose)
+      fit_subclones_clip(powerlaw_model_name, snvs_name, cnas_name, upper_f_limit, verbose = verbose)
   } else {
     stop("Currently supported methods are: BMix, CliP, and mclust")
   }
@@ -117,7 +117,7 @@ rebinarize_distribution <- function(distribution, n_bins = NULL, f = NULL) {
 
 
 were_subclonal_models_fitted <- function(object, ...) {
-  models <- get_models(object)
+  models <- get_model_coefficients(object)
   expect_colnames <- c("N", "cellularity", "N_mutations")
   all(expect_colnames %in% colnames(models))
 }
