@@ -48,6 +48,7 @@ NULL
 fit_subclones <- function(object,
                           N = 1:3,
                           powerlaw_model_name = active_models(object),
+                          name = paste0(powerlaw_model_name, "_subclones"),
                           snvs_name = default_SNVs(object),
                           cnas_name = default_CNAs(object),
                           method = "BMix",
@@ -58,13 +59,13 @@ fit_subclones <- function(object,
                           verbose = get_verbosity()) {
   if (method == "BMix") {
     object <- object |>
-      fit_subclones_bmix(N, powerlaw_model_name, snvs_name, upper_f_limit, verbose)
+      fit_subclones_bmix(N, powerlaw_model_name, name, snvs_name, upper_f_limit, verbose)
   } else if (method == "mclust") {
     object <- object |>
-      fit_subclones_mclust(N, powerlaw_model_name, snvs_name, upper_f_limit, verbose)
+      fit_subclones_mclust(N, powerlaw_model_name, name, snvs_name, upper_f_limit, verbose)
   } else if (method == "CliP") {
     object <- object |>
-      fit_subclones_clip(powerlaw_model_name, snvs_name, cnas_name, upper_f_limit, verbose = verbose)
+      fit_subclones_clip(powerlaw_model_name, name, snvs_name, cnas_name, upper_f_limit, verbose = verbose)
   } else {
     stop("Currently supported methods are: BMix, CliP, and mclust")
   }

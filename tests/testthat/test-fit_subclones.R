@@ -1,23 +1,20 @@
-set_cevomod_verbosity(0)
+data('test_data', package = "cevodata")
+verbose::verbose(cevoverse = 0)
+
 
 object <- test_data |>
-  prepare_SNVs() |>
+  calc_mutation_frequencies() |>
+  intervalize_mutation_frequencies() |>
+  calc_SFS() |>
   fit_powerlaw_tail_optim()
-
-N <- 1:3
-powerlaw_model_name <- "powerlaw_optim"
-upper_f_limit <- 0.75
-snvs_name <- "snvs"
-
-# For CliP interactive tests
-cnvs_name <- default_CNVs(object)
-clip_input <- file.path(tempdir(), "clip_input")
-clip_output <- file.path(tempdir(), "clip_output")
-clip_sif <- NULL
-verbose <- get_cevomod_verbosity()
 
 
 test_that("fit_subclones() mclust works", {
+  N <- 1:3
+  powerlaw_model_name <- "powerlaw_optim"
+  upper_f_limit <- 0.75
+  snvs_name <- "snvs"
+
   res <- object |>
     fit_subclones(method = "mclust")
   expect_false(
@@ -27,6 +24,11 @@ test_that("fit_subclones() mclust works", {
 
 
 test_that("fit_subclones() bmix works", {
+  N <- 1:3
+  powerlaw_model_name <- "powerlaw_optim"
+  upper_f_limit <- 0.75
+  snvs_name <- "snvs"
+
   suppressWarnings(
     suppressMessages({
       res <- object |>
@@ -39,9 +41,14 @@ test_that("fit_subclones() bmix works", {
 })
 
 
-### Do not push this test to github, since it requires that apptainer
-### is installed
+## Do not push this test to github, since it requires that apptainer
+## is installed
 # test_that("fit_subclones() clip works", {
+#   cnas_name <- default_CNAs(object)
+#   clip_input <- file.path(tempdir(), "clip_input")
+#   clip_output <- file.path(tempdir(), "clip_output")
+#   clip_sif <- NULL
+#   verbose <- get_verbosity()
 #   res <- object |>
 #     fit_subclones(method = "CliP", verbose = TRUE)
 #
