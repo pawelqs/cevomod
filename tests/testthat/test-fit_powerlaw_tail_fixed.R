@@ -33,7 +33,7 @@ test_that("Fitting neutral partial models works", {
     read_tsv(show_col_types = FALSE)
   attr(expected_residuals, "f_column") <- "VAF"
 
-  expect_s3_class(models, c("cevo_powerlaw_models", "cv_subitem", "list"))
+  expect_s3_class(models, c("cv_powerlaw_models", "cv_subitem", "list"))
   expect_equal(models$coefs, expected_coefs)
   expect_equal(models$residuals, expected_residuals)
   expect_equal(models$info, list(f_column = "VAF"))

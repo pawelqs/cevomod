@@ -87,7 +87,7 @@ fit_powerlaw_tail_fixed.cevodata <- function(object,
   info <- list(f_column = attr(Mf_1f, "f_column"))
 
   models <- lst(coefs, residuals, info)
-  class(models) <- c("cevo_powerlaw_models", "list")
+  class(models) <- c("cv_powerlaw_models", "list")
   add_models(object, models, name = name)
 }
 

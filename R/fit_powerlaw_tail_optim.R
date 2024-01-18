@@ -174,7 +174,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(
   info <- list(f_column = attr(object$sfs[[1]], "f_column"))
 
   models <- lst(coefs, bootstrap_coefs, residuals, info)
-  class(models) <- c("cevo_powerlaw_models", "list")
+  class(models) <- c("cv_powerlaw_models", "list")
   models
 }
 
@@ -260,7 +260,7 @@ fit_powerlaw_tail_optim.cevo_SFS_tbl <- function(
   info <- list(f_column = attr(sfs, "f_column"))
 
   models <- lst(coefs, residuals, info)
-  class(models) <- c("cevo_powerlaw_models", "list")
+  class(models) <- c("cv_powerlaw_models", "list")
   msg("Models fitted in ", Sys.time() - start_time, " seconds", verbose = verbose)
   models
 }
@@ -417,6 +417,6 @@ merge_bootstrap_models <- function(models) {
     unique()
 
   models <- lst(coefs, bootstrap_coefs, residuals, info = lst(f_column))
-  class(models) <- c("cevo_powerlaw_models", "list")
+  class(models) <- c("cv_powerlaw_models", "list")
   models
 }

@@ -21,7 +21,7 @@ test_that("fit_powerlaw_tail_optim() returns models with non-negative objective 
     fit_powerlaw_tail_optim()
   td <- get_model_coefficients(object, "powerlaw_optim")
   expect_true(all(td$value > 1990))
-  expect_s3_class(get_models(object, "powerlaw_optim"), "cevo_powerlaw_models")
+  expect_s3_class(get_models(object, "powerlaw_optim"), "cv_powerlaw_models")
 })
 
 
@@ -45,7 +45,7 @@ test_that("fit_powerlaw_tail_optim() bootstrapping test", {
   })
 
   models <- get_models(object)
-  expect_s3_class(models, "cevo_powerlaw_models")
+  expect_s3_class(models, "cv_powerlaw_models")
 
   # Models
   expected_columns <- c(
@@ -84,7 +84,7 @@ test_that("fit_powerlaw_tail_optim.cevo_SFS_tbl() works", {
     get_SFS()
 
   res <- fit_powerlaw_tail_optim(object)
-  expect_s3_class(res, c("cevo_powerlaw_models", "list"))
+  expect_s3_class(res, c("cv_powerlaw_models", "list"))
   # expect_equal(res$coefs, 2)
   expect_true(all(res$coefs$value > 1990))
 })
@@ -112,7 +112,7 @@ test_that("fit_powerlaw_tail_optim.cevo_SFS_bootstraps() works", {
     res <- fit_powerlaw_tail_optim(object, bootstraps = bootstraps)
   })
 
-  expect_s3_class(res, "cevo_powerlaw_models")
+  expect_s3_class(res, "cv_powerlaw_models")
 
   expected_columns <- c(
     "sample_id", "model", "component",
