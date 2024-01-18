@@ -36,8 +36,10 @@ fit_powerlaw_tail_optim <- function(object, ...) {
 
 #' @rdname powerlaw_optim
 #' @inheritParams get_non_zero_SFS_range
-#' @param peak_detection_upper_limit Upper f value up to which the main peak is searched
-#' @param reward_upper_limit Mutations under the curve up to this limit will be rewarded
+#' @param peak_detection_upper_limit Upper f value up to which the main peak is
+#'   searched
+#' @param reward_upper_limit Mutations under the curve up to this limit will be
+#'   rewarded
 #' @param bootstraps Number of bootstrap samples, or FALSE to make no resampling.
 #'   **This option significantly extendis the model fitting time!!**
 #' @export
@@ -67,22 +69,11 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
       control = control,
       verbose = verbose
     )
-    # residuals <- coefs |>
-    #   filter(.data$best) |>
-    #   calc_powerlaw_model_residuals(sfs)
-    # info <- list(f_column = attr(sfs, "f_column"))
-    #
-    # models <- lst(coefs, residuals, info)
-    # class(models) <- c("cevo_powerlaw_models", "list")
     add_models(object, models, name = name)
-    # object$models[[name]] <- models
-    # object <- calc_powerlaw_model_residuals(object, name)
-    # object$active_models <- name
-    # object
   } else {
-    rlang::check_installed("rsample", reason = "to perform bootstrap sampling of SNVs")
-    sfs_resamples <- calc_SFS_resamples(object, times = bootstraps, verbose = verbose)
-
+    rlang::check_installed("rsample", reason = "for SNVs bootstrap sampling")
+    sfs_resamples <- object |>
+      calc_SFS_resamples(times = bootstraps, verbose = verbose)
     models <- sfs_resamples |>
       map(
         fit_powerlaw_tail_optim,
@@ -98,14 +89,6 @@ fit_powerlaw_tail_optim.cevodata <- function(object,
         verbose = verbose
       )
     models <- merge_bootstrap_models(models)
-
-    # bootstrap_name <- str_c(name, "_bootstraps")
-    # object$models[[bootstrap_name]] <- bootstrap_models
-    # object <- calc_powerlaw_model_residuals(object, bootstrap_name)
-    # object$models[[name]] <- models
-    # object <- calc_powerlaw_model_residuals(object, name)
-    # object$active_models <- name
-    # object
     add_models(object, models, name = name)
   }
 }
@@ -128,8 +111,10 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
                                                         control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
                                                         verbose = get_verbosity(),
                                                         ...) {
-  rlang::check_installed("rsample", reason = "to perform bootstrap sampling of SNVs")
-  msg("Fitting models to ", unique(object$sfs[[1]]$sample_id), " resamples", verbose = verbose)
+  rlang::check_installed("rsample", reason = "to summarize bootstrapping results")
+
+  sample_id <- unique(object$sfs[[1]]$sample_id)
+  msg("Fitting models to ", sample_id, " resamples", verbose = verbose)
   pb <- if (verbose) progress_bar$new(total = nrow(object)) else NULL
 
   object$models <- object$sfs |>
@@ -160,7 +145,8 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
     map("coefs") |>
     set_names(object$id) |>
     bind_rows(.id = "resample_id")
-  # class(bootstrap_models) <- c("cevo_bootstrap_powerlaw_models", class(bootstrap_models))
+  # class(bootstrap_models) <-
+  #   c("cevo_bootstrap_powerlaw_models", class(bootstrap_models))
 
   coefs <- conf_intervals |>
     pivot_wider(
@@ -170,7 +156,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(object,
       names_vary = "slowest"
     ) |>
     transmute(
-      sample_id = unique(object$sfs[[1]]$sample_id),
+      sample_id = sample_id,
       model = name,
       component = "powerlaw tail",
       A = .data$A.estimate,
