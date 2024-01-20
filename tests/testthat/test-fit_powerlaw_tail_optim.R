@@ -105,7 +105,7 @@ test_that("fit_powerlaw_tail_optim.cevo_SFS_bootstraps() works", {
   object <- tcga_brca_fitted |>
     intervalize_mutation_frequencies() |>
     filter(sample_id %in% tcga_brca_fitted$metadata$sample_id[1:2]) |>
-    calc_SFS_resamples(times = bootstraps, verbose = verbose)
+    calc_SFS_resamples(times = bootstraps)
   object <- object$`TCGA-AC-A23H-01`
 
   suppressWarnings({

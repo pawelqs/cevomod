@@ -50,7 +50,7 @@ test_that("fit_subclones() bmix works", {
 #   clip_sif <- NULL
 #   verbose <- get_verbosity()
 #   res <- object |>
-#     fit_subclones(method = "CliP", verbose = TRUE)
+#     fit_subclones(method = "CliP")
 #
 #   expect_false(
 #     is.null(res$models$powerlaw_optim_subclones)
