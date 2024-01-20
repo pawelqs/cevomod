@@ -70,12 +70,6 @@ fit_subclones_bmix <- function(object,
     arrange(.data$sample_id, .data$best, .data$model)
 
   models <- lst(coefs, residuals, info = powerlaw_models$info)
-  # models_name <- paste0(powerlaw_model_name, "_subclones")
-  # resid_name <- paste0("residuals_", models_name)
-  # object$models[[models_name]] <- models
-  # object$misc[[resid_name]] <- residuals
-  # object$active_models <- models_name
-  # object
   add_models(object, models, name)
 }
 
