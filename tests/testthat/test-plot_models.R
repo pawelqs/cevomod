@@ -21,7 +21,7 @@ test_that("plot_models() works for powerlaw_optim_subclones", {
 
 
 test_that("plot_models() works for bs_powerlaw_model_bootstraps", {
-  models_name <- "bs_powerlaw_model_bootstraps"
+  models_name <- "bs_powerlaw_model"
   show_neutral_tail <- TRUE
   show_binomial_layer <- FALSE
   show_subclones <- TRUE
@@ -30,7 +30,7 @@ test_that("plot_models() works for bs_powerlaw_model_bootstraps", {
   ncol <- NULL
 
   suppressWarnings({
-    p <- plot_models(test_data_fitted, models_name = "bs_powerlaw_model_bootstraps")
+    p <- plot_models(test_data_fitted, models_name = models_name)
   })
   expect_s3_class(p, c("gg", "ggplot"))
   vdiffr::expect_doppelganger("bs_powerlaw_model_bootstraps", p)

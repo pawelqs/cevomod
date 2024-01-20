@@ -45,14 +45,15 @@ plot_models.cevodata <- function(object,
                                  nrow = NULL, ncol = NULL,
                                  ...) {
   models <- get_models(object, models_name)
-  neutral_lm_fitted <- "alpha" %in% names(models)
-  subclones_fitted <- "cellularity" %in% names(models)
-  bootstraped <- "cevo_bootstrap_powerlaw_models" %in% class(models)
-
-  resid <- get_residuals(object, models_name) |>
-    left_join(object$metadata, by = "sample_id") |>
+  coefs <- models$coefs
+  resid <- models$residuals |>
+    join_metadata(object) |>
     mutate(sample_id = parse_factor(.data$sample_id, levels = object$metadata$sample_id)) |>
     trim_powerlaw_pred()
+
+  neutral_lm_fitted <- "alpha" %in% names(coefs)
+  subclones_fitted <- "cellularity" %in% names(coefs)
+  bootstraped <- "bootstrap_coefs" %in% names(models)
 
   model_layers <- list(
     if (show_neutral_tail && neutral_lm_fitted && !bootstraped) {
@@ -76,7 +77,6 @@ plot_models.cevodata <- function(object,
     model_layers +
     facet_wrap(~.data$sample_id, scales = "free_y", nrow = nrow, ncol = ncol)
 }
-
 
 
 trim_powerlaw_pred <- function(resid, limit = 1.2) {
