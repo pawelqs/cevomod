@@ -15,13 +15,14 @@
 #' @export
 fit_subclones_clip <- function(object,
                                powerlaw_model_name = active_models(object),
+                               name = paste0(powerlaw_model_name, "_subclones"),
                                snvs_name = default_SNVs(object),
-                               cnvs_name = default_CNVs(object),
+                               cnas_name = default_CNAs(object),
                                upper_f_limit = 0.75,
                                clip_sif = NULL,
                                clip_input = file.path(tempdir(), "clip_input"),
                                clip_output = file.path(tempdir(), "clip_output"),
-                               verbose = get_cevomod_verbosity()) {
+                               verbose = get_verbosity()) {
   msg("Fitting binomial models using CllP", verbose = verbose)
   rlang::check_installed("readthis", reason = "to read CliP results")
   if (!is_apptainer_installed()) {
@@ -32,17 +33,23 @@ fit_subclones_clip <- function(object,
     clip_sif <- find_clip_container()
   }
 
-  powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
-  residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
+  powerlaw_models <- get_models(object, powerlaw_model_name)
+  if ("cv_powerlaw_models" %not in% class(powerlaw_models)) {
+    stop(
+      powerlaw_model_name, " is not a powerlaw model, required to fit subclones.",
+      "Use another model"
+    )
+  }
+  residuals <- get_model_residuals(object, model_name = powerlaw_model_name) |>
     filter(.data$f >= 0)
-  sequencing_depth <- SNVs(object, which = snvs_name) |>
+  sequencing_depth <- SNVs(object, name = snvs_name) |>
     get_local_sequencing_depths() |>
     transmute(.data$sample_id, .data$f, sequencing_DP = .data$median_DP)
 
   non_neutral_tail_mut_counts <- residuals |>
     mutate(n = if_else(.data$f > upper_f_limit, 0, round(.data$powerlaw_resid_clones))) |>
     select("sample_id", "f_interval", "n")
-  snvs_to_cluster <- SNVs(object, which = snvs_name) |>
+  snvs_to_cluster <- SNVs(object, name = snvs_name) |>
     nest_by(.data$sample_id, .data$f_interval) |>
     inner_join(non_neutral_tail_mut_counts, by = c("sample_id", "f_interval")) |>
     reframe(
@@ -51,7 +58,7 @@ fit_subclones_clip <- function(object,
 
   clip_files <- object |>
     add_SNV_data(snvs_to_cluster, "snvs_to_cluster") |>
-    to_clip(out_dir = clip_input, snvs_name = "snvs_to_cluster", cnvs_name = cnvs_name)
+    export_to_clip(out_dir = clip_input, snvs_name = "snvs_to_cluster", cnas_name = cnas_name)
 
   pmap(
     clip_files,
@@ -64,7 +71,7 @@ fit_subclones_clip <- function(object,
 
   clip_res <- readthis::read_clip_best_lambda(clip_output)
 
-  models <- clip_res$subclonal_structure |>
+  coefs <- clip_res$subclonal_structure |>
     transmute(
       .data$sample_id,
       model = "subclones CliP",
@@ -78,14 +85,14 @@ fit_subclones_clip <- function(object,
     left_join(sequencing_depth, by = c("sample_id", "f")) |>
     select(-"f")
 
-  best_models <- models |>
+  best_coefs <- coefs |>
     filter(.data$best) |>
     nest_by(.data$sample_id, .key = "clones")
 
   clonal_predictions <- residuals |>
     select("sample_id", "f_interval", "f") |>
     nest_by(.data$sample_id, .key = "intervals") |>
-    inner_join(best_models, by = "sample_id") |>
+    inner_join(best_coefs, by = "sample_id") |>
     reframe(get_binomial_predictions(.data$clones, .data$intervals)) |>
     select(-"f")
 
@@ -97,16 +104,12 @@ fit_subclones_clip <- function(object,
       model_resid = .data$SFS - .data$model_pred
     )
 
-  models <- powerlaw_models |>
-    bind_rows(models) |>
+  coefs <- powerlaw_models$coefs |>
+    bind_rows(coefs) |>
     arrange(.data$sample_id, .data$best, .data$model)
 
-  models_name <- paste0(powerlaw_model_name, "_subclones")
-  resid_name <- paste0("residuals_", models_name)
-  object$models[[models_name]] <- models
-  object$misc[[resid_name]] <- residuals
-  object$active_models <- models_name
-  object
+  models <- lst(coefs, residuals, info = powerlaw_models$info)
+  add_models(object, models, name)
 }
 
 
@@ -131,7 +134,7 @@ find_clip_container <- function() {
 
 
 
-run_clip <- function(sample_id, snvs_file, cnvs_file, purity_file, out_dir,
+run_clip <- function(sample_id, snvs_file, cnas_file, purity_file, out_dir,
                      clip_sif = NULL,
                      clip_args = c("-O", out_dir, "--sample_id", sample_id),
                      verbose = TRUE) {
@@ -143,7 +146,7 @@ run_clip <- function(sample_id, snvs_file, cnvs_file, purity_file, out_dir,
   args <- c(
     "exec", clip_sif,
     "python", "/opt/CliP/run_clip_main.py",
-    snvs_file, cnvs_file, purity_file, clip_args
+    snvs_file, cnas_file, purity_file, clip_args
   )
   out <- processx::run("apptainer", args, echo = verbose, echo_cmd = verbose)
 
