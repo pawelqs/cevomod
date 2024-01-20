@@ -12,12 +12,8 @@ fit_subclones_mclust <- function(object,
   msg("Fitting binomial models using mclust", verbose = verbose)
 
   powerlaw_models <- get_models(object, powerlaw_model_name)
-  if ("cv_powerlaw_models" %not in% class(powerlaw_models)) {
-    stop(
-      powerlaw_model_name, " is not a powerlaw model, required to fit subclones.",
-      "Use another model"
-    )
-  }
+  stop_if_models_not_powerlaw(powerlaw_models, powerlaw_model_name)
+
   residuals <- get_model_residuals(object, model_name = powerlaw_model_name) |>
     filter(.data$f >= 0)
   sequencing_depths <- SNVs(object, name = snvs_name) |>

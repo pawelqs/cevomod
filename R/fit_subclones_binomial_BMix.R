@@ -12,12 +12,8 @@ fit_subclones_bmix <- function(object,
   rlang::check_installed("BMix", reason = "to fit subclomes using BMix")
 
   powerlaw_models <- get_models(object, powerlaw_model_name)
-  if ("cv_powerlaw_models" %not in% class(powerlaw_models)) {
-    stop(
-      powerlaw_model_name, " is not a powerlaw model, required to fit subclones.",
-      "Use another model"
-    )
-  }
+  stop_if_models_not_powerlaw(powerlaw_models, powerlaw_model_name)
+
   residuals <- get_model_residuals(object, model_name = powerlaw_model_name) |>
     filter(.data$f >= 0)
   # necessary, since BMix does not return this parameter

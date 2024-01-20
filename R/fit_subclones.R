@@ -124,6 +124,16 @@ were_subclonal_models_fitted <- function(object, ...) {
 }
 
 
+stop_if_models_not_powerlaw <- function(models, name) {
+  if ("cv_powerlaw_models" %not in% class(models)) {
+    stop(
+      name, " is not a powerlaw model, required to fit subclones.",
+      "Use another model"
+    )
+  }
+}
+
+
 empty_clones_tibble <- function() {
   tibble(
     N = integer(),

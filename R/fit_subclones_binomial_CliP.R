@@ -34,12 +34,8 @@ fit_subclones_clip <- function(object,
   }
 
   powerlaw_models <- get_models(object, powerlaw_model_name)
-  if ("cv_powerlaw_models" %not in% class(powerlaw_models)) {
-    stop(
-      powerlaw_model_name, " is not a powerlaw model, required to fit subclones.",
-      "Use another model"
-    )
-  }
+  stop_if_models_not_powerlaw(powerlaw_models, powerlaw_model_name)
+
   residuals <- get_model_residuals(object, model_name = powerlaw_model_name) |>
     filter(.data$f >= 0)
   sequencing_depth <- SNVs(object, name = snvs_name) |>
