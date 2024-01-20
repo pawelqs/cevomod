@@ -1,5 +1,5 @@
-data("tcga_brca_test")
-set_cevomod_verbosity(0)
+data("tcga_brca_fitted")
+verbose::verbose(cevoverse = FALSE)
 
 
 test_that("plot_models() works for powerlaw_optim_subclones", {
@@ -39,7 +39,7 @@ test_that("plot_models() works for bs_powerlaw_model_bootstraps", {
 
 
 test_that("Comparing multiple models works", {
-  object <- tcga_brca_test |>
+  object <- tcga_brca_fitted |>
     fit_powerlaw_tail_fixed() |>
     fit_powerlaw_tail_optim()
   model_names <- c("powerlaw_fixed", "powerlaw_optim")

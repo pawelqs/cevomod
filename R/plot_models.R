@@ -221,10 +221,10 @@ compare_models <- function(object, model_names, column_name,
 
   resids <- model_names %>%
     set_names(model_names) |>
-    map(~get_residuals(object, .x)) |>
+    map(~get_model_residuals(object, .x)) |>
     bind_rows(.id = "model_name") |>
     left_join(ylimits, by = "sample_id") |>
-    left_join(object$metadata, by = "sample_id") |>
+    join_metadata(object) |>
     filter(!!sym(column_name) < .data$ylim, .data$f >= 0)
 
   plot_SFS(object, geom = "bar", ...) +
