@@ -5,8 +5,8 @@
 # Unpack
 # Fix the path below
 
-# library(tidyverse)
-# set.seed(1234)
+library(tidyverse)
+set.seed(1234)
 #
 #
 # ## ---------------------------------- SNVs ------------------------------------
@@ -113,10 +113,12 @@ tcga_brca_fitted <- tcga_brca_test |>
   calc_SFS() |>
   calc_cumulative_tails() |>
   calc_Mf_1f() |>
-  fit_powerlaw_tail_fixed()
-  # fit_subclones() |>
-  # fit_powerlaw_tail_optim() |>
-  # fit_subclones()
+  fit_powerlaw_tail_fixed() |>
+  fit_subclones() |>
+  fit_powerlaw_tail_optim() |>
+  fit_subclones()
+
+active_models(tcga_brca_fitted) <- "powerlaw_fixed_subclones"
 # tcga_brca_test$active_models <- "powerlaw_fixed_subclones"
 
 

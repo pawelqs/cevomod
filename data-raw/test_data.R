@@ -39,6 +39,8 @@
 
 
 ## ------------------------ Fitted -------------------------------------------
+# library(cevodata)
+# library(cevomo)
 
 withr::with_seed(
   123,
@@ -46,14 +48,14 @@ withr::with_seed(
     intervalize_mutation_frequencies() |>
     calc_SFS() |>
     fit_powerlaw_tail_fixed() |>
-    # fit_subclones() |>
-    fit_powerlaw_tail_optim()
-    # fit_subclones()# |>
-    # fit_powerlaw_tail_optim(name = "bs_powerlaw_model", bootstraps = 20)
+    fit_subclones() |>
+    fit_powerlaw_tail_optim() |>
+    fit_subclones() |>
+    fit_powerlaw_tail_optim(name = "bs_powerlaw_model", bootstraps = 20, verbose = TRUE)
 )
 
-test_data_fitted <- test_data_fitted |>
-  fit_powerlaw_tail_optim(name = "bs_powerlaw_model", bootstraps = 50)
+# test_data_fitted <- test_data_fitted |>
+#   fit_powerlaw_tail_optim(name = "bs_powerlaw_model", bootstraps = 50)
 
-test_data_fitted$active_models <- "powerlaw_optim"
+active_models(test_data_fitted) <- "powerlaw_optim"
 use_data(test_data_fitted, overwrite = TRUE)
