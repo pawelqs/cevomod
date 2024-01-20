@@ -65,7 +65,7 @@ plot_models.cevodata <- function(object,
       geom_line_binomial(resid, params_binomial)
     },
     if (show_subclones && subclones_fitted) {
-      geom_are_subclones(resid, params_subclones)
+      geom_area_subclones(resid, params_subclones)
     },
     if (show_final_fit && neutral_lm_fitted && subclones_fitted) {
       geom_line_final_fit(resid, params_final_fit)
@@ -137,7 +137,7 @@ geom_line_binomial <- function(resid, params = list()) {
 
 
 
-geom_are_subclones <- function(resid, params) {
+geom_area_subclones <- function(resid, params) {
   dt <- resid |>
     pivot_longer(
       cols = c("Clone", starts_with("Subclone")),
