@@ -1,4 +1,5 @@
 data("tcga_brca_fitted")
+data("test_data_fitted")
 verbose::verbose(cevoverse = FALSE)
 
 
@@ -28,9 +29,11 @@ test_that("plot_models() works for bs_powerlaw_model_bootstraps", {
   show_final_fit <- TRUE
   nrow <- NULL
   ncol <- NULL
+  object <- test_data_fitted
+  active_models(object) <- models_name
 
   suppressWarnings({
-    p <- plot_models(test_data_fitted, models_name = models_name)
+    p <- plot_models(object, models_name = models_name)
   })
   expect_s3_class(p, c("gg", "ggplot"))
   vdiffr::expect_doppelganger("bs_powerlaw_model_bootstraps", p)
