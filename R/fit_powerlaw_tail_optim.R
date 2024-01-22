@@ -171,9 +171,14 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(
   } else {
     calc_powerlaw_model_residuals(coefs, sfs)
   }
+  bootstrap_residuals <- if (is.null(sfs)) {
+    tibble()
+  } else {
+    calc_powerlaw_model_residuals(bootstrap_coefs, sfs)
+  }
   info <- list(f_column = attr(object$sfs[[1]], "f_column"))
 
-  models <- lst(coefs, bootstrap_coefs, residuals, info)
+  models <- lst(coefs, residuals, bootstrap_coefs, bootstrap_residuals, info)
   class(models) <- c("cv_powerlaw_models", "list")
   models
 }
@@ -411,12 +416,20 @@ merge_bootstrap_models <- function(models) {
     map("residuals") |>
     bind_rows(.id = "sample_id")
 
+  bootstrap_residuals <- models |>
+    map("bootstrap_residuals") |>
+    bind_rows(.id = "sample_id")
+
   f_column <- models |>
     map("info") |>
     map_chr("f_column") |>
     unique()
 
-  models <- lst(coefs, bootstrap_coefs, residuals, info = lst(f_column))
+  models <- lst(
+    coefs, residuals,
+    bootstrap_coefs, bootstrap_residuals,
+    info = lst(f_column)
+  )
   class(models) <- c("cv_powerlaw_models", "list")
   models
 }
