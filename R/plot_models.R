@@ -45,22 +45,29 @@ plot_models.cevodata <- function(object,
                                  nrow = NULL, ncol = NULL,
                                  ...) {
   models <- get_models(object, models_name)
-  coefs <- models$coefs
+
+  neutral_lm_fitted <- "alpha" %in% names(models$coefs)
+  subclones_fitted <- "cellularity" %in% names(models$coefs)
+  bootstraped <- "bootstrap_coefs" %in% names(models)
+
   resid <- models$residuals |>
     join_metadata(object) |>
     mutate(sample_id = parse_factor(.data$sample_id, levels = object$metadata$sample_id)) |>
     trim_powerlaw_pred()
 
-  neutral_lm_fitted <- "alpha" %in% names(coefs)
-  subclones_fitted <- "cellularity" %in% names(coefs)
-  bootstraped <- "bootstrap_coefs" %in% names(models)
+  if (bootstraped) {
+    bootstrap_residuals <- models$bootstrap_residuals |>
+      join_metadata(object) |>
+      mutate(sample_id = parse_factor(.data$sample_id, levels = object$metadata$sample_id)) |>
+      trim_powerlaw_pred()
+  }
 
   model_layers <- list(
     if (show_neutral_tail && neutral_lm_fitted && !bootstraped) {
       geom_area_neutral_tail(resid, params_neutral_tail)
     },
     if (show_neutral_tail && neutral_lm_fitted && bootstraped) {
-      geom_line_bootstraps(resid, params_bootstraps)
+      geom_line_bootstraps(bootstrap_residuals, params_bootstraps)
     },
     if (show_binomial_layer && subclones_fitted) {
       geom_line_binomial(resid, params_binomial)
