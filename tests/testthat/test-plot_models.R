@@ -11,9 +11,10 @@ test_that("plot_models() works for powerlaw_optim_subclones", {
   show_final_fit <- TRUE
   nrow <- NULL
   ncol <- NULL
+  object <- test_data_fitted
 
   suppressWarnings({
-    p <- plot_models(test_data_fitted, models_name = "powerlaw_optim_subclones")
+    p <- plot_models(object, models_name = "powerlaw_optim_subclones")
   })
   expect_s3_class(p, c("gg", "ggplot"))
   vdiffr::expect_doppelganger("powerlaw_optim_subclones", p)

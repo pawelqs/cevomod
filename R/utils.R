@@ -19,6 +19,12 @@ drop_na_columns <- function(.data) {
 }
 
 
+factorize <- function(tbl, col, levels = unique(tbl[["col"]])) {
+  tbl[[col]] <- parse_factor(tbl[[col]], levels = levels)
+  tbl
+}
+
+
 get_f_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
   bounds <- snvs |>
     filter(.data$f > 0.00001, !is.na(.data$f)) |>

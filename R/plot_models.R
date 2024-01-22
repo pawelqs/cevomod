@@ -80,9 +80,23 @@ plot_models.cevodata <- function(object,
     }
   )
 
-  plot_SFS(object, geom = "bar", ...) +
+  x_label <- models$info$f_column
+
+  resid |>
+    join_metadata(object) |>
+    factorize("sample_id", get_metadata(object)$sample_id) |>
+    group_by(.data$sample_id) |>
+    mutate(width = 0.9 / n()) |>
+    ungroup() |>
+    ggplot() +
+    aes(.data$f, .data$SFS, group = .data$sample_id) +
+    geom_bar(
+      aes(width = .data$width),
+      stat = "identity", alpha = 0.8, ...
+    ) +
     model_layers +
-    facet_wrap(~.data$sample_id, scales = "free_y", nrow = nrow, ncol = ncol)
+    facet_wrap(~.data$sample_id, scales = "free_y", nrow = nrow, ncol = ncol) +
+    labs(y = "count", x = x_label)
 }
 
 
