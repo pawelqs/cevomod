@@ -1,12 +1,6 @@
-# data('test_data', package = "cevodata")
 verbose::verbose(cevoverse = 0)
 
-
-  # calc_mutation_frequencies() |>
-  # intervalize_mutation_frequencies() |>
-  # calc_SFS() |>
-  # fit_powerlaw_tail_optim()
-
+# ------------------------------ Main functions --------------------------------
 
 test_that("fit_subclones() mclust works", {
   N <- 1:3
@@ -39,6 +33,8 @@ test_that("fit_subclones() bmix works", {
   powerlaw_model_name <- "powerlaw_optim"
   upper_f_limit <- 0.75
   snvs_name <- "snvs"
+  object <- test_data_fitted
+  active_models(object) <- "powerlaw_optim"
 
   suppressWarnings(
     suppressMessages({
@@ -46,9 +42,24 @@ test_that("fit_subclones() bmix works", {
         fit_subclones(method = "BMix")
     })
   )
-  expect_false(
-    is.null(res$models$powerlaw_optim_subclones)
-  )
+
+  # It has stochasticity!!!
+  # expected_coefs <- test_path("testdata", "test_data.coefs_powerlaw_optim_subclones_bmix.tsv") |>
+  #   read_tsv(show_col_types = FALSE) |>
+  #   filter(best)
+  # coefs <- get_model_coefficients(res)
+  # expect_equal(
+  #   coefs |> select(-BIC, -cellularity, -N_mutations),
+  #   expected_coefs |> select(-BIC, -cellularity, -N_mutations)
+  # )
+  # expect_true(cor(expected_coefs$cellularity, coefs$cellularity, use = "pairwise.complete.obs") > 0.99)
+  # expect_true(cor(expected_coefs$BIC, coefs$BIC, use = "pairwise.complete.obs") > 0.99)
+  # expect_true(cor(expected_coefs$N_mutations, coefs$N_mutations, use = "pairwise.complete.obs") > 0.99)
+
+  expected_resid <- test_path("testdata", "test_data.residuals_powerlaw_optim_subclones_bmix.tsv") |>
+    read_tsv(show_col_types = FALSE)
+  resid <- get_model_residuals(res)
+  expect_true(cor(expected_resid$binom_pred, resid$binom_pred, use = "pairwise.complete.obs") > 0.99)
 })
 
 
@@ -68,6 +79,8 @@ test_that("fit_subclones() bmix works", {
 #   )
 # })
 
+
+# ------------------------------ Other functions -------------------------------
 
 
 fit_binomial_models_cols <- c("N", "component", "cellularity", "N_mutations", "BIC")
