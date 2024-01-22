@@ -1,12 +1,11 @@
-data('test_data', package = "cevodata")
+# data('test_data', package = "cevodata")
 verbose::verbose(cevoverse = 0)
 
 
-object <- test_data |>
-  calc_mutation_frequencies() |>
-  intervalize_mutation_frequencies() |>
-  calc_SFS() |>
-  fit_powerlaw_tail_optim()
+  # calc_mutation_frequencies() |>
+  # intervalize_mutation_frequencies() |>
+  # calc_SFS() |>
+  # fit_powerlaw_tail_optim()
 
 
 test_that("fit_subclones() mclust works", {
@@ -15,11 +14,17 @@ test_that("fit_subclones() mclust works", {
   upper_f_limit <- 0.75
   snvs_name <- "snvs"
 
+  object <- test_data_fitted
+  active_models(object) <- "powerlaw_optim"
+
   res <- object |>
     fit_subclones(method = "mclust")
-  expect_false(
-    is.null(res$models$powerlaw_optim_subclones)
-  )
+
+  expected_coefs <- test_path("testdata", "test_data.coefs_powerlaw_optim_subclones_mclust.tsv") |>
+    read_tsv(show_col_types = FALSE) |>
+    filter(best)
+  coefs <- get_model_coefficients(res)
+  expect_equal(coefs, expected_coefs)
 })
 
 

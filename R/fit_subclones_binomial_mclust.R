@@ -93,7 +93,7 @@ fit_binomial_models_Mclust <- function(residuals, N) {
 
 
 mclust_to_clones_tbl <- function(mclust_model, n_mutations) {
-  tibble(
+  clones <- tibble(
     N = length(mclust_model$parameters$mean),
     cellularity = mclust_model$parameters$mean,
     N_mutations = round(mclust_model$parameters$pro * n_mutations),
@@ -104,6 +104,9 @@ mclust_to_clones_tbl <- function(mclust_model, n_mutations) {
       component = if_else(row_number() == 1, "Clone", str_c("Subclone ", row_number() - 1)),
       .before = "cellularity"
     )
+  names(clones$cellularity) <- NULL
+  names(clones$BIC) <- NULL
+  clones
 }
 
 
