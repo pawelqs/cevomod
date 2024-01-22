@@ -1,14 +1,15 @@
 sample_id	model	component	A	alpha	convergence	value	best	N_mutations	cellularity	lambda	sequencing_DP
-Sample 1	powerlaw_optim	powerlaw tail	60.00962951411436	1.8776522685061154	0	967.8037647083796	TRUE	NA	NA	NA	NA
-Sample 1	subclones CliP	Clone	NA	NA	NA	NA	TRUE	2381	0.502	0.25	53
-Sample 2	powerlaw_optim	powerlaw tail	4.709097072768205	3.2682095860345415	0	1718.6551327458264	TRUE	NA	NA	NA	NA
-Sample 2	subclones CliP	Clone	NA	NA	NA	NA	TRUE	383	0.3495	0.25	46
-Sample 2	subclones CliP	Subclone 1	NA	NA	NA	NA	TRUE	59	0.064	0.25	59.75
-Sample 3	powerlaw_optim	powerlaw tail	108.88451136425503	2.02412544878815	0	1585.2455583218032	TRUE	NA	NA	NA	NA
-Sample 3	subclones CliP	Clone	NA	NA	NA	NA	TRUE	664	0.50284111445783	0.01	61
-Sample 3	subclones CliP	Subclone 1	NA	NA	NA	NA	TRUE	88	0.4015	0.01	59
-Sample 3	subclones CliP	Subclone 2	NA	NA	NA	NA	TRUE	156	0.1845	0.01	28.75
-Sample 3	subclones CliP	Subclone 3	NA	NA	NA	NA	TRUE	484	0.104094008264463	0.01	37.5
+Sample 1	powerlaw_optim	powerlaw tail	60.01315147172387	1.8776328091900232	0	968.1504343392381	TRUE	NA	NA	NA	NA
+Sample 1	subclones CliP	Clone	NA	NA	NA	NA	TRUE	2359	0.5015	0.25	53
+Sample 2	powerlaw_optim	powerlaw tail	15.053930975814817	2.6007916298794242	0	1640.4794696405124	TRUE	NA	NA	NA	NA
+Sample 2	subclones CliP	Clone	NA	NA	NA	NA	TRUE	334	0.351	0.25	62.5
+Sample 2	subclones CliP	Subclone 1	NA	NA	NA	NA	TRUE	367	0.039	0.25	60
+Sample 3	powerlaw_optim	powerlaw tail	108.88451158462281	2.0241254481129602	0	1585.245558904235	TRUE	NA	NA	NA	NA
+Sample 3	subclones CliP	Clone	NA	NA	NA	NA	TRUE	612	0.501996732026145	0.05	61
+Sample 3	subclones CliP	Subclone 1	NA	NA	NA	NA	TRUE	107	0.4075	0.05	60
+Sample 3	subclones CliP	Subclone 2	NA	NA	NA	NA	TRUE	72	0.2035	0.05	25.749999999999996
+Sample 3	subclones CliP	Subclone 3	NA	NA	NA	NA	TRUE	299	0.1426739130434785	0.05	28.999999999999996
+Sample 3	subclones CliP	Subclone 4	NA	NA	NA	NA	TRUE	263	0.082996197718631	0.05	45.5
 Sample 4	powerlaw_optim	powerlaw tail	93.16235154384304	1.8598898366134282	0	1568.2845373244807	TRUE	NA	NA	NA	NA
-Sample 4	subclones CliP	Clone	NA	NA	NA	NA	TRUE	852	0.499	0.25	62.75
-Sample 4	subclones CliP	Subclone 1	NA	NA	NA	NA	TRUE	594	0.0765	0.25	39
+Sample 4	subclones CliP	Clone	NA	NA	NA	NA	TRUE	800	0.499	0.25	64.25
+Sample 4	subclones CliP	Subclone 1	NA	NA	NA	NA	TRUE	597	0.0795	0.25	39
