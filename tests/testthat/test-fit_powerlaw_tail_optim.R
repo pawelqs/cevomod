@@ -16,11 +16,21 @@ test_that("fit_powerlaw_tail_optim() returns models with non-negative objective 
   control <- list(maxit = 1000, ndeps = c(0.1, 0.01))
   verbose <- get_verbosity()
 
-  object <- tcga_brca_fitted |>
+  object <- test_data_fitted |>
     intervalize_mutation_frequencies() |>
     fit_powerlaw_tail_optim()
   td <- get_model_coefficients(object, "powerlaw_optim")
-  expect_true(all(td$value > 1990))
+
+  expected_coefs <- test_path("testdata", "test_data.coefs_powerlaw_optim.tsv") |>
+    read_tsv(show_col_types = FALSE)
+  expect_equal(td, expected_coefs)
+
+
+  expected <- test_path("testdata", "test_data.residuals_powerlaw_optim.tsv") |>
+    read_tsv(show_col_types = FALSE)
+  attr(expected, "f_column") <- "VAF"
+  expect_equal(get_model_residuals(object), expected)
+
   expect_s3_class(get_models(object, "powerlaw_optim"), "cv_powerlaw_models")
 })
 
