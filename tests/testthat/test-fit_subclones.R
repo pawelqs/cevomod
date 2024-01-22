@@ -25,6 +25,12 @@ test_that("fit_subclones() mclust works", {
     filter(best)
   coefs <- get_model_coefficients(res)
   expect_equal(coefs, expected_coefs)
+
+  expected_resid <- test_path("testdata", "test_data.residuals_powerlaw_optim_subclones_mclust.tsv") |>
+    read_tsv(show_col_types = FALSE)
+  attr(expected_resid, "f_column") <- "VAF"
+  resid <- get_model_residuals(res)
+  expect_equal(resid, expected_resid)
 })
 
 
