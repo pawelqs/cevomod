@@ -1,5 +1,5 @@
 
-## ------------------------- plot_models() function ---------------------------
+## ------------------------------- plot_models() -------------------------------
 
 #' Plot cevodata models
 #' @param object `<cevodata>` object
