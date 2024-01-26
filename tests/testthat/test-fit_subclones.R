@@ -51,10 +51,10 @@ test_that("fit_subclones() bmix works", {
   #   filter(best)
   # coefs <- get_model_coefficients(res)
   # expect_equal(
-  #   coefs |> select(-BIC, -cellularity, -N_mutations),
-  #   expected_coefs |> select(-BIC, -cellularity, -N_mutations)
+  #   coefs |> select(-BIC, -f, -N_mutations),
+  #   expected_coefs |> select(-BIC, -f, -N_mutations)
   # )
-  # expect_true(cor(expected_coefs$cellularity, coefs$cellularity, use = "pairwise.complete.obs") > 0.99)
+  # expect_true(cor(expected_coefs$f, coefs$f, use = "pairwise.complete.obs") > 0.99)
   # expect_true(cor(expected_coefs$BIC, coefs$BIC, use = "pairwise.complete.obs") > 0.99)
   # expect_true(cor(expected_coefs$N_mutations, coefs$N_mutations, use = "pairwise.complete.obs") > 0.99)
 
@@ -85,7 +85,7 @@ test_that("fit_subclones() bmix works", {
 # ------------------------------ Other functions -------------------------------
 
 
-fit_binomial_models_cols <- c("N", "component", "f", "N_mutations", "BIC")
+fit_binomial_models_cols <- c("N", "component", "frequency", "N_mutations", "BIC")
 
 
 test_that("fit_binomial_models() works with very few remaining mutations", {
@@ -122,7 +122,7 @@ test_that("get_binomial_predictions() works", {
   clones <- tibble(
     component = c("Clone", "Subclone 1"),
     N_mutations = c(300, 100),
-    cellularity = c(.5, .2),
+    frequency = c(.5, .2),
     sequencing_DP = 100
   )
   binomial <- get_binomial_predictions(clones, intervals)
@@ -137,7 +137,7 @@ test_that("any_binomial_distibutions_correlate() works", {
   clones_non_overlapping <- tibble(
     sample_id   = "S1",
     component   = c("Clone", "Subclone 1"),
-    cellularity = c(0.33, 0.16),
+    frequency = c(0.33, 0.16),
     N_mutations = c(748, 1256),
     sequencing_DP   = c(52, 26)
   )
@@ -147,7 +147,7 @@ test_that("any_binomial_distibutions_correlate() works", {
   clones_overlapping <- tibble(
     sample_id   = "S1",
     component   = c("Clone", "Subclone 1", "Subclone 2"),
-    cellularity = c(0.33, 0.17, 0.12),
+    frequency = c(0.33, 0.17, 0.12),
     N_mutations = c(732, 866, 406),
     sequencing_DP   = c(60, 25, 37)
   )
