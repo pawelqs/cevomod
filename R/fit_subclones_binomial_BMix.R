@@ -4,7 +4,6 @@
 fit_subclones_bmix <- function(object,
                                N = 1:3,
                                powerlaw_model_name = active_models(object),
-                               name = paste0(powerlaw_model_name, "_subclones"),
                                snvs_name = default_SNVs(object),
                                upper_f_limit = 0.75,
                                verbose = get_verbosity()) {
@@ -46,31 +45,7 @@ fit_subclones_bmix <- function(object,
     left_join(sequencing_depth, by = c("sample_id", "f")) |>
     select(-"f")
 
-  best_model_coefs <- coefs |>
-    filter(.data$best) |>
-    nest_by(.data$sample_id, .key = "clones")
-
-  clonal_predictions <- residuals |>
-    select("sample_id", "f_interval", "f") |>
-    nest_by(.data$sample_id, .key = "intervals") |>
-    inner_join(best_model_coefs, by = "sample_id") |>
-    reframe(get_binomial_predictions(.data$clones, .data$intervals)) |>
-    select(-"f")
-
-  residuals <- residuals |>
-    select(-"model_resid") |>
-    left_join(clonal_predictions, by = c("sample_id", "f_interval")) |>
-    mutate(
-      model_pred = .data$powerlaw_pred + .data$binom_pred,
-      model_resid = .data$SFS - .data$model_pred
-    )
-
-  coefs <- powerlaw_models$coefs |>
-    bind_rows(coefs) |>
-    arrange(.data$sample_id, .data$best, .data$model)
-
-  models <- lst(coefs, residuals, info = powerlaw_models$info)
-  add_models(object, models, name)
+  coefs
 }
 
 

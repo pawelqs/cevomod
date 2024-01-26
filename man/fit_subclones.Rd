@@ -14,8 +14,9 @@ fit_subclones(
   object,
   N = 1:3,
   powerlaw_model_name = active_models(object),
+  name = paste0(powerlaw_model_name, "_subclones"),
   snvs_name = default_SNVs(object),
-  cnvs_name = default_CNVs(object),
+  cnas_name = default_CNAs(object),
   method = "BMix",
   upper_f_limit = 0.75,
   clip_sif = NULL,
@@ -28,6 +29,7 @@ fit_subclones_bmix(
   object,
   N = 1:3,
   powerlaw_model_name = active_models(object),
+  name = paste0(powerlaw_model_name, "_subclones"),
   snvs_name = default_SNVs(object),
   upper_f_limit = 0.75,
   verbose = get_verbosity()
@@ -36,8 +38,9 @@ fit_subclones_bmix(
 fit_subclones_clip(
   object,
   powerlaw_model_name = active_models(object),
+  name = paste0(powerlaw_model_name, "_subclones"),
   snvs_name = default_SNVs(object),
-  cnvs_name = default_CNVs(object),
+  cnas_name = default_CNAs(object),
   upper_f_limit = 0.75,
   clip_sif = NULL,
   clip_input = file.path(tempdir(), "clip_input"),
@@ -49,6 +52,7 @@ fit_subclones_mclust(
   object,
   N = 1:3,
   powerlaw_model_name = active_models(object),
+  name = paste0(powerlaw_model_name, "_subclones"),
   snvs_name = default_SNVs(object),
   upper_f_limit = 0.75,
   verbose = get_verbosity()
@@ -64,7 +68,7 @@ powerlaw_fixed/powerlaw_optim}
 
 \item{snvs_name}{Which snvs to to use?}
 
-\item{cnvs_name}{Which cnvs to to use?}
+\item{cnas_name}{Which cnas to to use?}
 
 \item{method}{Clustering method to use. Currently supported methods:
 \itemize{

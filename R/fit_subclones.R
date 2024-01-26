@@ -58,20 +58,50 @@ fit_subclones <- function(object,
                           clip_input = file.path(tempdir(), "clip_input"),
                           clip_output = file.path(tempdir(), "clip_output"),
                           verbose = get_verbosity()) {
+  powerlaw_models <- get_models(object, powerlaw_model_name)
+  stop_if_models_not_powerlaw(powerlaw_models, powerlaw_model_name)
+
+  residuals <- get_model_residuals(object, model_name = powerlaw_model_name) |>
+    filter(.data$f >= 0)
+
   if (method == "BMix") {
-    object <- object |>
-      fit_subclones_bmix(N, powerlaw_model_name, name, snvs_name, upper_f_limit, verbose)
+    coefs <- object |>
+      fit_subclones_bmix(N, powerlaw_model_name, snvs_name, upper_f_limit, verbose)
   } else if (method == "mclust") {
-    object <- object |>
-      fit_subclones_mclust(N, powerlaw_model_name, name, snvs_name, upper_f_limit, verbose)
+    coefs <- object |>
+      fit_subclones_mclust(N, powerlaw_model_name, snvs_name, upper_f_limit, verbose)
   } else if (method == "CliP") {
-    object <- object |>
-      fit_subclones_clip(powerlaw_model_name, name, snvs_name, cnas_name, upper_f_limit, verbose = verbose)
+    coefs <- object |>
+      fit_subclones_clip(powerlaw_model_name, snvs_name, cnas_name, upper_f_limit, verbose = verbose)
   } else {
     stop("Currently supported methods are: BMix, CliP, and mclust")
   }
 
-  object
+  best_coefs <- coefs |>
+    filter(.data$best) |>
+    nest_by(.data$sample_id, .key = "clones")
+
+  clonal_predictions <- residuals |>
+    select("sample_id", "f_interval", "f") |>
+    nest_by(.data$sample_id, .key = "intervals") |>
+    inner_join(best_coefs, by = "sample_id") |>
+    reframe(get_binomial_predictions(.data$clones, .data$intervals)) |>
+    select(-"f")
+
+  residuals <- residuals |>
+    select(-"model_resid") |>
+    left_join(clonal_predictions, by = c("sample_id", "f_interval")) |>
+    mutate(
+      model_pred = .data$powerlaw_pred + .data$binom_pred,
+      model_resid = .data$SFS - .data$model_pred
+    )
+
+  coefs <- powerlaw_models$coefs |>
+    bind_rows(coefs) |>
+    arrange(.data$sample_id, .data$best, .data$model)
+
+  models <- lst(coefs, residuals, info = powerlaw_models$info)
+  add_models(object, models, name)
 }
 
 
