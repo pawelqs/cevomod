@@ -76,14 +76,17 @@ get_evolutionary_parameters.cv_powerlaw_subclones_models <- function(
 
 get_mutation_rates <- function(coefs) {
   require_columns(coefs, "sample_id", "component", "A", "alpha")
-  if (any(coefs$alpha != 2)) {
+  powerlaw_coefs <- coefs |>
+    filter(.data$component %in% c("Neutral tail", "powerlaw tail"))
+
+  if (any(powerlaw_coefs$alpha != 2)) {
     warning(
       "Model assumes that alpha = 2, but different values were found. ",
       "Mutation rates may be inaccurate."
     )
   }
-  mutation_rates <- coefs |>
-    filter(.data$component %in% c("Neutral tail", "powerlaw tail")) |>
+
+  mutation_rates <- powerlaw_coefs |>
     transmute(
       .data$sample_id,
       mutation_rate = .data$A,
