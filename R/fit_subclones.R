@@ -18,13 +18,7 @@
 #'     differences
 #' @param upper_f_limit ignore variants with f higher than
 #' @param verbose Verbose?
-#' @name fit_subclones
-NULL
-
-
-
-#' @describeIn fit_subclones Provides a common interface for all other methods,
-#'   runs the selected method and passes all the required arguments down.
+#'
 #' @examples
 #' \dontrun{
 #' # Using BMix
@@ -44,6 +38,13 @@ NULL
 #' # or
 #' fit_subclones_clip(test_data_fitted)
 #' }
+#' @name fit_subclones
+NULL
+
+
+
+#' @describeIn fit_subclones Provides a common interface for all other methods,
+#'   runs the selected method and passes all the required arguments down.
 #' @export
 fit_subclones <- function(object,
                           N = 1:3,
