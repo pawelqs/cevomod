@@ -90,6 +90,7 @@ fit_powerlaw_tail_optim.cevodata <- function(
       )
     models <- merge_bootstrap_models(models)
   }
+  class(models) <- c("cv_powerlaw_models", "list")
   add_models(object, models, name = name)
 }
 
