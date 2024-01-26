@@ -1,4 +1,3 @@
-
 ## ---------------------- Get evolutionary parameters --------------------------
 
 #' Get evolutionary parameters from the model
@@ -97,23 +96,23 @@ get_mutation_rates <- function(coefs) {
 
 
 # get_mutation_rates_like_MOBSTER <- function() {
-  # models <- get_models(object)
-  # residuals <- get_residuals(object)
-  # bin_widths <- residuals |>
-  #   group_by(sample_id) |>
-  #   summarise(bin_width = get_interval_width(f_interval))
-  # min_VAF <- 0.2
-  # max_VAF <- 0.8
-  # residuals |>
-  #   filter(VAF > min_VAF, VAF < max_VAF) |>
-  #   group_by(sample_id) |>
-  #   summarise(N = sum(powerlaw_pred)) |>
-  #   left_join(bin_widths) |>
-  #   mutate(
-  #     min_VAF = min_VAF - bin_width / 2,
-  #     max_VAF = max_VAF + bin_width / 2,
-  #     mu = N / ( 1/(2*min_VAF) - 1/(2*max_VAF) ) / 2
-  # )
+# models <- get_models(object)
+# residuals <- get_residuals(object)
+# bin_widths <- residuals |>
+#   group_by(sample_id) |>
+#   summarise(bin_width = get_interval_width(f_interval))
+# min_VAF <- 0.2
+# max_VAF <- 0.8
+# residuals |>
+#   filter(VAF > min_VAF, VAF < max_VAF) |>
+#   group_by(sample_id) |>
+#   summarise(N = sum(powerlaw_pred)) |>
+#   left_join(bin_widths) |>
+#   mutate(
+#     min_VAF = min_VAF - bin_width / 2,
+#     max_VAF = max_VAF + bin_width / 2,
+#     mu = N / ( 1/(2*min_VAF) - 1/(2*max_VAF) ) / 2
+# )
 # }
 
 
@@ -125,7 +124,7 @@ get_mutation_rates <- function(coefs) {
 
 mobster_emergence_time <- function(N, mu) {
   # Emergence time is negative, when N is not big enough, eg. comparable with mu
-  (N / mu) / (2 * log(2))# - (-digamma(1) / log(2))
+  (N / mu) / (2 * log(2)) # - (-digamma(1) / log(2))
 }
 
 
@@ -141,9 +140,8 @@ mobster_evolutionary_params <- function(subclones, Nmax = 10^10) {
       largestsubclone <- max(subclones$cellular_frequency)
       time_end <- log(Nmax * (1 - largestsubclone)) / log(2)
       s <- selection2clonenested(subclones$emergence_time, time_end, subclones$cellular_frequency)
-    }
-    else {
-      time_end <- log(Nmax * ( 1 - subclones$cellular_frequency[1] - subclones$cellular_frequency[2] )) / log(2)
+    } else {
+      time_end <- log(Nmax * (1 - subclones$cellular_frequency[1] - subclones$cellular_frequency[2])) / log(2)
       s <- selection2clone(subclones$emergence_time, time_end, subclones$cellular_frequency)
     }
   }
