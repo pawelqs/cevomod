@@ -1,4 +1,4 @@
-sample_id	model	component	A	alpha	convergence	value	best	N_mutations	cellularity	lambda	sequencing_DP
+sample_id	model	component	A	alpha	convergence	value	best	N_mutations	f	lambda	sequencing_DP
 Sample 1	powerlaw_optim	powerlaw tail	60.01315147172387	1.8776328091900232	0	968.1504343392381	TRUE	NA	NA	NA	NA
 Sample 1	subclones CliP	Clone	NA	NA	NA	NA	TRUE	2359	0.5015	0.25	53
 Sample 2	powerlaw_optim	powerlaw tail	15.053930975814817	2.6007916298794242	0	1640.4794696405124	TRUE	NA	NA	NA	NA
