@@ -68,17 +68,18 @@ test_that("fit_subclones() bmix works", {
 ## Do not push this test to github, since it requires that apptainer
 ## is installed
 # test_that("fit_subclones() clip works", {
-#   cnas_name <- default_CNAs(object)
-#   clip_input <- file.path(tempdir(), "clip_input")
-#   clip_output <- file.path(tempdir(), "clip_output")
-#   clip_sif <- NULL
-#   verbose <- get_verbosity()
-#   res <- object |>
-#     fit_subclones(method = "CliP")
-#
-#   expect_false(
-#     is.null(res$models$powerlaw_optim_subclones)
-#   )
+  # cnas_name <- default_CNAs(object)
+  # clip_input <- file.path(tempdir(), "clip_input")
+  # clip_output <- file.path(tempdir(), "clip_output")
+  # clip_sif <- NULL
+  # verbose <- get_verbosity()
+  # object <- test_data_fitted
+  # res <- object |>
+  #   fit_subclones(method = "CliP")
+  #
+  # expect_false(
+  #   is.null(res$models$powerlaw_optim_subclones)
+  # )
 # })
 
 
