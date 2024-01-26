@@ -3,27 +3,25 @@
 
 #' Get evolutionary parameters from the model
 #'
-#' Code of those functions is only re-formatted code from MOBSTER R package
-#' by Caravagna, Williams et al. https://github.com/caravagnalab/mobster
+#' @details
+#' Code to get the evolutionary parameters from the powerlaw model with subclones
+#' is only re-formatted code from MOBSTER R package by Caravagna, Williams et al.
+#' https://github.com/caravagnalab/mobster
 #'
-#'
-#'
-#' Use properties of subclone fit to calculate selection intensity, selection
+#' Uses properties of subclone fit to calculate selection intensity, selection
 #' is defined as the relative growth rates of host tumour cell
 #' populations (\eqn{\lambda h}) vs subclone (\eqn{\lambda s}):
 #' \deqn{1+s=\lambda h / \lambda s}
 #'
-#' @param Nmax Time when tumour is sampled (in tumour doublings)
-#'
 #' @param object cevodata object or models tibble
+#' @param Nmax Time when tumour is sampled (in tumour doublings)
 #' @param ... other arguments
 #' @param models_name models_name
 #' @name evo_params
 NULL
 
 
-#' @describeIn evo_params Get evolutionary parameters
-#' @params object cevodata or models object
+#' @rdname evo_params
 #' @export
 get_evolutionary_parameters <- function(object, ...) {
   UseMethod("get_evolutionary_parameters")
