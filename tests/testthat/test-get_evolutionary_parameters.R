@@ -79,6 +79,19 @@ test_that("get_evolutionary_parameters.cv_powerlaw_subclones_models() works", {
 # ------------------------------- Other functions ------------------------------
 
 
+test_that("get_mutation_rates() throws warning if alpha != 2", {
+  coefs <- tibble(
+    sample_id = str_c("sample", 0:5),
+    component = "Neutral tail",
+    A = 100,
+    alpha = 3
+  )
+  models <- lst(coefs)
+  class(models) <- c("cv_powerlaw_models")
+  expect_warning(get_mutation_rates(coefs))
+})
+
+
 test_that("mobster_emergence_time() works", {
   res <- mobster_emergence_time(100, 5)
   expect_equal(res, 14.4269504)
