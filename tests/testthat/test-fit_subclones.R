@@ -85,7 +85,7 @@ test_that("fit_subclones() bmix works", {
 # ------------------------------ Other functions -------------------------------
 
 
-fit_binomial_models_cols <- c("N", "component", "cellularity", "N_mutations", "BIC")
+fit_binomial_models_cols <- c("N", "component", "f", "N_mutations", "BIC")
 
 
 test_that("fit_binomial_models() works with very few remaining mutations", {

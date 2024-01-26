@@ -1,4 +1,4 @@
-sample_id	model	component	A	alpha	convergence	value	best	N	cellularity	N_mutations	BIC	sequencing_DP	has_overlapping_clones	max_BIC
+sample_id	model	component	A	alpha	convergence	value	best	N	f	N_mutations	BIC	sequencing_DP	has_overlapping_clones	max_BIC
 Sample 1	binomial_clones	Clone	NA	NA	NA	NA	FALSE	1	0.49904336734694665	2352	4985.8011652689775	53	FALSE	5669.530484470525
 Sample 1	binomial_clones	Clone	NA	NA	NA	NA	FALSE	3	0.5359703707260834	964	5645.622567539466	53	TRUE	5669.530484470525
 Sample 1	binomial_clones	Subclone 1	NA	NA	NA	NA	FALSE	3	0.48301323525078	1354	5645.622567539466	52	TRUE	5669.530484470525

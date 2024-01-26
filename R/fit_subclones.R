@@ -121,11 +121,11 @@ get_binomial_predictions <- function(clones, intervals) {
 }
 
 
-get_binomial_distribution <- function(cellularity, N_mutations, sequencing_DP, ...) {
+get_binomial_distribution <- function(f, N_mutations, sequencing_DP, ...) {
   i <- 0:round(sequencing_DP)
   tibble(
     f = i / sequencing_DP,
-    pred = N_mutations * stats::dbinom(i, round(sequencing_DP), cellularity)
+    pred = N_mutations * stats::dbinom(i, round(sequencing_DP), f)
   )
 }
 
@@ -151,7 +151,7 @@ rebinarize_distribution <- function(distribution, n_bins = NULL, f = NULL) {
 
 were_subclonal_models_fitted <- function(object, ...) {
   models <- get_model_coefficients(object)
-  expect_colnames <- c("N", "cellularity", "N_mutations")
+  expect_colnames <- c("N", "f", "N_mutations")
   all(expect_colnames %in% colnames(models))
 }
 
@@ -170,7 +170,7 @@ empty_clones_tibble <- function() {
   tibble(
     N = integer(),
     component = character(),
-    cellularity = double(),
+    f = double(),
     N_mutations = double(),
     BIC = double()
   )
