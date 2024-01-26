@@ -17,7 +17,7 @@ fit_powerlaw_tail_optim(object, ...)
   allowed_zero_bins = 2,
   y_treshold = 1,
   y_threshold_pct = 0.01,
-  av_filter = c(1/3, 1/3, 1/3),
+  av_filter = c(1, 1, 1)/3,
   peak_detection_upper_limit = 0.3,
   reward_upper_limit = 0.4,
   control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
@@ -28,10 +28,11 @@ fit_powerlaw_tail_optim(object, ...)
 \method{fit_powerlaw_tail_optim}{cevo_SFS_bootstraps}(
   object,
   name = "powerlaw_optim",
+  sfs = NULL,
   allowed_zero_bins = 2,
   y_treshold = 1,
   y_threshold_pct = 0.01,
-  av_filter = c(1/3, 1/3, 1/3),
+  av_filter = c(1, 1, 1)/3,
   peak_detection_upper_limit = 0.3,
   reward_upper_limit = 0.4,
   control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
@@ -45,10 +46,11 @@ fit_powerlaw_tail_optim(object, ...)
   allowed_zero_bins = 2,
   y_treshold = 1,
   y_threshold_pct = 0.01,
-  av_filter = c(1/3, 1/3, 1/3),
+  av_filter = c(1, 1, 1)/3,
   peak_detection_upper_limit = 0.3,
   reward_upper_limit = 0.4,
   control = list(maxit = 1000, ndeps = c(0.1, 0.01)),
+  calc_residuals = TRUE,
   verbose = get_verbosity(),
   ...
 )
@@ -72,13 +74,17 @@ height of the higherst peak will be considered empty}
 
 \item{av_filter}{average filter values to be applied to f}
 
-\item{peak_detection_upper_limit}{Upper f value up to which the main peak is searched}
+\item{peak_detection_upper_limit}{Upper f value up to which the main peak is
+searched}
 
-\item{reward_upper_limit}{Mutations under the curve up to this limit will be rewarded}
+\item{reward_upper_limit}{Mutations under the curve up to this limit will be
+rewarded}
 
 \item{control}{control param of stats::optim()}
 
 \item{verbose}{verbose?}
+
+\item{sfs}{SFS}
 }
 \description{
 \code{fit_powerlaw_tail_optim()} uses \code{stats::optim} to find optimal A and alpha
@@ -91,9 +97,12 @@ to the power of x, where x is the length of the vector of negative error values.
 This allows the powerlaw curve to detach from the SFS for 1 or two bins, but
 then the penalty rises extremely.
 }
+\details{
+Takes a single sample bootstrap SFS and fits a powerlaw model to it.
+}
 \examples{
 data("tcga_brca_test")
 cd <- tcga_brca_test |>
-  dplyr::filter(sample_id \%in\% c("TCGA-AC-A23H-01","TCGA-AN-A046-01")) |>
+  dplyr::filter(sample_id \%in\% c("TCGA-AC-A23H-01", "TCGA-AN-A046-01")) |>
   fit_powerlaw_tail_optim()
 }
