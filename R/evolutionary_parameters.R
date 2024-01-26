@@ -1,9 +1,19 @@
 
+## ---------------------- Get evolutionary parameters --------------------------
 
 #' Get evolutionary parameters from the model
 #'
 #' Code of those functions is only re-formatted code from MOBSTER R package
 #' by Caravagna, Williams et al. https://github.com/caravagnalab/mobster
+#'
+#'
+#'
+#' Use properties of subclone fit to calculate selection intensity, selection
+#' is defined as the relative growth rates of host tumour cell
+#' populations (\eqn{\lambda h}) vs subclone (\eqn{\lambda s}):
+#' \deqn{1+s=\lambda h / \lambda s}
+#'
+#' @param Nmax Time when tumour is sampled (in tumour doublings)
 #'
 #' @param object cevodata object or models tibble
 #' @param ... other arguments
@@ -12,33 +22,79 @@
 NULL
 
 
-## ------------------------ Mutation rates by Williams ------------------------
-
-#' @describeIn evo_params Get mutation rates by Williams
-#' Use ...
+#' @describeIn evo_params Get evolutionary parameters
+#' @params object cevodata or models object
 #' @export
-get_mutation_rates <- function(object, ...) {
-  UseMethod("get_mutation_rates")
+get_evolutionary_parameters <- function(object, ...) {
+  UseMethod("get_evolutionary_parameters")
 }
 
 
-#' @describeIn evo_params Get mutation rates by Williams
 #' @export
-get_mutation_rates.cevodata <- function(object, models_name = "powerlaw_fixed", ...) {
-  mutation_rates <- get_models(object, models_name) |>
-    filter(.data$component == "Neutral tail") |>
+get_evolutionary_parameters.cevodata <- function(
+    object,
+    models_name = active_models(object),
+    Nmax = 10^10,
+    ...) {
+  object |>
+    get_models(models_name) |>
+    get_evolutionary_parameters(Nmax = Nmax)
+}
+
+
+#' @export
+get_evolutionary_parameters.cv_powerlaw_models <- function(object, ...) {
+  get_mutation_rates(object$coefs)
+}
+
+
+#' @export
+get_evolutionary_parameters.cv_powerlaw_subclones_models <- function(
+    object,
+    Nmax = 10^10,
+    ...) {
+  models <- object
+  mutation_rates <- get_mutation_rates(models$coefs)
+  subclones <- models$coefs |>
+    filter(str_detect(.data$component, "Subclone")) |>
+    select("sample_id", "component", "N_mutations", "frequency") |>
+    mutate(cellular_frequency = 2 * .data$frequency) |> # need ccf so times by 2
+    select(-"frequency")
+
+  dt <- subclones |>
+    left_join(mutation_rates, by = "sample_id") |>
+    mutate(
+      emergence_time = mobster_emergence_time(.data$N_mutations, .data$mutation_rate)
+    ) |>
+    nest(subclones = c("component", "N_mutations", "cellular_frequency", "emergence_time"))
+
+  dt |>
+    rowwise("sample_id", "mutation_rate") |>
+    reframe(mobster_evolutionary_params(.data$subclones, Nmax = Nmax))
+}
+
+
+## ------------------------------ Mutation rates -------------------------------
+
+get_mutation_rates <- function(coefs) {
+  require_columns(coefs, "sample_id", "component", "A")
+  mutation_rates <- coefs |>
+    filter(.data$component %in% c("Neutral tail", "powerlaw tail")) |>
     transmute(
       .data$sample_id,
-      mutation_rate_williams = .data$A
+      mutation_rate = .data$A,
+      mutation_rate_method = "williams"
     )
   mutation_rates
+}
+
+
+# get_mutation_rates_like_MOBSTER <- function() {
   # models <- get_models(object)
-  #
   # residuals <- get_residuals(object)
   # bin_widths <- residuals |>
   #   group_by(sample_id) |>
   #   summarise(bin_width = get_interval_width(f_interval))
-  #
   # min_VAF <- 0.2
   # max_VAF <- 0.8
   # residuals |>
@@ -50,22 +106,9 @@ get_mutation_rates.cevodata <- function(object, models_name = "powerlaw_fixed", 
   #     min_VAF = min_VAF - bin_width / 2,
   #     max_VAF = max_VAF + bin_width / 2,
   #     mu = N / ( 1/(2*min_VAF) - 1/(2*max_VAF) ) / 2
-    # )
-}
+  # )
+# }
 
-
-#' @describeIn evo_params Get mutation rates by Williams
-#' @export
-get_mutation_rates.tbl_df <- function(object, ...) {
-  require_columns(object, "sample_id", "component", "A")
-  mutation_rates <- object |>
-    filter(.data$component == "Neutral tail") |>
-    transmute(
-      .data$sample_id,
-      mutation_rate_williams = .data$A
-    )
-  mutation_rates
-}
 
 
 ## --------------------- Selection coefs by Williams --------------------------
@@ -73,88 +116,39 @@ get_mutation_rates.tbl_df <- function(object, ...) {
 # by Caravagna, Williams et al. https://github.com/caravagnalab/mobster
 
 
-#' @describeIn evo_params Get subclonal selection coefficients Williams
-#'
-#' Use properties of subclone fit to calculate selection intensity, selection
-#' is defined as the relative growth rates of host tumour cell
-#' populations (\eqn{\lambda h}) vs subclone (\eqn{\lambda s}):
-#' \deqn{1+s=\lambda h / \lambda s}
-#'
-#' @param Nmax Time when tumour is sampled (in tumour doublings)
-#' @export
-get_selection_coefficients <- function(object, ...) {
-  UseMethod("get_selection_coefficients")
-}
-
-
-#' @describeIn evo_params Get subclonal selection coefficients Williams
-#' @export
-get_selection_coefficients.cevodata <- function(object,
-                                                models_name = "powerlaw_fixed_subclones",
-                                                Nmax = 10^10, ...) {
-  get_models(object, models_name) |>
-    get_selection_coefficients()
-}
-
-
-#' @describeIn evo_params Get subclonal selection coefficients Williams
-#' @export
-get_selection_coefficients.tbl_df <- function(object, Nmax = 10^10, ...) {
-  require_columns(object, "sample_id", "component", "A", "N_mutations", "cellularity")
-  mutation_rates <- get_mutation_rates(object)
-
-  subclones <- object |>
-    filter(str_detect(.data$component, "Subclone")) |>
-    drop_na_columns() |>
-    select("sample_id", "component", "N_mutations", "cellularity") |>
-    mutate(subclone_frequency = 2 * .data$cellularity) |> # need ccf so times by 2
-    select(-"cellularity")
-
-  dt <- subclones |>
-    left_join(mutation_rates, by = "sample_id") |>
-    mutate(
-      emergence_time = get_emergence_time(.data$N_mutations, .data$mutation_rate_williams)
-    ) |>
-    nest(subclones = c("component", "N_mutations", "subclone_frequency", "emergence_time"))
-
-  dt |>
-    rowwise("sample_id", "mutation_rate_williams") |>
-    reframe(mobster_evolutionary_parameters(.data$subclones))
-}
-
-
-# Emergence time is negative, when N is not big enough, eg. comparable with mu
-get_emergence_time <- function(N, mu) {
+mobster_emergence_time <- function(N, mu) {
+  # Emergence time is negative, when N is not big enough, eg. comparable with mu
   (N / mu) / (2 * log(2))# - (-digamma(1) / log(2))
 }
 
 
-mobster_evolutionary_parameters <- function(subclones, Nmax = 10^10) {
+mobster_evolutionary_params <- function(subclones, Nmax = 10^10) {
+  require_columns(subclones, "component", "N_mutations", "cellular_frequency", "emergence_time")
   nsubclones <- nrow(subclones)
 
   if (nsubclones == 1) {
-    time_end <- log(Nmax * (1 - subclones$subclone_frequency)) / log(2)
-    s <- selection(subclones$emergence_time, time_end, subclones$subclone_frequency)
+    time_end <- log(Nmax * (1 - subclones$cellular_frequency)) / log(2)
+    s <- selection(subclones$emergence_time, time_end, subclones$cellular_frequency)
   } else if (nsubclones == 2) {
     if (are_subclones_nested(subclones)) { # pigeon hole principle
-      largestsubclone <- max(subclones$subclone_frequency)
+      largestsubclone <- max(subclones$cellular_frequency)
       time_end <- log(Nmax * (1 - largestsubclone)) / log(2)
-      s <- selection2clonenested(subclones$emergence_time, time_end, subclones$subclone_frequency)
+      s <- selection2clonenested(subclones$emergence_time, time_end, subclones$cellular_frequency)
     }
     else {
-      time_end <- log(Nmax * ( 1 - subclones$subclone_frequency[1] - subclones$subclone_frequency[2] )) / log(2)
-      s <- selection2clone(subclones$emergence_time, time_end, subclones$subclone_frequency)
+      time_end <- log(Nmax * ( 1 - subclones$cellular_frequency[1] - subclones$cellular_frequency[2] )) / log(2)
+      s <- selection2clone(subclones$emergence_time, time_end, subclones$cellular_frequency)
     }
   }
 
   subclones$time_end <- time_end
-  subclones$selection <- s
+  subclones$selection_coef <- s
   return(subclones)
 }
 
 
 are_subclones_nested <- function(subclones) {
-  sum(subclones$subclone_frequency) > 1
+  sum(subclones$cellular_frequency) > 1
 }
 
 
@@ -204,7 +198,7 @@ selection2clonenested <- function(times, time_end, frequencies) {
 
   x1 <- log(2) * time1
   x2 <- log((subclonefrequency1 - subclonefrequency2) / (1 - subclonefrequency1))
-  x3 <- log(2) * (time_end - time1) # I replaced time with time1, I am sure it was a typo; PK
+  x3 <- log(2) * (time_end - time1) # I replaced time with time1, sure it was a typo; PK
   s1 <- ((x1 + x2) / x3)
 
   x1 <- log(2) * time2
@@ -214,4 +208,3 @@ selection2clonenested <- function(times, time_end, frequencies) {
 
   return(c(s1, s2))
 }
-
