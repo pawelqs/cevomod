@@ -28,7 +28,7 @@ fit_subclones_mclust <- function(object,
     nest_by(.data$sample_id) |>
     reframe(fit_binomial_models(.data$data, N = N, pb = pb)) |>
     mutate(model = "binomial_clones", .after = "sample_id") |>
-    mutate(f = round(.data$cellularity, digits = 2)) |>
+    mutate(f = round(.data$frequency, digits = 2)) |>
     left_join(sequencing_depths, by = c("sample_id", "f")) |>
     select(-"f") |>
     evaluate_binomial_models()
@@ -70,16 +70,16 @@ fit_binomial_models_Mclust <- function(residuals, N) {
 mclust_to_clones_tbl <- function(mclust_model, n_mutations) {
   clones <- tibble(
     N = length(mclust_model$parameters$mean),
-    cellularity = mclust_model$parameters$mean,
+    frequency = mclust_model$parameters$mean,
     N_mutations = round(mclust_model$parameters$pro * n_mutations),
     BIC = mclust_model$bic
   ) |>
-    arrange(desc(.data$cellularity)) |>
+    arrange(desc(.data$frequency)) |>
     mutate(
       component = if_else(row_number() == 1, "Clone", str_c("Subclone ", row_number() - 1)),
-      .before = "cellularity"
+      .before = "frequency"
     )
-  names(clones$cellularity) <- NULL
+  names(clones$frequency) <- NULL
   names(clones$BIC) <- NULL
   clones
 }
