@@ -72,8 +72,8 @@ fit_subclones_clip <- function(object,
       model = "subclones CliP",
       component = if_else(.data$cluster_index == 0, "Clone", str_c("Subclone ", .data$cluster_index)),
       N_mutations = .data$num_SNV,
-      f = .data$cellular_prevalence/2,
-      f = round(.data$f, digits = 2),
+      frequency = .data$cellular_prevalence/2,
+      f = round(.data$frequency, digits = 2),
       .data$lambda,
       best = .data$best_lambda
     ) |>
