@@ -39,7 +39,7 @@ fit_subclones_bmix <- function(object,
     reframe(fit_binomial_models_BMix(.data$data, N, pb, verbose)) |>
     mutate(model = "binomial_clones_BMix", .after = "sample_id") |>
     mutate(
-      f = round(.data$cellularity, digits = 2),
+      f = round(.data$frequency, digits = 2),
       best = TRUE
     ) |>
     left_join(sequencing_depth, by = c("sample_id", "f")) |>
@@ -67,7 +67,7 @@ fit_binomial_models_BMix <- function(data, N, pb = NULL, verbose = TRUE) {
         BIC = model$BIC
       ) |>
       left_join(mut_counts, by = "cluster") |>
-      select("N", "component", cellularity = "mean", "N_mutations", "BIC")
+      select("N", "component", frequency = "mean", "N_mutations", "BIC")
   }
 
   if (!is.null(pb)) pb$tick()
