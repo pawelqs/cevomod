@@ -47,7 +47,7 @@ plot_models.cevodata <- function(object,
   models <- get_models(object, models_name)
 
   neutral_lm_fitted <- "alpha" %in% names(models$coefs)
-  subclones_fitted <- "cellularity" %in% names(models$coefs)
+  subclones_fitted <- "frequency" %in% names(models$coefs)
   bootstraped <- "bootstrap_coefs" %in% names(models)
 
   resid <- models$residuals |>
