@@ -101,6 +101,7 @@ fit_subclones <- function(object,
     arrange(.data$sample_id, .data$best, .data$model)
 
   models <- lst(coefs, residuals, info = powerlaw_models$info)
+  class(models) <- c("cv_powerlaw_subclones_models", "list")
   add_models(object, models, name)
 }
 
