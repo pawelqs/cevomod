@@ -29,7 +29,6 @@ fit_subclones_bmix(
   object,
   N = 1:3,
   powerlaw_model_name = active_models(object),
-  name = paste0(powerlaw_model_name, "_subclones"),
   snvs_name = default_SNVs(object),
   upper_f_limit = 0.75,
   verbose = get_verbosity()
@@ -38,7 +37,6 @@ fit_subclones_bmix(
 fit_subclones_clip(
   object,
   powerlaw_model_name = active_models(object),
-  name = paste0(powerlaw_model_name, "_subclones"),
   snvs_name = default_SNVs(object),
   cnas_name = default_CNAs(object),
   upper_f_limit = 0.75,
@@ -52,7 +50,6 @@ fit_subclones_mclust(
   object,
   N = 1:3,
   powerlaw_model_name = active_models(object),
-  name = paste0(powerlaw_model_name, "_subclones"),
   snvs_name = default_SNVs(object),
   upper_f_limit = 0.75,
   verbose = get_verbosity()
