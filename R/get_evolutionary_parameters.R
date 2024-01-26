@@ -63,7 +63,9 @@ get_evolutionary_parameters.cv_powerlaw_subclones_models <- function(
     mutate(
       emergence_time = mobster_emergence_time(.data$N_mutations, .data$mutation_rate)
     ) |>
-    nest(subclones = c("component", "N_mutations", "cellular_frequency", "emergence_time"))
+    nest(
+      subclones = c("component", "N_mutations", "cellular_frequency", "emergence_time")
+    )
 
   dt |>
     rowwise("sample_id", "mutation_rate") |>
@@ -129,7 +131,10 @@ mobster_emergence_time <- function(N, mu) {
 
 
 mobster_evolutionary_params <- function(subclones, Nmax = 10^10) {
-  require_columns(subclones, "component", "N_mutations", "cellular_frequency", "emergence_time")
+  require_columns(
+    subclones,
+    "component", "N_mutations", "cellular_frequency", "emergence_time"
+  )
   nsubclones <- nrow(subclones)
 
   if (nsubclones == 1) {
@@ -139,10 +144,19 @@ mobster_evolutionary_params <- function(subclones, Nmax = 10^10) {
     if (are_subclones_nested(subclones)) { # pigeon hole principle
       largestsubclone <- max(subclones$cellular_frequency)
       time_end <- log(Nmax * (1 - largestsubclone)) / log(2)
-      s <- selection2clonenested(subclones$emergence_time, time_end, subclones$cellular_frequency)
+      s <- selection2clonenested(
+        subclones$emergence_time,
+        time_end,
+        subclones$cellular_frequency
+      )
     } else {
-      time_end <- log(Nmax * (1 - subclones$cellular_frequency[1] - subclones$cellular_frequency[2])) / log(2)
-      s <- selection2clone(subclones$emergence_time, time_end, subclones$cellular_frequency)
+      x <- 1 - subclones$cellular_frequency[1] - subclones$cellular_frequency[2]
+      time_end <- log(Nmax * x) / log(2)
+      s <- selection2clone(
+        subclones$emergence_time,
+        time_end,
+        subclones$cellular_frequency
+      )
     }
   }
 
