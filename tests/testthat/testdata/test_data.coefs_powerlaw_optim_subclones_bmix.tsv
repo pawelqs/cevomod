@@ -1,4 +1,4 @@
-sample_id	model	component	A	alpha	convergence	value	best	N	f	N_mutations	BIC	sequencing_DP
+sample_id	model	component	A	alpha	convergence	value	best	N	frequency	N_mutations	BIC	sequencing_DP
 Sample 1	binomial_clones_BMix	Clone	NA	NA	NA	NA	TRUE	1	0.5009467773001	2365	13824.843979499434	53
 Sample 1	powerlaw_optim	powerlaw tail	60.01315147172387	1.8776328091900232	0	968.1504343392381	TRUE	NA	NA	NA	NA	NA
 Sample 2	binomial_clones_BMix	Clone	NA	NA	NA	NA	TRUE	2	0.35116755729824023	335	3750.400528838304	62.5
