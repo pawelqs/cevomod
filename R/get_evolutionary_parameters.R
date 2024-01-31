@@ -41,7 +41,8 @@ get_evolutionary_parameters.cevodata <- function(
 
 #' @export
 get_evolutionary_parameters.cv_powerlaw_models <- function(object, ...) {
-  get_mutation_rates(object$coefs)
+  coefs <- get_best_coefs(object)
+  get_mutation_rates(coefs)
 }
 
 
@@ -51,8 +52,9 @@ get_evolutionary_parameters.cv_powerlaw_subclones_models <- function(
     Nmax = 10^10,
     ...) {
   models <- object
-  mutation_rates <- get_mutation_rates(models$coefs)
-  subclones <- models$coefs |>
+  coefs <- get_best_coefs(object)
+  mutation_rates <- get_mutation_rates(coefs)
+  subclones <- coefs |>
     filter(str_detect(.data$component, "Subclone")) |>
     select("sample_id", "component", "N_mutations", "frequency") |>
     mutate(cellular_frequency = 2 * .data$frequency) |> # need ccf so times by 2
@@ -70,6 +72,15 @@ get_evolutionary_parameters.cv_powerlaw_subclones_models <- function(
   dt |>
     rowwise("sample_id", "mutation_rate") |>
     reframe(mobster_evolutionary_params(.data$subclones, Nmax = Nmax))
+}
+
+
+get_best_coefs <- function(object) {
+  if ("best" %in% names(object$coefs)) {
+    filter(object$coefs, .data$best)
+  } else {
+    object$coefs
+  }
 }
 
 
