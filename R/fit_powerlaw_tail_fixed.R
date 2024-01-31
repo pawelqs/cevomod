@@ -154,7 +154,7 @@ get_model_coefficients <- function(object,
                                    model_name = active_models(object),
                                    best_only = TRUE) {
   coefs <- get_models(object, model_name)$coefs
-  if (best_only) filter(coefs, .data$best) else coefs
+  if (best_only && ("best" %in% names(coefs))) filter(coefs, .data$best) else coefs
 }
 
 
