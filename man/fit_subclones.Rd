@@ -63,6 +63,8 @@ fit_subclones_mclust(
 \item{powerlaw_model_name}{Residual of which powerlaw model to use?
 powerlaw_fixed/powerlaw_optim}
 
+\item{name}{Name of the new model}
+
 \item{snvs_name}{Which snvs to to use?}
 
 \item{cnas_name}{Which cnas to to use?}

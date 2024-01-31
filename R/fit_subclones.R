@@ -7,6 +7,7 @@
 #' @param N Vector of numbers of clones to for models
 #' @param powerlaw_model_name Residual of which powerlaw model to use?
 #'   powerlaw_fixed/powerlaw_optim
+#' @param name Name of the new model
 #' @param snvs_name Which snvs to to use?
 #' @param cnas_name Which cnas to to use?
 #' @param method Clustering method to use. Currently supported methods:
