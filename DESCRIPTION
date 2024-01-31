@@ -37,7 +37,6 @@ Imports:
     forcats,
     ggplot2,
     mclust,
-    plyranges,
     progress,
     purrr,
     readr,
