@@ -39,6 +39,7 @@ devtools::install_github("pawelqs/cevomod")
 
 
 ## Last changes
+* **v3.0.0** - cevodata package extracted from the original cevomod and imported by cevomod. cevomod responsible for modelling part only.
 * **v2.3.0** - subclones can be fitted using [CliP](https://github.com/wwylab/CliP) ([Jiang et al., 2021](https://www.biorxiv.org/content/10.1101/2021.03.31.437383v1)) (`fit_subclones(method = "CliP")`). This option requires that the Apptainer is installed. CliP container image can be build with `build_clip_container()`
 * **v2.2.0** - fit_powerlaw_tail_fixed() has a bootstrap option. See the details in [Fitting models #Bootstrapping](https://pawelqs.github.io/cevomod/articles/fitting_models.html#bootstrapping) vignette
 * **v2.1.0** - cevomod is integrated with a helper [readthis](https://pawelqs.github.io/readthis/index.html) package, designed for bulk reading of variant files from algorithms such as Mutect2, Strelka, ASCAT, or FACETS, in the cevomod-friendly data format. Objects returned by `readthis::read_*()` functions can be added to the cevodata object using a general `add_data()` function.
