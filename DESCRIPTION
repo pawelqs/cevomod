@@ -16,6 +16,7 @@ Suggests:
     mutSignatures,
     neutralitytestr,
     knitr,
+    readthis,
     rmarkdown,
     shiny,
     shinydashboard,
@@ -46,12 +47,15 @@ Imports:
     tibble,
     tidyr,
     tidyselect,
+    verbose,
     yardstick
 Depends: 
     R (>= 2.10)
 Remotes: 
     caravagnalab/mobster,
     caravagnalab/BMix,
-    pawelqs/cevodata
+    pawelqs/cevodata,
+    pawelqs/readthis,
+    pawelqs/verbose
 LazyData: true
 URL: https://pawelqs.github.io/cevomod/, https://github.com/pawelqs/cevomod
