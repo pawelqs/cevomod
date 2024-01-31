@@ -186,6 +186,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(
 
 
 #' @rdname powerlaw_optim
+#' @param calc_residuals Return model residuals?
 #' @export
 fit_powerlaw_tail_optim.cevo_SFS_tbl <- function(
     object,

@@ -85,6 +85,8 @@ rewarded}
 \item{verbose}{verbose?}
 
 \item{sfs}{SFS}
+
+\item{calc_residuals}{Return model residuals?}
 }
 \description{
 \code{fit_powerlaw_tail_optim()} uses \code{stats::optim} to find optimal A and alpha
