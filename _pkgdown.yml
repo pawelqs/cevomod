@@ -5,6 +5,7 @@ template:
   bslib:
     pkgdown-nav-height: 100px
 
+
 home:
   links:
   - text: Source Code
@@ -43,7 +44,6 @@ reference:
     - quick_save
     - run_browser
     - shuffle
-
 
 
 articles:
