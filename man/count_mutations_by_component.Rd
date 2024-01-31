@@ -9,7 +9,8 @@
 count_mutations_by_component(
   object,
   models_name = active_models(object),
-  include_missing = FALSE
+  include_missing = FALSE,
+  min_f = 0.01
 )
 
 count_powerlaw_tail_mutations(object, models_name = active_models(object))
@@ -17,7 +18,6 @@ count_powerlaw_tail_mutations(object, models_name = active_models(object))
 count_missing_powerlaw_tail_mutations(
   object,
   models_name = active_models(object),
-  bins = 100,
   min_f = 0.01
 )
 }
@@ -27,6 +27,9 @@ count_missing_powerlaw_tail_mutations(
 \item{models_name}{models name}
 
 \item{include_missing}{include the component of the missing mutations}
+
+\item{min_f}{f threshold - power law tail goes to the Infinity, so we need
+to set a reasonable threshold}
 }
 \description{
 Get numbers of neutral, clonal, subclonal ect variants
@@ -35,6 +38,6 @@ Get numbers of neutral, clonal, subclonal ect variants
 \itemize{
 \item \code{count_powerlaw_tail_mutations()}: Count neutral tail mutations
 
-\item \code{count_missing_powerlaw_tail_mutations()}: Count filtered mutations with VAF higher than 0.01
+\item \code{count_missing_powerlaw_tail_mutations()}: Count filtered mutations with f higher than threshold
 
 }}
