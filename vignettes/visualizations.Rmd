@@ -27,23 +27,13 @@ suppressPackageStartupMessages({
 
 theme_set(theme_minimal())
 
-cd <- test_data
+cd <- test_data_fitted
+active_models(cd) <- "powerlaw_optim_subclones"
 cd
 ```
 
 
-# Data overview
-
-
-## Sequencing depth
-
-```{r}
-plot_sequencing_depth(cd)
-```
-
-
 # VAF distributions
-
 
 ## VAF spectra
 
@@ -82,26 +72,30 @@ plot_Mf_1f(cd)
 
 # Mutations
 
+(moved to cevoplots, to be fixed later)
+
 Drier mutations can be easily annotated on the VAF plots using the layer_mutations() function. By default, only the mutations with HIGH or MODERATE impact are annotated, but a custom filtering function can be applied with the `filter` argument.
 
 ```{r, fig.width=10, fig.height=6}
-plot_SFS(cd) +
-  layer_mutations(cd, mapping = aes(x = VAF), drivers = "BRCA")
+# plot_SFS(cd) +
+#   layer_mutations(cd, mapping = aes(x = VAF), drivers = "BRCA")
 ```
 
 Also, custom list of genes can be provided with the `genes` argument:
+(moved to cevoplots, to be fixed later)
 
 ```{r, fig.width=10, fig.height=6}
-plot_SFS(cd) +
-  layer_mutations(cd, mapping = aes(x = VAF), genes = c("TP53", "BRCA1"))
+# plot_SFS(cd) +
+#   layer_mutations(cd, mapping = aes(x = VAF), genes = c("TP53", "BRCA1"))
 ```
 
 ## Mutation plots
 
 Mutations in many genes of interest can be plotted with `plot_mutations()`:
+(moved to cevoplots, to be fixed later)
 
 ```{r}
-plot_mutations(cd, drivers = "BRCA")
+# plot_mutations(cd, drivers = "BRCA")
 ```
 
 # Models
@@ -109,14 +103,14 @@ plot_mutations(cd, drivers = "BRCA")
 Active models can be plotted with `plot_models()`
 
 ```{r}
-test_data_fitted |> 
+cd |> 
   plot_models()
 ```
 
-The plots can be ealisy customized:
+The plots can be easily customized:
 
 ```{r}
-test_data_fitted |> 
+cd |> 
   plot_models() +
   aes(fill = sex) +
   scale_fill_manual(values = c(male = "#DD4124", female = "#00496F")) +
@@ -126,7 +120,7 @@ test_data_fitted |>
 And the model components can be shown or hidden with `show_` arguments
 
 ```{r}
-test_data_fitted |> 
+cd |> 
   plot_models(show_subclones = FALSE) +
   aes(fill = sex) +
   scale_fill_manual(values = c(male = "#DD4124", female = "#00496F")) +
