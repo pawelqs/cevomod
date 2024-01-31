@@ -14,83 +14,35 @@ home:
 
 
 reference:
-- title: cevodata
-- contents:
-  - as_cevo_snvs
-  - init_cevodata
-  - starts_with("add_")
-  - starts_with("default_")
-  - set_cancer_type
-  - use_purity
-- title: cevodata transformations
-- contents:
-  - filter.cevodata
-  - split_by.cevodata
-  - merge.cevodata
-  - update.cevodata
-- title: Other transformations
-- contents:
-  - annotate_mutation_contexts
-  - unite_mutation_id
-  - cut_f_intervals
-  - filter_SNVs_by_regions
-  - shuffle
-- title: Data preparation
-- contents:
-  - annotate_normal_cn
-  - calc_mutation_frequencies
-  - intervalize_mutation_frequencies
-  - prepare_SNVs
 - title: Model fitting
 - contents:
   - starts_with("fit_")
 - title: Getters
 - contents:
   - starts_with("get_")
-  - active_models
-  - SNVs_CNVs
-- title: Evolutionary parameters
-- contents:
-  - get_mutation_rates
-  - get_selection_coefficients
+  - get_evolutionary_parameters
 - title: Visualizations
 - contents:
   - compare_models
   - geom_powerlaw
-  - hide_facet_labels
-  - hide_legend
-  - starts_with("layer_")
-  - has_keyword("palettes")
   - starts_with("plot")
-  - rotate_x_labels
-  - starts_with("scale_")
-  - starts_with("stat_")
 - title: Data
 - contents:
-  - driver_genes
-  - test_data
+  - tcga_brca_fitted
   - test_data_fitted
 - title: Other functions
 - contents:
   - build_clip_container
   - fill_na
-  - fix_powerlaw_N_mutations
   - generate_neutral_snvs
-  - set_cevomod_verbosity
   - set_containers_dir
-  - to_clip
   - "`%not in%`"
 - title: internal
   contents:
-    - count_mutation_types
     - count_mutations_by_component
-    - tcga_brca_test
     - quick_save
-    - print.cevo_palettes
     - run_browser
-    - run_cevomod
-    - variant_classification
-    - variant_classification_filter
+    - shuffle
 
 
 
