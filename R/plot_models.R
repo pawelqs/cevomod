@@ -52,7 +52,7 @@ plot_models.cevodata <- function(object,
 
   resid <- models$residuals |>
     join_metadata(object) |>
-    mutate(sample_id = parse_factor(.data$sample_id, levels = object$metadata$sample_id)) |>
+    factorize("sample_id", get_metadata(object)$sample_id) |>
     trim_powerlaw_pred()
 
   if (bootstraped) {
@@ -83,8 +83,6 @@ plot_models.cevodata <- function(object,
   x_label <- models$info$f_column
 
   resid |>
-    join_metadata(object) |>
-    factorize("sample_id", get_metadata(object)$sample_id) |>
     group_by(.data$sample_id) |>
     mutate(width = 0.9 / n()) |>
     ungroup() |>
