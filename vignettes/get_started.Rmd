@@ -24,13 +24,14 @@ In this tutorial we will use the `test_data` dataset provided with cevomod, whic
 
 ```{r setup}
 suppressPackageStartupMessages({
+  library(cevodata)
   library(cevomod)
   library(tidyverse)
 })
 
 theme_set(theme_minimal())
 snvs <- SNVs(test_data)
-cnvs <- CNVs(test_data)
+cnas <- CNAs(test_data)
 sample_data <- test_data$metadata
 ```
 
@@ -51,7 +52,7 @@ cevomod functions are pipe-oriented (in general), so we can create and populate 
 ```{r}
 cd <- init_cevodata(name = "Demo data") |> 
   add_SNV_data(snvs) |> 
-  add_sample_data(sample_data)
+  add_metadata(sample_data)
 
 cd
 ```
@@ -79,7 +80,7 @@ plot_SFS(cd) +
 We can see that there are clear peaks of clonal mutations in all 4 samples. In 3 of them, the average frequency of the clonal variants equals 0.5, corresponding to a sample purity of 1. In Sample 2, the average frequency of clonal mutations is lower, which is in line with the lower purity of this sample:
 
 ```{r}
-cd$metadata |> 
+get_metadata(cd) |> 
   select(sample_id, purity)
 ```
 
@@ -98,14 +99,14 @@ Although VAF is often used to model cancer evolution from the bulk sequencing da
 - normal_cn - containing information about the sequence ploidy in normal cells.
 
 ```{r}
-cnvs
+cnas
 ```
 
 We can add the CNV data to the cevodata object using the `add_CNV_data()` function.
 
 ```{r}
 cd <- cd |> 
-  add_CNV_data(cnvs)
+  add_CNA_data(cnas)
 
 cd
 ```
@@ -176,10 +177,10 @@ active_models(cd)
 Models can be viewed with the `get_models()` function:
 
 ```{r}
-get_models(cd, which = "powerlaw_fixed")
+get_models(cd, name = "powerlaw_fixed")
 ```
 
-The active model is returned if the `which` argument is left empty:
+The active model is returned if the `name` argument is left empty:
 
 ```{r}
 get_models(cd)
@@ -208,25 +209,13 @@ The model fitted to sample 2 is very inaccurate. The slope of the distribution i
 
 The evolutionary parameters for the subclones can be calculated using the equations provided by [Williams et al. (2018)](https://doi.org/10.1038/s41588-018-0128-6). Williams assumes an exponential tumor growth and a constant mutation rate, under which the power-law exponent equals 2, so we can use the equations with the models we fitted. In cevomod, we use the code and functions implemented in the [MOBSTER package](https://github.com/caravagnalab/mobster/blob/master/R/evodynamics.R) to calculate the parameters. We should not use the model for Sample 2, though. The mutation rate is severely underestimated, and the model fit is inaccurate. One should evaluate the fitted models carefully, before continuing with the analysis.
 
-Mutation rates can be obtained with `get_mutation_rates()`, and the selection coefficients with `get_selection_coefficients()` functions. Both functions can be run on the cevodata objects (with the correct models fitted), or on the model tibbles directly. This allows us to manually correct the model tibbles before the calculation of the evolutionary parameters.
+All evolutionary parameters can be obtained with `get_evolutionary_parameters()` function, which can be run on the cevodata object (with the correct models fitted), or on the model objects directly.
 
 For example, one can get filter Sample 2 out from the cevodata object:
 
 ```{r}
 cd |> 
   filter(sample_id != "Sample 2") |> 
-  get_models() |> 
-  get_mutation_rates()
+  get_evolutionary_parameters()
 ```
-
-or from the models tibble:
-
-
-```{r}
-cd |> 
-  get_models() |> 
-  filter(sample_id != "Sample 2") |> 
-  get_selection_coefficients()
-```
-
 
