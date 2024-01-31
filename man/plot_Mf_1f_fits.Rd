@@ -9,7 +9,9 @@ plot_Mf_1f_fits(object, model_name = "powerlaw_fixed", ...)
 \arguments{
 \item{object}{cevodata object}
 
-\item{...}{other params}
+\item{model_name}{Name of the model to plot}
+
+\item{...}{Other params}
 }
 \description{
 Plot M(f) ~ 1/f fits
