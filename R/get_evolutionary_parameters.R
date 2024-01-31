@@ -14,8 +14,8 @@
 #'
 #' @param object cevodata object or models tibble
 #' @param Nmax Time when tumour is sampled (in tumour doublings)
-#' @param ... other arguments
 #' @param models_name models_name
+#' @param ... other arguments
 #' @name evo_params
 NULL
 
@@ -27,6 +27,7 @@ get_evolutionary_parameters <- function(object, ...) {
 }
 
 
+#' @rdname evo_params
 #' @export
 get_evolutionary_parameters.cevodata <- function(
     object,
@@ -39,6 +40,7 @@ get_evolutionary_parameters.cevodata <- function(
 }
 
 
+#' @rdname evo_params
 #' @export
 get_evolutionary_parameters.cv_powerlaw_models <- function(object, ...) {
   coefs <- get_best_coefs(object)
@@ -46,6 +48,7 @@ get_evolutionary_parameters.cv_powerlaw_models <- function(object, ...) {
 }
 
 
+#' @rdname evo_params
 #' @export
 get_evolutionary_parameters.cv_powerlaw_subclones_models <- function(
     object,

@@ -3,18 +3,32 @@
 \name{evo_params}
 \alias{evo_params}
 \alias{get_evolutionary_parameters}
+\alias{get_evolutionary_parameters.cevodata}
+\alias{get_evolutionary_parameters.cv_powerlaw_models}
+\alias{get_evolutionary_parameters.cv_powerlaw_subclones_models}
 \title{Get evolutionary parameters from the model}
 \usage{
 get_evolutionary_parameters(object, ...)
+
+\method{get_evolutionary_parameters}{cevodata}(
+  object,
+  models_name = active_models(object),
+  Nmax = 10^10,
+  ...
+)
+
+\method{get_evolutionary_parameters}{cv_powerlaw_models}(object, ...)
+
+\method{get_evolutionary_parameters}{cv_powerlaw_subclones_models}(object, Nmax = 10^10, ...)
 }
 \arguments{
 \item{object}{cevodata object or models tibble}
 
 \item{...}{other arguments}
 
-\item{Nmax}{Time when tumour is sampled (in tumour doublings)}
-
 \item{models_name}{models_name}
+
+\item{Nmax}{Time when tumour is sampled (in tumour doublings)}
 }
 \description{
 Get evolutionary parameters from the model
