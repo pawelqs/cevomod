@@ -103,8 +103,8 @@ then the penalty rises extremely.
 Takes a single sample bootstrap SFS and fits a powerlaw model to it.
 }
 \examples{
-data("tcga_brca_test")
-cd <- tcga_brca_test |>
+data("tcga_brca_fitted")
+cd <- tcga_brca_fitted |>
   dplyr::filter(sample_id \%in\% c("TCGA-AC-A23H-01", "TCGA-AN-A046-01")) |>
   fit_powerlaw_tail_optim()
 }

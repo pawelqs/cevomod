@@ -19,8 +19,8 @@
 #' @param verbose verbose?
 #' @param ... other arguments passed to stats::optim()
 #' @examples
-#' data("tcga_brca_test")
-#' cd <- tcga_brca_test |>
+#' data("tcga_brca_fitted")
+#' cd <- tcga_brca_fitted |>
 #'   dplyr::filter(sample_id %in% c("TCGA-AC-A23H-01", "TCGA-AN-A046-01")) |>
 #'   fit_powerlaw_tail_optim()
 #' @name powerlaw_optim
@@ -141,7 +141,7 @@ fit_powerlaw_tail_optim.cevo_SFS_bootstraps <- function(
     map("coefs") |>
     map(~ pivot_longer(.x, all_of(c("A", "alpha")), names_to = "term", values_to = "estimate"))
 
-  conf_intervals <- rsample::int_pctl(object, tidy_coefs)
+  conf_intervals <- rsample::int_pctl(object, .data$tidy_coefs)
 
   bootstrap_coefs <- object$models |>
     map("coefs") |>

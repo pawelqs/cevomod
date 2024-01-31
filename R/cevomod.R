@@ -5,11 +5,6 @@
 #' @docType data
 NULL
 
-#' 4 test samples
-#' @name test_data
-#' @docType data
-NULL
-
 
 #' cevomod results for 4 test samples
 #' @name test_data_fitted
