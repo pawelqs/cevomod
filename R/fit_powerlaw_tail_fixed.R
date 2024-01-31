@@ -28,6 +28,7 @@
 #' @param verbose verbose?
 #' @param ... other arguments
 #' @examples
+#' library(cevodata)
 #' data("tcga_brca_test")
 #' snvs <- SNVs(tcga_brca_test) |>
 #'   dplyr::filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01"))
@@ -39,8 +40,7 @@
 #'   calc_SFS() |>
 #'   fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
 #'
-#' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
-#'   layer_lm_fits(cd)
+#' plot_models(cd)
 #' @name powerlaw_fixed_model
 NULL
 
@@ -171,7 +171,8 @@ get_model_residuals <- function(object, model_name = active_models(object)) {
 
 #' Plot M(f) ~ 1/f fits
 #' @param object cevodata object
-#' @param ... other params
+#' @param model_name Name of the model to plot
+#' @param ... Other params
 #' @export
 plot_Mf_1f_fits <- function(object, model_name = "powerlaw_fixed", ...) {
   coefs <- get_model_coefficients(object, model_name) |>

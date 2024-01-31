@@ -70,6 +70,7 @@ evolutionary parameters of detected subclones can be calculated.
 
 }}
 \examples{
+library(cevodata)
 data("tcga_brca_test")
 snvs <- SNVs(tcga_brca_test) |>
   dplyr::filter(sample_id \%in\% c("TCGA-AC-A23H-01","TCGA-AN-A046-01"))
@@ -81,6 +82,5 @@ cd <- init_cevodata("Test") |>
   calc_SFS() |>
   fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
 
-plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
-  layer_lm_fits(cd)
+plot_models(cd)
 }
