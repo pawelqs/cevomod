@@ -14,14 +14,15 @@ fit_subclones(
   object,
   N = 1:3,
   powerlaw_model_name = active_models(object),
+  name = paste0(powerlaw_model_name, "_subclones"),
   snvs_name = default_SNVs(object),
-  cnvs_name = default_CNVs(object),
+  cnas_name = default_CNAs(object),
   method = "BMix",
   upper_f_limit = 0.75,
   clip_sif = NULL,
   clip_input = file.path(tempdir(), "clip_input"),
   clip_output = file.path(tempdir(), "clip_output"),
-  verbose = get_cevomod_verbosity()
+  verbose = get_verbosity()
 )
 
 fit_subclones_bmix(
@@ -30,19 +31,19 @@ fit_subclones_bmix(
   powerlaw_model_name = active_models(object),
   snvs_name = default_SNVs(object),
   upper_f_limit = 0.75,
-  verbose = get_cevomod_verbosity()
+  verbose = get_verbosity()
 )
 
 fit_subclones_clip(
   object,
   powerlaw_model_name = active_models(object),
   snvs_name = default_SNVs(object),
-  cnvs_name = default_CNVs(object),
+  cnas_name = default_CNAs(object),
   upper_f_limit = 0.75,
   clip_sif = NULL,
   clip_input = file.path(tempdir(), "clip_input"),
   clip_output = file.path(tempdir(), "clip_output"),
-  verbose = get_cevomod_verbosity()
+  verbose = get_verbosity()
 )
 
 fit_subclones_mclust(
@@ -51,7 +52,7 @@ fit_subclones_mclust(
   powerlaw_model_name = active_models(object),
   snvs_name = default_SNVs(object),
   upper_f_limit = 0.75,
-  verbose = get_cevomod_verbosity()
+  verbose = get_verbosity()
 )
 }
 \arguments{
@@ -62,9 +63,11 @@ fit_subclones_mclust(
 \item{powerlaw_model_name}{Residual of which powerlaw model to use?
 powerlaw_fixed/powerlaw_optim}
 
+\item{name}{Name of the new model}
+
 \item{snvs_name}{Which snvs to to use?}
 
-\item{cnvs_name}{Which cnvs to to use?}
+\item{cnas_name}{Which cnas to to use?}
 
 \item{method}{Clustering method to use. Currently supported methods:
 \itemize{

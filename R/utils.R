@@ -19,6 +19,12 @@ drop_na_columns <- function(.data) {
 }
 
 
+factorize <- function(tbl, col, levels = unique(tbl[["col"]])) {
+  tbl[[col]] <- parse_factor(tbl[[col]], levels = levels)
+  tbl
+}
+
+
 get_f_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
   bounds <- snvs |>
     filter(.data$f > 0.00001, !is.na(.data$f)) |>
@@ -31,16 +37,50 @@ get_f_range <- function(snvs, pct_left = 0.05, pct_right = 0.95) {
 }
 
 
+get_local_sequencing_depths <- function(snvs, ...) {
+  sequencing_depths <- snvs |>
+    mutate(f = round(.data$f, digits = 2)) |>
+    group_by(.data$sample_id, .data$f) |>
+    summarise(
+      mean_DP = mean(.data$DP, na.rm = TRUE),
+      median_DP = stats::median(.data$DP, na.rm = TRUE),
+      sd_DP = sd(.data$DP, na.rm = TRUE),
+      .groups = "drop"
+    )
+
+  completed_depths <- sequencing_depths |>
+    nest_by(.data$sample_id) |>
+    reframe(
+      f = 1:100/100,
+      mean_DP = stats::approx(.data$data$f, .data$data$mean_DP, xout = .data$f, rule = 2)$y,
+      median_DP = stats::approx(.data$data$f, .data$data$median_DP, xout = .data$f, rule = 2)$y,
+      sd_DP = stats::approx(.data$data$f, .data$data$sd_DP, xout = .data$f, rule = 2)$y
+    )
+
+  completed_depths
+}
+
+
 msg <- function(...,
                 collapse = "",
                 col = "steelblue3",
                 new_line = TRUE,
-                verbose = get_cevomod_verbosity()) {
+                verbose = get_verbosity()) {
   msg <- str_c(list(...), collapse = collapse)
   if (verbose && new_line) {
     cli::cat_line(msg, col = col)
   } else if (verbose) {
    cat(crayon::blue(msg))
+  }
+}
+
+
+get_verbosity <- function() {
+  v <- verbose::verbose("cevoverse")
+  if (is.null(v)) {
+    0
+  } else {
+    v
   }
 }
 
@@ -90,13 +130,6 @@ run_browser <- function() {
   }
 
   shiny::runApp(app_dir, display.mode = "normal")
-}
-
-
-#' @export
-print.cevo_snvs <- function(x, ...) {
-  msg("<cevo_snvs> tibble")
-  NextMethod()
 }
 
 

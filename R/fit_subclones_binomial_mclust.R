@@ -7,18 +7,20 @@ fit_subclones_mclust <- function(object,
                                  powerlaw_model_name = active_models(object),
                                  snvs_name = default_SNVs(object),
                                  upper_f_limit = 0.75,
-                                 verbose = get_cevomod_verbosity()) {
+                                 verbose = get_verbosity()) {
   msg("Fitting binomial models using mclust", verbose = verbose)
 
-  powerlaw_models <- get_powerlaw_models(object, powerlaw_model_name)
-  residuals <- get_residuals(object, models_name = powerlaw_model_name) |>
+  powerlaw_models <- get_models(object, powerlaw_model_name)
+  stop_if_models_not_powerlaw(powerlaw_models, powerlaw_model_name)
+
+  residuals <- get_model_residuals(object, model_name = powerlaw_model_name) |>
     filter(.data$f >= 0)
-  sequencing_depths <- SNVs(object, which = snvs_name) |>
+  sequencing_depths <- SNVs(object, name = snvs_name) |>
     get_local_sequencing_depths() |>
     transmute(.data$sample_id, .data$f, sequencing_DP = .data$median_DP)
 
   pb <- if (verbose) progress_bar$new(total = n_distinct(residuals$sample_id)) else NULL
-  models <- residuals |>
+  coefs <- residuals |>
     select("sample_id", "f", "powerlaw_resid_clones") |>
     mutate(
       powerlaw_resid_clones = if_else(.data$f > upper_f_limit, 0, .data$powerlaw_resid_clones)
@@ -26,40 +28,12 @@ fit_subclones_mclust <- function(object,
     nest_by(.data$sample_id) |>
     reframe(fit_binomial_models(.data$data, N = N, pb = pb)) |>
     mutate(model = "binomial_clones", .after = "sample_id") |>
-    mutate(f = round(.data$cellularity, digits = 2)) |>
+    mutate(f = round(.data$frequency, digits = 2)) |>
     left_join(sequencing_depths, by = c("sample_id", "f")) |>
     select(-"f") |>
     evaluate_binomial_models()
 
-  best_models <- models |>
-    filter(.data$best) |>
-    nest_by(.data$sample_id, .key = "clones")
-
-  clonal_predictions <- residuals |>
-    select("sample_id", "f_interval", "f") |>
-    nest_by(.data$sample_id, .key = "intervals") |>
-    inner_join(best_models, by = "sample_id") |>
-    reframe(get_binomial_predictions(.data$clones, .data$intervals)) |>
-    select(-"f")
-
-  residuals <- residuals |>
-    select(-"model_resid") |>
-    left_join(clonal_predictions, by = c("sample_id", "f_interval")) |>
-    mutate(
-      model_pred = .data$powerlaw_pred + .data$binom_pred,
-      model_resid = .data$SFS - .data$model_pred
-    )
-
-  models <- powerlaw_models |>
-    bind_rows(models) |>
-    arrange(.data$sample_id, .data$best, .data$model)
-
-  models_name <- paste0(powerlaw_model_name, "_subclones")
-  resid_name <- paste0("residuals_", models_name)
-  object$models[[models_name]] <- models
-  object$misc[[resid_name]] <- residuals
-  object$active_models <- models_name
-  object
+  coefs
 }
 
 
@@ -94,17 +68,20 @@ fit_binomial_models_Mclust <- function(residuals, N) {
 
 
 mclust_to_clones_tbl <- function(mclust_model, n_mutations) {
-  tibble(
+  clones <- tibble(
     N = length(mclust_model$parameters$mean),
-    cellularity = mclust_model$parameters$mean,
+    frequency = mclust_model$parameters$mean,
     N_mutations = round(mclust_model$parameters$pro * n_mutations),
     BIC = mclust_model$bic
   ) |>
-    arrange(desc(.data$cellularity)) |>
+    arrange(desc(.data$frequency)) |>
     mutate(
       component = if_else(row_number() == 1, "Clone", str_c("Subclone ", row_number() - 1)),
-      .before = "cellularity"
+      .before = "frequency"
     )
+  names(clones$frequency) <- NULL
+  names(clones$BIC) <- NULL
+  clones
 }
 
 

@@ -1,58 +1,92 @@
-set_cevomod_verbosity(0)
+verbose::verbose(cevoverse = 0)
 
-object <- test_data |>
-  prepare_SNVs() |>
-  fit_powerlaw_tail_optim()
 
-N <- 1:3
-powerlaw_model_name <- "powerlaw_optim"
-upper_f_limit <- 0.75
-snvs_name <- "snvs"
-
-# For CliP interactive tests
-cnvs_name <- default_CNVs(object)
-clip_input <- file.path(tempdir(), "clip_input")
-clip_output <- file.path(tempdir(), "clip_output")
-clip_sif <- NULL
-verbose <- get_cevomod_verbosity()
+# ------------------------------ Main functions --------------------------------
 
 
 test_that("fit_subclones() mclust works", {
+  N <- 1:3
+  powerlaw_model_name <- "powerlaw_optim"
+  upper_f_limit <- 0.75
+  snvs_name <- "snvs"
+
+  object <- test_data_fitted
+  active_models(object) <- "powerlaw_optim"
+
   res <- object |>
     fit_subclones(method = "mclust")
-  expect_false(
-    is.null(res$models$powerlaw_optim_subclones)
-  )
+
+  expected_coefs <- test_path("testdata", "test_data.coefs_powerlaw_optim_subclones_mclust.tsv") |>
+    read_tsv(show_col_types = FALSE) |>
+    filter(best)
+  coefs <- get_model_coefficients(res)
+  expect_equal(coefs, expected_coefs)
+
+  expected_resid <- test_path("testdata", "test_data.residuals_powerlaw_optim_subclones_mclust.tsv") |>
+    read_tsv(show_col_types = FALSE)
+  attr(expected_resid, "f_column") <- "VAF"
+  resid <- get_model_residuals(res)
+  expect_equal(resid, expected_resid)
 })
 
 
 test_that("fit_subclones() bmix works", {
+  N <- 1:3
+  powerlaw_model_name <- "powerlaw_optim"
+  upper_f_limit <- 0.75
+  snvs_name <- "snvs"
+  object <- test_data_fitted
+  active_models(object) <- "powerlaw_optim"
+
   suppressWarnings(
     suppressMessages({
       res <- object |>
         fit_subclones(method = "BMix")
     })
   )
-  expect_false(
-    is.null(res$models$powerlaw_optim_subclones)
-  )
+
+  # It has stochasticity!!!
+  # expected_coefs <- test_path("testdata", "test_data.coefs_powerlaw_optim_subclones_bmix.tsv") |>
+  #   read_tsv(show_col_types = FALSE) |>
+  #   filter(best)
+  # coefs <- get_model_coefficients(res)
+  # expect_equal(
+  #   coefs |> select(-BIC, -f, -N_mutations),
+  #   expected_coefs |> select(-BIC, -f, -N_mutations)
+  # )
+  # expect_true(cor(expected_coefs$f, coefs$f, use = "pairwise.complete.obs") > 0.99)
+  # expect_true(cor(expected_coefs$BIC, coefs$BIC, use = "pairwise.complete.obs") > 0.99)
+  # expect_true(cor(expected_coefs$N_mutations, coefs$N_mutations, use = "pairwise.complete.obs") > 0.99)
+
+  expected_resid <- test_path("testdata", "test_data.residuals_powerlaw_optim_subclones_bmix.tsv") |>
+    read_tsv(show_col_types = FALSE)
+  resid <- get_model_residuals(res)
+  expect_true(cor(expected_resid$binom_pred, resid$binom_pred, use = "pairwise.complete.obs") > 0.99)
 })
 
 
-### Do not push this test to github, since it requires that apptainer
-### is installed
+## Do not push this test to github, since it requires that apptainer
+## is installed
 # test_that("fit_subclones() clip works", {
-#   res <- object |>
-#     fit_subclones(method = "CliP", verbose = TRUE)
-#
-#   expect_false(
-#     is.null(res$models$powerlaw_optim_subclones)
-#   )
+  # cnas_name <- default_CNAs(object)
+  # clip_input <- file.path(tempdir(), "clip_input")
+  # clip_output <- file.path(tempdir(), "clip_output")
+  # clip_sif <- NULL
+  # verbose <- get_verbosity()
+  # object <- test_data_fitted
+  # res <- object |>
+  #   fit_subclones(method = "CliP")
+  #
+  # expect_false(
+  #   is.null(res$models$powerlaw_optim_subclones)
+  # )
 # })
 
 
+# ------------------------------ Other functions -------------------------------
 
-fit_binomial_models_cols <- c("N", "component", "cellularity", "N_mutations", "BIC")
+
+fit_binomial_models_cols <- c("N", "component", "frequency", "N_mutations", "BIC")
 
 
 test_that("fit_binomial_models() works with very few remaining mutations", {
@@ -89,7 +123,7 @@ test_that("get_binomial_predictions() works", {
   clones <- tibble(
     component = c("Clone", "Subclone 1"),
     N_mutations = c(300, 100),
-    cellularity = c(.5, .2),
+    frequency = c(.5, .2),
     sequencing_DP = 100
   )
   binomial <- get_binomial_predictions(clones, intervals)
@@ -104,7 +138,7 @@ test_that("any_binomial_distibutions_correlate() works", {
   clones_non_overlapping <- tibble(
     sample_id   = "S1",
     component   = c("Clone", "Subclone 1"),
-    cellularity = c(0.33, 0.16),
+    frequency = c(0.33, 0.16),
     N_mutations = c(748, 1256),
     sequencing_DP   = c(52, 26)
   )
@@ -114,7 +148,7 @@ test_that("any_binomial_distibutions_correlate() works", {
   clones_overlapping <- tibble(
     sample_id   = "S1",
     component   = c("Clone", "Subclone 1", "Subclone 2"),
-    cellularity = c(0.33, 0.17, 0.12),
+    frequency = c(0.33, 0.17, 0.12),
     N_mutations = c(732, 866, 406),
     sequencing_DP   = c(60, 25, 37)
   )

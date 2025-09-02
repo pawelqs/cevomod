@@ -1,5 +1,5 @@
 
-## ------------------------- plot_models() function ---------------------------
+## ------------------------------- plot_models() -------------------------------
 
 #' Plot cevodata models
 #' @param object `<cevodata>` object
@@ -45,38 +45,57 @@ plot_models.cevodata <- function(object,
                                  nrow = NULL, ncol = NULL,
                                  ...) {
   models <- get_models(object, models_name)
-  neutral_lm_fitted <- "alpha" %in% names(models)
-  subclones_fitted <- "cellularity" %in% names(models)
-  bootstraped <- "cevo_bootstrap_powerlaw_models" %in% class(models)
 
-  resid <- get_residuals(object, models_name) |>
-    left_join(object$metadata, by = "sample_id") |>
-    mutate(sample_id = parse_factor(.data$sample_id, levels = object$metadata$sample_id)) |>
+  neutral_lm_fitted <- "alpha" %in% names(models$coefs)
+  subclones_fitted <- "frequency" %in% names(models$coefs)
+  bootstraped <- "bootstrap_coefs" %in% names(models)
+
+  resid <- models$residuals |>
+    join_metadata(object) |>
+    factorize("sample_id", get_metadata(object)$sample_id) |>
     trim_powerlaw_pred()
+
+  if (bootstraped) {
+    bootstrap_residuals <- models$bootstrap_residuals |>
+      join_metadata(object) |>
+      mutate(sample_id = parse_factor(.data$sample_id, levels = object$metadata$sample_id)) |>
+      trim_powerlaw_pred()
+  }
 
   model_layers <- list(
     if (show_neutral_tail && neutral_lm_fitted && !bootstraped) {
       geom_area_neutral_tail(resid, params_neutral_tail)
     },
     if (show_neutral_tail && neutral_lm_fitted && bootstraped) {
-      geom_line_bootstraps(resid, params_bootstraps)
+      geom_line_bootstraps(bootstrap_residuals, params_bootstraps)
     },
     if (show_binomial_layer && subclones_fitted) {
       geom_line_binomial(resid, params_binomial)
     },
     if (show_subclones && subclones_fitted) {
-      geom_are_subclones(resid, params_subclones)
+      geom_area_subclones(resid, params_subclones)
     },
     if (show_final_fit && neutral_lm_fitted && subclones_fitted) {
       geom_line_final_fit(resid, params_final_fit)
     }
   )
 
-  plot_SFS(object, geom = "bar", ...) +
-    model_layers +
-    facet_wrap(~.data$sample_id, scales = "free_y", nrow = nrow, ncol = ncol)
-}
+  x_label <- models$info$f_column
 
+  resid |>
+    group_by(.data$sample_id) |>
+    mutate(width = 0.9 / n()) |>
+    ungroup() |>
+    ggplot() +
+    aes(.data$f, .data$SFS, group = .data$sample_id) +
+    geom_bar(
+      aes(width = .data$width),
+      stat = "identity", alpha = 0.8, ...
+    ) +
+    model_layers +
+    facet_wrap(~.data$sample_id, scales = "free_y", nrow = nrow, ncol = ncol) +
+    labs(y = "count", x = x_label)
+}
 
 
 trim_powerlaw_pred <- function(resid, limit = 1.2) {
@@ -137,7 +156,7 @@ geom_line_binomial <- function(resid, params = list()) {
 
 
 
-geom_are_subclones <- function(resid, params) {
+geom_area_subclones <- function(resid, params) {
   dt <- resid |>
     pivot_longer(
       cols = c("Clone", starts_with("Subclone")),
@@ -221,10 +240,10 @@ compare_models <- function(object, model_names, column_name,
 
   resids <- model_names %>%
     set_names(model_names) |>
-    map(~get_residuals(object, .x)) |>
+    map(~get_model_residuals(object, .x)) |>
     bind_rows(.id = "model_name") |>
     left_join(ylimits, by = "sample_id") |>
-    left_join(object$metadata, by = "sample_id") |>
+    join_metadata(object) |>
     filter(!!sym(column_name) < .data$ylim, .data$f >= 0)
 
   plot_SFS(object, geom = "bar", ...) +

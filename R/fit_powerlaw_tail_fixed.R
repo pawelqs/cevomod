@@ -1,3 +1,4 @@
+# --------------------------------- Fit ----------------------------------------
 
 #' Fitting neutral models
 #'
@@ -27,6 +28,7 @@
 #' @param verbose verbose?
 #' @param ... other arguments
 #' @examples
+#' library(cevodata)
 #' data("tcga_brca_test")
 #' snvs <- SNVs(tcga_brca_test) |>
 #'   dplyr::filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01"))
@@ -38,8 +40,7 @@
 #'   calc_SFS() |>
 #'   fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
 #'
-#' plot(cd$models$Mf_1f, from = 0.05, to = 0.4, scale = FALSE) +
-#'   layer_lm_fits(cd)
+#' plot_models(cd)
 #' @name powerlaw_fixed_model
 NULL
 
@@ -60,15 +61,13 @@ fit_powerlaw_tail_fixed.cevodata <- function(object,
                                              lm_length = 0.05,
                                              name = "powerlaw_fixed",
                                              pct_left = 0.05, pct_right = 0.95,
-                                             verbose = get_cevomod_verbosity(),
+                                             verbose = get_verbosity(),
                                              ...) {
   msg("Fitting williams neutral models...", verbose = verbose)
 
   Mf_1f <- get_Mf_1f(object)
-  bounds <- get_f_range(SNVs(object), pct_left = pct_left, pct_right = pct_right)
-  # bounds <- get_non_zero_SFS_range(get_SFS(object), allowed_zero_bins = 2) |>
-  #   rename(lower_bound = "from", higher_bound = "to")
-
+  bounds <- SNVs(object) |>
+    get_f_range(pct_left = pct_left, pct_right = pct_right)
   data <- Mf_1f |>
     left_join(bounds, by = "sample_id") |>
     filter(.data$f > .data$lower_bound, .data$f < .data$higher_bound) |>
@@ -76,18 +75,20 @@ fit_powerlaw_tail_fixed.cevodata <- function(object,
     nest_by(.data$sample_id)
 
   pb <- if (verbose) progress_bar$new(total = nrow(data)) else NULL
-  models <- data |>
+  coefs <- data |>
     reframe(
       model = "powerlaw_fixed",
       component = "Neutral tail",
       fit_optimal_lm(.data$data, rsq_treshold, lm_length = lm_length, pb)
     )
-  class(models) <- c("cevo_powerlaw_models", class(models))
+  residuals <- coefs |>
+    filter(.data$best) |>
+    calc_powerlaw_model_residuals(sfs = get_SFS(object))
+  info <- list(f_column = attr(Mf_1f, "f_column"))
 
-  object$models[[name]] <- models
-  object$active_models <- name
-  object <- calc_powerlaw_model_residuals(object, models_name = name)
-  object
+  models <- lst(coefs, residuals, info)
+  class(models) <- c("cv_powerlaw_models", "list")
+  add_models(object, models, name = name)
 }
 
 
@@ -142,13 +143,43 @@ tidy_lm <- function(x, y) {
   res
 }
 
+# ----------------------------------- Get --------------------------------------
+
+#' Get model coefficients
+#' @param object cevodata object
+#' @param model_name Model name
+#' @param best_only Return only best models?
+#' @export
+get_model_coefficients <- function(object,
+                                   model_name = active_models(object),
+                                   best_only = TRUE) {
+  coefs <- get_models(object, model_name)$coefs
+  if (best_only && ("best" %in% names(coefs))) filter(coefs, .data$best) else coefs
+}
+
+
+#' Get model residuals
+#' @param object cevodata object
+#' @param model_name Model name
+#' @export
+get_model_residuals <- function(object, model_name = active_models(object)) {
+  get_models(object, model_name)$residuals
+}
+
+
+# ----------------------------------- Plot -------------------------------------
 
 #' Plot M(f) ~ 1/f fits
 #' @param object cevodata object
-#' @param ... other params
+#' @param model_name Name of the model to plot
+#' @param ... Other params
 #' @export
-plot_Mf_1f_fits <- function(object, ...) {
-  plot_Mf_1f(object, scale = FALSE, ...) +
+plot_Mf_1f_fits <- function(object, model_name = "powerlaw_fixed", ...) {
+  coefs <- get_model_coefficients(object, model_name) |>
+    join_metadata(object)
+  xmax <- max(coefs$to)
+  xmax <- max(xmax, 0.25)
+  plot_Mf_1f(object, scale = FALSE, to = xmax, ...) +
     layer_lm_fits(object, alpha = 0.5) +
     theme(axis.text.x = element_text(angle = 90))
 }
@@ -168,9 +199,9 @@ layer_lm_fits <- function(cd, model_name = "powerlaw_fixed", ...) {
       y = 1/.data$from * .data$A + .data$b,
       yend = 1/.data$to * .data$A + .data$b
     ),
-    size = 1,
-    data = get_models(cd, model_name) |>
-      left_join(cd$metadata, by = "sample_id"),
+    linewidth = 1,
+    data = get_model_coefficients(cd, model_name) |>
+      join_metadata(cd),
     show.legend = FALSE,
     ...
   )
@@ -189,11 +220,10 @@ plot_neutral_A_coefficients <- function(object, ...) {
 
 #' @export
 plot_neutral_A_coefficients <- function(object, model_name = "powerlaw_fixed", ...) {
-  get_models(object, model_name, best_only = FALSE) |>
+  get_model_coefficients(object, model_name, best_only = FALSE) |>
+    join_metadata(object) |>
     ggplot() +
     aes(x = .data$from, xend = .data$to, y = .data$A, yend = .data$A, color = .data$best) +
     geom_segment(...) +
-    facet_wrap(~.data$sample_id, scales = "free") +
-    theme_minimal() +
-    scale_color_brewer(palette = "Dark2")
+    facet_wrap(~.data$sample_id, scales = "free")
 }

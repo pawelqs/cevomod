@@ -23,12 +23,15 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 suppressPackageStartupMessages({
+  library(cevodata)
   library(cevomod)
   library(tidyverse)
 })
 
 cd <- test_data |> 
-  prepare_SNVs()
+  calc_mutation_frequencies() |> 
+  intervalize_mutation_frequencies() |> 
+  calc_SFS()
 cd
 ```
 
@@ -64,7 +67,7 @@ plot_models(cd)
 
 
 ```{r}
-get_models(cd) |> 
+get_model_coefficients(cd) |> 
   select(sample_id, model, component, alpha)
 ```
 
@@ -85,9 +88,7 @@ plot_models(cd)
 
 If the subclones are fitted for the power-law component with the exponent equal to 2, the evolutionary parameters can be estimated using the equations from [Williams et al. (2018)](https://doi.org/10.1038/s41588-018-0128-6). In cevomod, we use the code implemented in the [MOBSTER package](https://github.com/caravagnalab/mobster/blob/master/R/evodynamics.R) to calculate these parameters.
 
-Mutation rates can be obtained with `get_mutation_rates()`, and the selection coefficients with `get_selection_coefficients()` functions. Both functions can be run on the cevodata objects (with the correct models fitted), or on the model tibbles directly. This allows us to manually correct the model tibbles before the calculation of the evolutionary parameters.
-
-For example, one can get filter Sample 2 out from the cevodata object:
+To get the evolutionary parameters, run `get_evolutionary_parameters()` on the cevodata or models object.
 
 ```{r}
 cd <- cd |> 
@@ -95,12 +96,8 @@ cd <- cd |>
   fit_subclones(powerlaw_model_name = "powerlaw_fixed")
 
 cd |> 
-  get_models() |> 
-  get_mutation_rates()
-
-cd |> 
-  get_models() |> 
-  get_selection_coefficients()
+  # get_models() |> 
+  get_evolutionary_parameters()
 ```
 
 ## Alternative methods for fitting clones and subclones
@@ -140,19 +137,23 @@ If `bootstraps` is an integer greater than 1, the SNVs from the default assay ar
 For demonstration purposes, we will bootstrap for 2 samples and with only 2 resamples.
 
 ```{r}
+keep_samples <- get_metadata(cd)$sample_id[1:2]
 cd <- cd |> 
-  filter(sample_id %in% cd$metadata$sample_id[1:2]) |> 
+  filter(sample_id %in% keep_samples) |> 
   fit_powerlaw_tail_optim(name = "bs_model", bootstraps = 2)
+```
 
+```{r}
 get_model_names(cd)
 ```
 
 ```{r}
-get_models(cd, "bs_model_bootstraps")
+get_models(cd, "bs_model") |> 
+  summary()
 ```
 
 ```{r}
-get_models(cd, "bs_model")
+get_model_coefficients(cd, "bs_model")
 ```
 
 Resampled models can be plotted in the same way as non-resampled models using the `plot_models()` function.

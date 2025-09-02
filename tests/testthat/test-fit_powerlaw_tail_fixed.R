@@ -1,26 +1,42 @@
-data("tcga_brca_test")
-set_cevomod_verbosity(0)
+data("tcga_brca_fitted")
+verbose::verbose(cevoverse = 0)
 
+
+# ---------------------------------- Fit ---------------------------------------
 
 test_that("Fitting neutral partial models works", {
-  snvs <- SNVs(tcga_brca_test) |>
+  rsq_treshold <- 0.98
+  lm_length <- 0.05
+  name <- "powerlaw_fixed"
+  pct_left <- 0.05
+  pct_right <- 0.95
+  verbose <- get_verbosity()
+
+  snvs <- SNVs(tcga_brca_fitted) |>
     filter(sample_id %in% c("TCGA-AC-A23H-01","TCGA-AN-A046-01"))
   object <- init_cevodata("Test") |>
     add_SNV_data(snvs) |>
     intervalize_mutation_frequencies() |>
     calc_Mf_1f() |>
     calc_SFS() |>
-    fit_powerlaw_tail_fixed(rsq_treshold = 0.99)
-  path <- test_path("tcga_brca_partial_neutral_models.tsv")
-  expected <- read_tsv(path, col_types = "cccdddddddl") |>
+    fit_powerlaw_tail_fixed()
+  models <- get_models(object)
+
+  expected_coefs <- test_path("testdata", "tcga_brca_2samples.coefs_powerlaw_fixed.tsv") |>
+    read_tsv(col_types = "cccdddddddl") |>
     mutate(
       model = "powerlaw_fixed",
       component = "Neutral tail",
       .before = "from"
     )
-  class(expected) <- c("cevo_powerlaw_models", class(expected))
-  # write_tsv(object$models$powerlaw_fixed, path)
-  expect_equal(get_models(object, best_only = FALSE), expected)
+  expected_residuals <- test_path("testdata", "tcga_brca_2samples.residuals_powerlaw_fixed.tsv") |>
+    read_tsv(show_col_types = FALSE)
+  attr(expected_residuals, "f_column") <- "VAF"
+
+  expect_s3_class(models, c("cv_powerlaw_models", "cv_subitem", "list"))
+  expect_equal(models$coefs, expected_coefs)
+  expect_equal(models$residuals, expected_residuals)
+  expect_equal(models$info, list(f_column = "VAF"))
 })
 
 
@@ -73,8 +89,11 @@ object <- init_cevodata("Test") |>
 
 
 test_that("calc_powerlaw_model_residuals() creates proper tibble", {
-  cd <- calc_powerlaw_model_residuals(object, "powerlaw_fixed")
-  resids <- get_residuals(cd, "powerlaw_fixed")
+  coefs <- get_models(object)$coefs |>
+    filter(best)
+  sfs <- get_SFS(object)
+  resids <- calc_powerlaw_model_residuals(coefs, sfs)
+  # resids <- get_residuals(cd, "powerlaw_fixed")
   expect_equal(nrow(resids), 101)
   expect_true(all(c("powerlaw_resid", "sampling_rate") %in% names(resids)))
   expect_equal(
@@ -85,3 +104,16 @@ test_that("calc_powerlaw_model_residuals() creates proper tibble", {
   expect_equal(is.na(resids) |> sum(), 1)
 })
 
+
+# ------------------------------- Plot -----------------------------------------
+
+test_that("plot_Mf_1f_fits() works", {
+  p <- plot_Mf_1f_fits(tcga_brca_fitted)
+  vdiffr::expect_doppelganger("plot-Mf-1f-fits", p)
+})
+
+
+test_that("plot_neutral_A_coefficients() works", {
+  p <- plot_neutral_A_coefficients(tcga_brca_fitted)
+  vdiffr::expect_doppelganger("plot-neutral-A-coefficients", p)
+})

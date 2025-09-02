@@ -1,0 +1,5 @@
+sample_id	model	component	A	alpha	convergence	value	best
+Sample 1	powerlaw_optim	powerlaw tail	60.01315147172387	1.8776328091900232	0	968.1504343392381	TRUE
+Sample 2	powerlaw_optim	powerlaw tail	15.053930975814817	2.6007916298794242	0	1640.4794696405124	TRUE
+Sample 3	powerlaw_optim	powerlaw tail	108.88451158462281	2.0241254481129602	0	1585.245558904235	TRUE
+Sample 4	powerlaw_optim	powerlaw tail	93.16235154384304	1.8598898366134282	0	1568.2845373244807	TRUE

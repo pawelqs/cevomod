@@ -1,31 +1,16 @@
+# --------------------------------- Calc ---------------------------------------
 
-#' Get model residuals
-#' @param cd cevodata object
-#' @param models_name name of the models
-#' @export
-get_residuals <- function(cd, models_name = cd$active_model) {
-  slot_name <- paste0("residuals_", models_name)
-  residuals <- cd$misc[[slot_name]]
-  if (is.null(residuals)) {
-    stop(slot_name, "slot empty. Fit apropriate model first!")
-  }
-  residuals
-}
-
-
-calc_powerlaw_model_residuals <- function(object, models_name, ...) {
-  powerlaw_models <- get_models(object, models_name)
-  optional_cols <- c("from", "to", "b") |> intersect(colnames(powerlaw_models))
+calc_powerlaw_model_residuals <- function(powerlaw_coefs, sfs, ...) {
+  optional_cols <- c("from", "to", "b") |> intersect(colnames(powerlaw_coefs))
   from_to_cols_present <- all(c("from", "to") %in% optional_cols)
-  powerlaw_models <- powerlaw_models |>
+  powerlaw_coefs <- powerlaw_coefs |>
     filter(!is.na(.data$A), !is.na(.data$alpha)) |>
     select("sample_id", any_of("resample_id"), "A", "alpha", all_of(optional_cols))
-  sfs <- get_SFS(object)
   nbins <- summarise(sfs, nbins = n() - 1, .by = "sample_id") # zero bin does not count
 
   residuals <- sfs |>
     select("sample_id", "f_interval", "f", SFS = "y") |>
-    inner_join(powerlaw_models, by = "sample_id") |>
+    inner_join(powerlaw_coefs, by = "sample_id") |>
     left_join(nbins, by = "sample_id") |>
     mutate(
       neutr = if (from_to_cols_present) {
@@ -40,10 +25,8 @@ calc_powerlaw_model_residuals <- function(object, models_name, ...) {
       model_resid = .data$powerlaw_resid,
     ) |>
     select(-("nbins":"alpha"))
-
-  slot_name <- paste0("residuals_", models_name)
-  object$misc[[slot_name]] <- residuals
-  object
+  class(residuals) <- class(tibble())
+  residuals
 }
 
 
@@ -51,6 +34,8 @@ calc_powerlaw_curve <- function(f, A, alpha, nbins) {
   if_else(f < 0, 0, (A / nbins) / f^alpha)
 }
 
+
+# ----------------------------------- Plot-------------------------------------
 
 #' Plot model residuals
 #'
@@ -64,11 +49,10 @@ calc_powerlaw_curve <- function(f, A, alpha, nbins) {
 NULL
 
 
-
 #' @describeIn plot_residuals Plot sampling rate
 #' @export
 plot_sampling_rate <- function(object, mapping = NULL, geom = geom_point, ...) {
-  residuals <- get_residuals(object) |>
+  residuals <- get_model_residuals(object) |>
     left_join(object$metadata, by = "sample_id") |>
     filter(.data$f >= 0)
   default_mapping <- aes(.data$f, .data$sampling_rate, color = .data$sample_id)
@@ -82,7 +66,6 @@ plot_sampling_rate <- function(object, mapping = NULL, geom = geom_point, ...) {
 }
 
 
-
 #' @describeIn plot_residuals Plot residuals of the neutral model
 #' @export
 plot_residuals_powerlaw_model <- function(object,
@@ -91,8 +74,8 @@ plot_residuals_powerlaw_model <- function(object,
                                           geom = geom_point,
                                           fit_clones = TRUE,
                                           ...) {
-  residuals <- get_residuals(object, models_name) |>
-    left_join(object$metadata, by = "sample_id") |>
+  residuals <- get_model_residuals(object, models_name) |>
+    join_metadata(object) |>
     group_by(.data$sample_id) |>
     mutate(width = 0.9 / n())
   binomial_model_fitted <- !is.null(residuals[["binom_pred"]])
@@ -118,8 +101,8 @@ plot_residuals_full_model <- function(object,
                                       mapping = NULL,
                                       geom = geom_point,
                                       ...) {
-  residuals <- get_residuals(object) |>
-    left_join(object$metadata, by = "sample_id")
+  residuals <- get_model_residuals(object) |>
+    join_metadata(object)
   default_mapping <- aes(.data$f, .data$model_resid, color = .data$sample_id)
   final_mapping <- join_aes(default_mapping, mapping)
   ggplot(residuals) +
@@ -140,7 +123,7 @@ plot_binomial_fits_vs_powerlaw_residuals_bars <- function(
         geom = geom_bar,
         fit_clones = TRUE,
         ...) {
-  residuals <- get_residuals(object, models_name)
+  residuals <- get_model_residuals(object, models_name)
   binomial_model_fitted <- !is.null(residuals[["binom_pred"]])
   if (!binomial_model_fitted) {
     stop("Fit subclones first!")

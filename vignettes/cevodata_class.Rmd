@@ -17,16 +17,18 @@ knitr::opts_chunk$set(
 ```
 
 
-The basic data structure used by `cevomod` is the `cevodata` `S3` class. It is designed to store the data for the entire cohort of samples (SNVs, CNVs, metadata, models) in a single object. Storing the data for many samples in a single object, rather than in a list of single-sample objects, makes it easier to perform studies on larger cohorts of samples. cevomod internally iterates over the samples as needed, using vectorized R functions where possible, which is much faster than the classical loop-based approach. The visualization methods implemented are also cohort-oriented, allowing the user to easily compare results between samples and groups of samples.
+The basic data structure used by `cevomod` is the `cevodata` `S3` class. It is designed to store the data for the entire cohort of samples (SNVs, CNAs, metadata, models) in a single object. Storing the data for many samples in a single object, rather than in a list of single-sample objects, makes it easier to perform studies on larger cohorts of samples. cevomod internally iterates over the samples as needed, using vectorized R functions where possible, which is much faster than the classical loop-based approach. The visualization methods implemented are also cohort-oriented, allowing the user to easily compare results between samples and groups of samples.
 
 All data in the `cevodata' object is stored in tidyverse tibbles. The main components of the `cevodata` object are
 
 
 - metadata - tibble that associates sample IDs with patient IDs and contains all metadata about patients (such as sex, age, or molecular subtype of tumor) and samples (such as purity estimates),
 - SNVs - stores tibbles of SNVs and indels. Multiple tibbles can be stored with alternative lists of variants (different variant callers, data filtering settings, etc.),
-- CNVs - stores tibbles of CNVs. Multiple tibbles can be stored with alternative lists of variants,
-- models - stores models fitted by `cevomod`, but also some intermediate results such as VAF spectra, $M(f) ~ 1/f$ statistics, and cumulative tails counts,
-- misc - list of tibbles used by cevomod to store e.g. the model residuals. 
+- CNAs - stores tibbles of CNAs. Multiple tibbles can be stored with alternative lists of variants,
+- stats - stores tibbles of statistics calculated for each sample, such as the cumulative tails, $M(f) ~ 1/f$ statistics, or SFS spectra
+- models - stores models fitted by `cevomod`
+- misc - currently not used
+- settings list
 
 
 
@@ -37,6 +39,7 @@ The user interface of cevomod was inspired by the tidyverse R packages ecosystem
 
 ```{r}
 suppressPackageStartupMessages({
+  library(cevodata)
   library(cevomod)
   library(tidyverse)
 })
@@ -75,7 +78,7 @@ filtered_snvs <- snvs |>
 Now let's create a `cevodata` and add both versions of SNV data:  
 
 ```{r}
-cd <- init_cevodata(name = "Training cevodata", cancer = "BRCA") |>
+cd <- init_cevodata(name = "Training cevodata") |>
     add_SNV_data(filtered_snvs, name = "filtered_snvs") |> 
     add_SNV_data(snvs, name = "all_Mutect_snvs")
 
@@ -89,7 +92,7 @@ default_SNVs(cd) <- "filtered_snvs"
 cd
 ```
 
-In the same way, one can use the `add_CNV_data()` and `default_CNVs()` functions to add the list(s) of CNVs to the `cevodata`.
+In the same way, one can use the `add_CNA_data()` and `default_CNAs()` functions to add the list(s) of CNAs to the `cevodata`.
 
 
 
@@ -98,7 +101,7 @@ In the same way, one can use the `add_CNV_data()` and `default_CNVs()` functions
 Metadata tibble contains only the sample IDs now.
 
 ```{r}
-cd$metadata
+get_metadata(cd)
 ```
 
 Lets add some more information:
@@ -116,13 +119,13 @@ patient_data <- tibble(
 )
 
 cd <- cd |> 
-  add_sample_data(sample_data) |> 
-  add_patient_data(patient_data)
+  add_metadata(sample_data) |> 
+  add_metadata(patient_data)
 ```
 
 
 ```{r}
-cd$metadata
+get_metadata(cd)
 ```
 
 # Transformations
